@@ -1083,12 +1083,12 @@ export default function GrowthPage() {
         </div>
 
         <div className='flex flex-wrap items-center gap-3'>
-          {hasGenerated && (
+          {/* {hasGenerated && (
             <span className='inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 type-caption font-medium text-gray-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400'>
               <Clock size={13} />
               Updated {fmtDate(latest?.created_at)}
             </span>
-          )}
+          )} */}
 
           <Button
             variant='outline'

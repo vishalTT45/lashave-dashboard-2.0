@@ -417,12 +417,12 @@ function AvailabilityContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const [bookingSearch, setBookingSearch] = useState('');
 
-const [openBookingFilter, setOpenBookingFilter] = useState<
-  'status' | 'date' | 'channel' | null
->(null);
+  const [openBookingFilter, setOpenBookingFilter] = useState<
+    'status' | 'date' | 'channel' | null
+  >(null);
 
-const [bookingChannelFilter, setBookingChannelFilter] = useState<string[]>([]);
-const bookingChannelFilterRef = useRef<HTMLDivElement>(null);
+  const [bookingChannelFilter, setBookingChannelFilter] = useState<string[]>([]);
+  const bookingChannelFilterRef = useRef<HTMLDivElement>(null);
 
   const [bookingDateRange, setBookingDateRange] = useState<{
     from: string;
@@ -549,85 +549,85 @@ const bookingChannelFilterRef = useRef<HTMLDivElement>(null);
       ? 'All channels'
       : bookingChannelFilter.length === 1
         ? bookingChannelFilter[0].charAt(0).toUpperCase() +
-          bookingChannelFilter[0].slice(1)
+        bookingChannelFilter[0].slice(1)
         : `${bookingChannelFilter.length} channels`;
 
   /* Filtered list */
- const filteredBookings = useMemo(() => {
-   const byTab = (() => {
-     switch (activeTab) {
-       case 'today':
-         return bookings.filter((b) => isToday(b.start_time));
+  const filteredBookings = useMemo(() => {
+    const byTab = (() => {
+      switch (activeTab) {
+        case 'today':
+          return bookings.filter((b) => isToday(b.start_time));
 
-       case 'upcoming':
-         return bookings.filter(
-           (b) => isUpcoming(b.start_time) && b.status !== 'cancelled',
-         );
+        case 'upcoming':
+          return bookings.filter(
+            (b) => isUpcoming(b.start_time) && b.status !== 'cancelled',
+          );
 
-       case 'confirmed':
-         return bookings.filter(
-           (b) =>
-             ['confirmed', 'rescheduled'].includes(b.status) &&
-             !isBookingCompleted(b),
-         );
+        case 'confirmed':
+          return bookings.filter(
+            (b) =>
+              ['confirmed', 'rescheduled'].includes(b.status) &&
+              !isBookingCompleted(b),
+          );
 
-       case 'completed':
-         return bookings.filter((b) => isBookingCompleted(b));
+        case 'completed':
+          return bookings.filter((b) => isBookingCompleted(b));
 
-       case 'cancelled':
-         return bookings.filter((b) => b.status === 'cancelled');
+        case 'cancelled':
+          return bookings.filter((b) => b.status === 'cancelled');
 
-       default:
-         return bookings.filter((b) => b.status !== 'cancelled');
-     }
-   })();
+        default:
+          return bookings.filter((b) => b.status !== 'cancelled');
+      }
+    })();
 
-   const byDate = bookingDateRange
-     ? byTab.filter((booking) => {
-         const key = (booking.start_time || booking.booking_date || '').slice(
-           0,
-           10,
-         );
-         if (!key) return false;
-         return key >= bookingDateRange.from && key <= bookingDateRange.to;
-       })
-     : byTab;
+    const byDate = bookingDateRange
+      ? byTab.filter((booking) => {
+        const key = (booking.start_time || booking.booking_date || '').slice(
+          0,
+          10,
+        );
+        if (!key) return false;
+        return key >= bookingDateRange.from && key <= bookingDateRange.to;
+      })
+      : byTab;
 
-   const byChannel =
-     bookingChannelFilter.length === 0
-       ? byDate
-       : byDate.filter((booking) =>
-           bookingChannelFilter.includes((booking.channel || '').toLowerCase()),
-         );
+    const byChannel =
+      bookingChannelFilter.length === 0
+        ? byDate
+        : byDate.filter((booking) =>
+          bookingChannelFilter.includes((booking.channel || '').toLowerCase()),
+        );
 
-   const query = bookingSearch.trim().toLowerCase();
-   if (!query) return byChannel;
+    const query = bookingSearch.trim().toLowerCase();
+    if (!query) return byChannel;
 
-   return byChannel.filter((booking) =>
-     [
-       booking.customer_name,
-       booking.customer_phone,
-       booking.customer_details?.phone,
-       booking.customer_details?.email,
-       booking.channel,
-       booking.status,
-       booking.booking_date,
-       booking.start_time,
-       booking.end_time,
-       booking.instagram_profile?.username,
-     ]
-       .filter(Boolean)
-       .join(' ')
-       .toLowerCase()
-       .includes(query),
-   );
- }, [
-   bookings,
-   activeTab,
-   bookingSearch,
-   bookingDateRange,
-   bookingChannelFilter,
- ]);
+    return byChannel.filter((booking) =>
+      [
+        booking.customer_name,
+        booking.customer_phone,
+        booking.customer_details?.phone,
+        booking.customer_details?.email,
+        booking.channel,
+        booking.status,
+        booking.booking_date,
+        booking.start_time,
+        booking.end_time,
+        booking.instagram_profile?.username,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase()
+        .includes(query),
+    );
+  }, [
+    bookings,
+    activeTab,
+    bookingSearch,
+    bookingDateRange,
+    bookingChannelFilter,
+  ]);
   const sortedBookings = useMemo(() => {
     const getSortValue = (booking: Booking) => {
       const displayName =
@@ -686,9 +686,9 @@ const bookingChannelFilterRef = useRef<HTMLDivElement>(null);
     setBookingSort((current) =>
       current.key === key
         ? {
-            key,
-            direction: current.direction === 'asc' ? 'desc' : 'asc',
-          }
+          key,
+          direction: current.direction === 'asc' ? 'desc' : 'asc',
+        }
         : { key, direction: 'asc' },
     );
   };
@@ -817,41 +817,41 @@ const bookingChannelFilterRef = useRef<HTMLDivElement>(null);
       method: 'POST' | 'PUT' | 'PATCH';
       body?: { status: string };
     }> = [
-      {
-        path: `/admin/booking/${bookingId}/status`,
-        method: 'PUT',
-        body: { status: 'completed' },
-      },
-      {
-        path: `/admin/booking/${bookingId}/status`,
-        method: 'PATCH',
-        body: { status: 'completed' },
-      },
-      {
-        path: `/admin/bookings/${bookingId}/status`,
-        method: 'PUT',
-        body: { status: 'completed' },
-      },
-      {
-        path: `/admin/bookings/${bookingId}/status`,
-        method: 'PATCH',
-        body: { status: 'completed' },
-      },
-      {
-        path: `/admin/booking/${bookingId}/complete`,
-        method: 'POST',
-      },
-      {
-        path: `/admin/booking/${bookingId}`,
-        method: 'PATCH',
-        body: { status: 'completed' },
-      },
-      {
-        path: `/admin/bookings/${bookingId}`,
-        method: 'PATCH',
-        body: { status: 'completed' },
-      },
-    ];
+        {
+          path: `/admin/booking/${bookingId}/status`,
+          method: 'PUT',
+          body: { status: 'completed' },
+        },
+        {
+          path: `/admin/booking/${bookingId}/status`,
+          method: 'PATCH',
+          body: { status: 'completed' },
+        },
+        {
+          path: `/admin/bookings/${bookingId}/status`,
+          method: 'PUT',
+          body: { status: 'completed' },
+        },
+        {
+          path: `/admin/bookings/${bookingId}/status`,
+          method: 'PATCH',
+          body: { status: 'completed' },
+        },
+        {
+          path: `/admin/booking/${bookingId}/complete`,
+          method: 'POST',
+        },
+        {
+          path: `/admin/booking/${bookingId}`,
+          method: 'PATCH',
+          body: { status: 'completed' },
+        },
+        {
+          path: `/admin/bookings/${bookingId}`,
+          method: 'PATCH',
+          body: { status: 'completed' },
+        },
+      ];
 
     let lastError: unknown = null;
     for (const attempt of attempts) {
@@ -1034,6 +1034,11 @@ const bookingChannelFilterRef = useRef<HTMLDivElement>(null);
         field.field_key.toLowerCase() === 'phone' ||
         field.label.toLowerCase().includes('phone'),
     );
+    const emailField = customerFields.find(
+      (field) =>
+        field.field_key.toLowerCase() === 'email' ||
+        field.label.toLowerCase().includes('email'),
+    );
 
     try {
       setCreatingManualBooking(true);
@@ -1046,6 +1051,9 @@ const bookingChannelFilterRef = useRef<HTMLDivElement>(null);
           tenant_id: bookingSettings.tenant_id,
           conversation_id: null,
           customer_name: name,
+          customer_email: emailField
+            ? (manualValues[emailField.field_key] || '').trim().toLowerCase()
+            : '',
           customer_phone: phoneField
             ? (manualValues[phoneField.field_key] || '').trim() || null
             : null,
@@ -1075,8 +1083,8 @@ const bookingChannelFilterRef = useRef<HTMLDivElement>(null);
 
   const manualDayLabel = manualDate
     ? new Date(`${manualDate}T00:00:00`).toLocaleDateString('en-IN', {
-        weekday: 'long',
-      })
+      weekday: 'long',
+    })
     : '';
 
   const primaryFieldKeys = ['name', 'phone', 'email'];
@@ -1576,12 +1584,12 @@ const bookingChannelFilterRef = useRef<HTMLDivElement>(null);
                             <span className='inline-flex items-center gap-2'>
                               {booking.channel &&
                                 CHANNEL_LOGOS[
-                                  booking.channel.toLowerCase()
+                                booking.channel.toLowerCase()
                                 ] && (
                                   <Image
                                     src={
                                       CHANNEL_LOGOS[
-                                        booking.channel.toLowerCase()
+                                      booking.channel.toLowerCase()
                                       ]
                                     }
                                     alt={booking.channel}

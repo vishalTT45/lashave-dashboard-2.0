@@ -61,11 +61,13 @@ export function AppSidebar() {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
   const [bookingEnabled, setBookingEnabled] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     apiFetch<MeResp>('/admin/profile/me', { auth: true })
       .then((me) => setBookingEnabled(!!me.tenant?.booking_enabled))
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   const isActive = useCallback(
@@ -81,29 +83,44 @@ export function AppSidebar() {
   const items = navItems.filter(
     (item) => !item.requiresBooking || bookingEnabled,
   );
-  const showLabel = isExpanded || isHovered || isMobileOpen;
+  // Server and first browser render must produce identical HTML.
+  const effectiveExpanded = mounted ? isExpanded : true;
+  const effectiveHovered = mounted ? isHovered : false;
+  const effectiveMobileOpen = mounted ? isMobileOpen : false;
 
+  const showLabel =
+    effectiveExpanded || effectiveHovered || effectiveMobileOpen;
   return (
     <aside
       className={`fixed mt-16 flex flex-col lg:mt-0 top-0 left-0 z-50 h-screen border-r border-[var(--app-primary)] bg-[var(--app-primary)] px-5 text-[var(--app-sidebar-text)] transition-all duration-300 ease-in-out
-        ${isMobileOpen ? 'w-[290px]' : isExpanded || isHovered ? 'w-[240px] xl:w-[290px]' : 'w-[90px]'}
-        ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0`}
-      onMouseEnter={() => !isExpanded && setIsHovered(true)}
+    ${effectiveMobileOpen
+          ? 'w-[290px]'
+          : effectiveExpanded || effectiveHovered
+            ? 'w-[240px] xl:w-[290px]'
+            : 'w-[90px]'
+        }
+    ${effectiveMobileOpen ? 'translate-x-0' : '-translate-x-full'}
+    lg:translate-x-0`}
+      onMouseEnter={() => !effectiveExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`flex py-8 ${!isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start'}`}
+        className={`flex py-8 ${!effectiveExpanded && !effectiveHovered
+          ? 'lg:justify-center'
+          : 'justify-start'
+          }`}
       >
-        <Link href='/' className='flex items-center gap-2'>
+        <Link href="/" className="flex items-center gap-2">
           <Image
-            src='/lashvaelogo.png'
-            alt='Lashvae'
-            width={showLabel ? 36 : 32}
-            height={showLabel ? 36 : 32}
+            src="/lashvaelogo.png"
+            alt="Lashvae"
+            width={36}
+            height={36}
+            className="h-9 w-9 object-contain"
           />
+
           {showLabel && (
-            <span className='type-card-title font-semibold tracking-wide text-[var(--app-sidebar-text)]'>
+            <span className="type-card-title font-semibold tracking-wide text-[var(--app-sidebar-text)]">
               LASHVAE AI
             </span>
           )}

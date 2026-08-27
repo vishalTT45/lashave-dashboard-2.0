@@ -35,7 +35,7 @@ export function AppHeader() {
           </button>
 
           <Link href="/" className="lg:hidden">
-            <Image width={36} height={36} src="/lashvaelogo.png" alt="Lashvae" />
+            <Image width={36} height={36} src="/lashvaelogo.png" alt="Lashvae" className="h-9 w-9 object-contain" />
           </Link>
         </div>
 

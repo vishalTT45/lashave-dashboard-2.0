@@ -156,11 +156,10 @@ function Alert({
 
   return (
     <div
-      className={`rounded-[10px] border px-4 py-3 type-small ${
-        type === 'success'
-          ? 'border-success-200 bg-success-50 text-success-700 dark:border-success-500/25 dark:bg-success-500/10 dark:text-success-400'
-          : 'border-error-200 bg-error-50 text-error-600 dark:border-error-500/25 dark:bg-error-500/10 dark:text-error-400'
-      }`}
+      className={`rounded-[10px] border px-4 py-3 type-small ${type === 'success'
+        ? 'border-success-200 bg-success-50 text-success-700 dark:border-success-500/25 dark:bg-success-500/10 dark:text-success-400'
+        : 'border-error-200 bg-error-50 text-error-600 dark:border-error-500/25 dark:bg-error-500/10 dark:text-error-400'
+        }`}
     >
       {message}
     </div>
@@ -508,11 +507,10 @@ function AuthPageInner() {
                       setTab(item);
                       go(item);
                     }}
-                    className={`rounded-[10px] px-3 py-2 type-small font-medium transition ${
-                      tab === item
-                        ? 'bg-white text-blue-600 shadow-theme-xs dark:bg-gray-900 dark:text-blue-400'
-                        : 'text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400'
-                    }`}
+                    className={`rounded-[10px] px-3 py-2 type-small font-medium transition ${tab === item
+                      ? 'bg-white text-blue-600 shadow-theme-xs dark:bg-gray-900 dark:text-blue-400'
+                      : 'text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400'
+                      }`}
                   >
                     {item === 'login' ? 'Sign In' : 'Sign Up'}
                   </button>
@@ -797,6 +795,7 @@ function AuthPageInner() {
                   width={60}
                   height={60}
                   alt='Lashvae'
+                  style={{ width: 'auto', height: 'auto' }}
                   className='h-[60px] w-[60px] object-contain'
                   priority
                 />

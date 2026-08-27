@@ -2,21 +2,24 @@
 
 import { Palette } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { APPEARANCE_COLORS, useTheme, type AppearanceColor } from "@/lib/theme-context";
+import { APPEARANCE_COLORS, DEFAULT_APPEARANCE_COLOR, useTheme, type AppearanceColor } from "@/lib/theme-context";
 import { cn } from "@/lib/utils";
 
 export function AppearancePaletteButton() {
   const { appearanceColor, setAppearanceColor } = useTheme();
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    setMounted(true);
     function handleClick(event: MouseEvent) {
       if (!ref.current?.contains(event.target as Node)) setOpen(false);
     }
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
+  const displayColor = mounted ? appearanceColor : DEFAULT_APPEARANCE_COLOR;
 
   function selectColor(color: AppearanceColor) {
     setAppearanceColor(color);
@@ -34,7 +37,7 @@ export function AppearancePaletteButton() {
         <Palette className="icon-default" />
         <span
           className="absolute bottom-1.5 right-1.5 h-3 w-3 rounded-full border-2 border-white dark:border-gray-900"
-          style={{ backgroundColor: appearanceColor }}
+          style={{ backgroundColor: displayColor }}
         />
       </button>
 

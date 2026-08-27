@@ -98,25 +98,25 @@ function applyAppearanceColor(value: string) {
 }
 
 type ThemeContextValue = {
-  isDark:       boolean;
-  toggleTheme:  () => void;
-  toggle:       () => void; 
-  t:            Theme;
+  isDark: boolean;
+  toggleTheme: () => void;
+  toggle: () => void;
+  t: Theme;
   appearanceColor: AppearanceColor;
   setAppearanceColor: (color: AppearanceColor) => void;
 };
 
 const ThemeContext = createContext<ThemeContextValue>({
-  isDark:      false,
-  toggleTheme: () => {},
-  toggle:      () => {},
-  t:           LIGHT,
+  isDark: false,
+  toggleTheme: () => { },
+  toggle: () => { },
+  t: LIGHT,
   appearanceColor: DEFAULT_APPEARANCE_COLOR,
-  setAppearanceColor: () => {},
+  setAppearanceColor: () => { },
 });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [isDark, setIsDark]   = useState(false);
+  const [isDark, setIsDark] = useState(false);
   const [appearanceColor, setAppearanceColorState] = useState<AppearanceColor>(DEFAULT_APPEARANCE_COLOR);
   const [mounted, setMounted] = useState(false);
 
@@ -125,10 +125,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     // const stored = localStorage.getItem("theme") ?? localStorage.getItem("tt_theme");
     const stored = localStorage.getItem("theme") ?? localStorage.getItem("tt_theme");
 
-  if (!stored) {
-  localStorage.setItem("theme", "light");
-}
-const initial = stored === "dark" ? true : false;
+    if (!stored) {
+      localStorage.setItem("theme", "light");
+    }
+    const initial = stored === "dark" ? true : false;
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     // const initial = stored ? stored === "dark" : false;
     setIsDark(initial);
@@ -142,7 +142,7 @@ const initial = stored === "dark" ? true : false;
     applyAppearanceColor(nextAppearance);
     setMounted(true);
   }, []);
-  
+
 
   function toggleTheme() {
     setIsDark(prev => {

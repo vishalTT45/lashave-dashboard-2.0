@@ -37,8 +37,10 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
   const [isHovered, setIsHovered] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const prevBucket = useRef<ScreenBucket | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const handleResize = () => {
       const bucket = getBucket(window.innerWidth);
       const mobile = bucket === "mobile";
@@ -68,8 +70,8 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
   return (
     <SidebarContext.Provider
       value={{
-        isExpanded: isMobile ? false : isExpanded,
-        isMobileOpen,
+        isExpanded: mounted ? (isMobile ? false : isExpanded) : true,
+        isMobileOpen: mounted ? isMobileOpen : false,
         isHovered,
         openSubmenu,
         toggleSidebar,

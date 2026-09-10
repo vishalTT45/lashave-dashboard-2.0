@@ -272,7 +272,7 @@ function Card({
 }) {
   return (
     <div
-      className={`rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] ${className}`}
+      className={`rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3 ${className}`}
     >
       {children}
     </div>
@@ -299,7 +299,7 @@ function MetricCard({
         ? 'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-400'
         : tone === 'danger'
           ? 'bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-400'
-          : 'bg-brand-50 text-brand-600 dark:bg-brand-500/[0.12] dark:text-brand-400';
+          : 'bg-brand-50 text-brand-600 dark:bg-brand-500/12 dark:text-brand-400';
 
   return (
     <Card className='p-4 sm:p-5'>
@@ -325,40 +325,6 @@ function MetricCard({
   );
 }
 
-function formatDate(str: string) {
-  return new Date(str + 'T00:00:00').toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
-}
-
-function ChartHeader({
-  title,
-  subtitle,
-  action,
-}: {
-  title: string;
-  subtitle?: string;
-  action?: React.ReactNode;
-}) {
-  return (
-    <div className='mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between'>
-      <div>
-        <h3 className='type-card-title font-semibold text-gray-800 dark:text-white/90'>
-          {title}
-        </h3>
-        {subtitle && (
-          <p className='mt-1 type-small text-gray-500 dark:text-gray-400'>
-            {subtitle}
-          </p>
-        )}
-      </div>
-      {action}
-    </div>
-  );
-}
-
 function EmptyBlock({ label }: { label: string }) {
   return (
     <div className='flex min-h-40 items-center justify-center rounded-xl border border-dashed border-gray-200 type-small text-gray-500 dark:border-gray-800 dark:text-gray-400'>
@@ -379,8 +345,8 @@ function DateFilter({
   setActivePreset: (value: number | null) => void;
 }) {
   return (
-    <div className='flex w-full min-w-0 flex-col gap-2 rounded-xl border border-gray-200 bg-white p-2 dark:border-gray-800 dark:bg-white/[0.03] xl:w-auto xl:flex-row xl:flex-wrap xl:items-center'>
-      <div className='grid shrink-0 grid-cols-3 gap-1.5 xl:w-auto'>
+    <div className='flex w-full min-w-0 flex-col gap-2 rounded-xl border border-gray-200 bg-white p-2 dark:border-gray-800 dark:bg-white/3 lg:w-auto lg:flex-row lg:flex-wrap lg:items-center'>
+      <div className='grid shrink-0 grid-cols-3 gap-1.5 lg:w-auto'>
         {[
           { label: 'Today', days: 0 },
           { label: '7 Days', days: 7 },
@@ -417,7 +383,7 @@ function DateFilter({
               to: dateRange?.to ?? toDateStr(new Date()),
             });
           }}
-          className='h-8 min-w-[130px] rounded-lg border border-gray-200 bg-white px-2.5 type-small text-gray-700 outline-none focus:border-brand-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300'
+          className='h-8 min-w-32.5 rounded-lg border border-gray-200 bg-white px-2.5 type-small text-gray-700 outline-none focus:border-brand-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300'
         />
         <input
           type='date'
@@ -429,7 +395,7 @@ function DateFilter({
               to: e.target.value,
             });
           }}
-          className='h-8 min-w-[130px] rounded-lg border border-gray-200 bg-white px-2.5 type-small text-gray-700 outline-none focus:border-brand-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300'
+          className='h-8 min-w-32.5 rounded-lg border border-gray-200 bg-white px-2.5 type-small text-gray-700 outline-none focus:border-brand-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300'
         />
       </div>
 
@@ -469,7 +435,7 @@ function TopicsCard({
             Real-time themes from customer chats: questions, objections, purchase signals, and service requests.
           </p>
         </div>
-        <div className='inline-flex h-8 shrink-0 items-center justify-center rounded-[10px] bg-brand-50 px-3 type-small font-semibold text-brand-600 dark:bg-brand-500/15 dark:text-brand-400'>
+        <div className='inline-flex h-8 shrink-0 items-center justify-center rounded-(--radius-control) bg-brand-50 px-3 type-small font-semibold text-brand-600 dark:bg-brand-500/15 dark:text-brand-400'>
           {loading ? '-' : `${total} signals`}
         </div>
       </div>
@@ -478,14 +444,14 @@ function TopicsCard({
       ) : topics.length === 0 ? (
         <EmptyBlock label='No conversation topics detected yet' />
       ) : (
-        <div className='overflow-hidden rounded-xl border border-gray-200 divide-y divide-gray-100 dark:border-gray-800 dark:divide-white/[0.05]'>
+        <div className='overflow-hidden rounded-xl border border-gray-200 divide-y divide-gray-100 dark:border-gray-800 dark:divide-white/5'>
           {topics.slice(0, 8).map((topic) => {
             const pct = Math.max(Math.round((topic.count / max) * 100), 8);
             const label = topic.topic.replace(/_/g, ' ');
             return (
               <div
                 key={topic.topic}
-                className='grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-2.5 transition hover:bg-gray-50 dark:hover:bg-white/[0.02] sm:px-5'
+                className='grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-2.5 transition hover:bg-gray-50 dark:hover:bg-white/2 sm:px-5'
               >
                 <div className='min-w-0'>
                   <span
@@ -494,7 +460,7 @@ function TopicsCard({
                   >
                     {label}
                   </span>
-                  <div className='mt-2 h-1 overflow-hidden rounded-full bg-gray-100 dark:bg-white/[0.06]'>
+                  <div className='mt-2 h-1 overflow-hidden rounded-full bg-gray-100 dark:bg-white/6'>
                     <div
                       className='h-full rounded-full bg-brand-500'
                       style={{ width: `${pct}%` }}
@@ -585,7 +551,7 @@ function MessagesAreaChart({
               : 'Daily message volume'}
           </p>
         </div>
-        <button className='shrink-0 rounded-full border border-gray-200 bg-white px-2.5 py-1 text-[10px] font-semibold text-gray-600 dark:border-gray-700 dark:bg-white/[0.03] dark:text-gray-400'>
+        <button className='shrink-0 rounded-full border border-gray-200 bg-white px-2.5 py-1 text-[10px] font-semibold text-gray-600 dark:border-gray-700 dark:bg-white/3 dark:text-gray-400'>
           7 Days
         </button>
       </div>
@@ -627,7 +593,7 @@ function FaqGapsCard({ gaps, loading }: { gaps: FaqGap[]; loading: boolean }) {
               key={`${gap.query}-${index}`}
               className='flex items-start justify-between gap-3 px-1 py-2.5'
             >
-              <p className='min-w-0 flex-1 whitespace-normal break-words type-small font-medium leading-5 text-gray-700 dark:text-gray-300'>
+              <p className='min-w-0 flex-1 whitespace-normal wrap-break-word type-small font-medium leading-5 text-gray-700 dark:text-gray-300'>
                 &ldquo;{gap.query}&rdquo;
               </p>
               <span className='shrink-0 rounded-full border border-brand-100 bg-brand-50 px-2 py-0.5 text-[10px] font-bold text-brand-600 dark:border-brand-500/20 dark:bg-brand-500/10 dark:text-brand-400'>
@@ -681,7 +647,7 @@ function PipelineChart({
             Lead Pipeline
           </h3>
         </div>
-        <button className='rounded-full border border-gray-200 bg-white px-3 py-1 text-[11px] font-medium text-gray-600 dark:border-gray-700 dark:bg-white/[0.03] dark:text-gray-400'>
+        <button className='rounded-full border border-gray-200 bg-white px-3 py-1 text-[11px] font-medium text-gray-600 dark:border-gray-700 dark:bg-white/3 dark:text-gray-400'>
           all time
         </button>
       </div>
@@ -719,7 +685,7 @@ function PipelineChart({
                       {value}
                     </span>
                   </div>
-                  <div className='h-[3px] overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800'>
+                  <div className='h-0.75 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800'>
                     <div
                       className='h-full rounded-full'
                       style={{
@@ -808,7 +774,7 @@ function ActiveChannelsCard({
   };
 
   return (
-    <div className='min-w-0 w-full grid auto-cols-fr gap-2 [grid-template-columns:repeat(auto-fit,minmax(160px,1fr))] sm:gap-2.5 sm:[grid-template-columns:repeat(auto-fit,minmax(180px,1fr))] lg:gap-3 lg:[grid-template-columns:repeat(auto-fit,minmax(170px,1fr))]'>
+    <div className='min-w-0 w-full grid auto-cols-fr gap-2 grid-cols-[repeat(auto-fit,minmax(160px,1fr))] sm:gap-2.5 sm:grid-cols-[repeat(auto-fit,minmax(180px,1fr))] lg:gap-3 lg:grid-cols-[repeat(auto-fit,minmax(170px,1fr))]'>
       {displayChannels.map((item) => {
         const messagesToday = messagesForPlatform(item.platform);
         const isActive = Boolean(item.channel?.is_active);
@@ -816,7 +782,7 @@ function ActiveChannelsCard({
         return (
           <div
             key={item.channel?.id || item.platform}
-            className={`flex min-h-[108px] min-w-0 w-full flex-col overflow-hidden rounded-2xl border border-gray-200/70 bg-white/90 p-2.5 shadow-sm backdrop-blur dark:border-white/[0.07] dark:bg-gray-900/60 sm:p-3 ${
+            className={`flex min-h-27 min-w-0 w-full flex-col overflow-hidden rounded-2xl border border-gray-200/70 bg-white/90 p-2.5 shadow-sm backdrop-blur dark:border-white/7 dark:bg-gray-900/60 sm:p-3 ${
               item.comingSoon ? 'opacity-75' : ''
             }`}
           >
@@ -903,7 +869,7 @@ function timeAgo(iso: string | null) {
 
 const FALLBACK_CFG: AttentionCfg = {
   dot: 'bg-gray-400',
-  badge: 'bg-gray-100 text-gray-600 dark:bg-gray-500/[0.12] dark:text-gray-300',
+  badge: 'bg-gray-100 text-gray-600 dark:bg-gray-500/12 dark:text-gray-300',
   label: 'attention',
 };
 
@@ -952,7 +918,7 @@ function AttentionCard({
               <Link
                 key={`${item.type}-${item.created_at}-${index}`}
                 href={href}
-                className='flex gap-2.5 px-1 py-2.5 hover:bg-gray-50 dark:hover:bg-white/[0.02] rounded-lg transition-colors'
+                className='flex gap-2.5 px-1 py-2.5 hover:bg-gray-50 dark:hover:bg-white/2 rounded-lg transition-colors'
               >
                 <span
                   className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${cfg.dot}`}
@@ -1004,8 +970,15 @@ export default function OverviewPage() {
     useState<ChannelTS | null>(null);
   const [, setTsLeads] = useState<TS | null>(null);
   const [tsHandoffs, setTsHandoffs] = useState<TS | null>(null);
+  // Fetched but not yet surfaced in this page's UI (the handoffsToday
+  // calculation that used to read this was itself dead code and has
+  // been removed) — preserving the fetch for a future chart/metric.
+  void tsHandoffs;
   const [, setTsHourly] = useState<TS | null>(null);
   const [handoffConvCount, setHandoffConvCount] = useState<number>(0);
+  // Fetched but not yet surfaced in this page's UI — preserving the
+  // fetch for a future summary card rather than deleting it.
+  void handoffConvCount;
   const [err, setErr] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [channels, setChannels] = useState<ChannelInfo[]>([]);
@@ -1406,25 +1379,10 @@ ${about}`.trim();
     [tsMessages],
   );
 
-  const handoffsToday = useMemo(() => {
-    if (!tsHandoffs?.points?.length) return 0;
-    const today = toDateStr(new Date());
-    return tsHandoffs.points.reduce(
-      (total, point) => total + (point.t.startsWith(today) ? point.v : 0),
-      0,
-    );
-  }, [tsHandoffs]);
-
-  const bookingsTheme = {
-    text: isDark ? '#ffffff' : '#0f172a',
-    textSub: isDark ? '#94a3b8' : '#64748b',
-    textMuted: isDark ? '#475569' : '#94a3b8',
-  };
-
   return (
     <RequireAuth>
-      <div className='mx-auto w-full max-w-[1440px] overflow-x-hidden px-4 py-4 sm:px-6 lg:px-8'>
-        <div className='mb-4 min-w-0 flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between'>
+      <div className='overflow-x-hidden py-4'>
+        <div className='mb-4 min-w-0 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between'>
           <div className='min-w-0'>
             <p className='type-small font-medium text-brand-500 dark:text-brand-400'>
               Overview
@@ -1541,12 +1499,12 @@ ${about}`.trim();
           />
         </div>
 
-        <div className='mt-4 grid grid-cols-1 gap-3 sm:gap-4 xl:grid-cols-12 min-w-0 w-full'>
-          <div className='xl:col-span-7 min-w-0'>
+        <div className='mt-4 grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-12 min-w-0 w-full'>
+          <div className='lg:col-span-7 min-w-0'>
             <AttentionCard items={attentionItems} loading={attentionLoading} />
           </div>
 
-          <div className='xl:col-span-5 min-w-0'>
+          <div className='lg:col-span-5 min-w-0'>
             <PipelineChart
               pipeline={pipeline}
               pipeMap={pipeMap}
@@ -1559,8 +1517,8 @@ ${about}`.trim();
           <TopicsCard topics={topics} loading={topicsLoading} />
         </div>
 
-        <div className='mt-4 grid grid-cols-1 gap-3 sm:gap-4 xl:grid-cols-12 min-w-0 w-full'>
-          <div className='xl:col-span-12 min-w-0'>
+        <div className='mt-4 grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-12 min-w-0 w-full'>
+          <div className='lg:col-span-12 min-w-0'>
             <MessagesAreaChart
               points={msgChart}
               total={overview?.total_messages ?? 0}
@@ -1569,7 +1527,7 @@ ${about}`.trim();
             />
           </div>
 
-          <div className='xl:col-span-12 min-w-0'>
+          <div className='lg:col-span-12 min-w-0'>
             <FaqGapsCard gaps={faqGaps} loading={faqLoading} />
           </div>
         </div>

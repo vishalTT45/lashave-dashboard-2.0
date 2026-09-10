@@ -89,6 +89,10 @@ export default function NotificationSettingsCard() {
   }, [showFeedback]);
 
   useEffect(() => {
+    // Fetch on mount / dependency change — the correct place for a
+    // loading/data flag on an async fetch, not a derive-state-from-render
+    // antipattern.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void fetchSettings();
   }, [fetchSettings]);
 
@@ -251,7 +255,7 @@ export default function NotificationSettingsCard() {
 
   if (loading) {
     return (
-      <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6'>
+      <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3 sm:p-6'>
         <div className='flex items-center justify-center gap-3 py-8 text-gray-500 dark:text-gray-400'>
           <Loader2 className='h-5 w-5 animate-spin' />
           <span className='type-small'>Loading notification settings…</span>
@@ -264,7 +268,7 @@ export default function NotificationSettingsCard() {
   const masterEnabled = data?.email_notifications_enabled ?? true;
 
   return (
-    <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6'>
+    <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3 sm:p-6'>
       <div className='mb-5 flex flex-wrap items-start justify-between gap-4 border-b border-gray-100 pb-5 dark:border-gray-800'>
         <div className='flex items-start gap-4'>
           <div
@@ -341,7 +345,7 @@ export default function NotificationSettingsCard() {
         </div>
       )}
 
-      <div className='mb-5 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/[0.02]'>
+      <div className='mb-5 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/2'>
         <div className='flex items-center gap-3'>
           <ShieldCheck className='h-5 w-5 shrink-0 text-brand-500 dark:text-brand-400' />
           <div>
@@ -420,7 +424,7 @@ export default function NotificationSettingsCard() {
           Notification Email Address
         </Label>
         <div className='flex flex-wrap gap-3'>
-          <div className='relative min-w-[260px] flex-1'>
+          <div className='relative min-w-65 flex-1'>
             <Mail className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
             <Input
               id='notification-email'

@@ -12,10 +12,19 @@
   --font-inter: Inter, ui-sans-serif, system-ui, sans-serif;
   --font-outfit: var(--font-inter);
 
+  /*
+    Breakpoints define utility variants only (sm:, lg:, ...). They are
+    NOT the source of truth for how many columns a desktop layout
+    shows — that is governed by the layout regimes below (mobile /
+    tablet / desktop) so composition stays stable across every
+    desktop monitor width and browser zoom level. There is
+    intentionally no ultra-wide breakpoint (e.g. a `3xl` at 2000px):
+    a dashboard should not redesign itself just because someone has a
+    4K monitor or has zoomed out.
+  */
   --breakpoint-*: initial;
   --breakpoint-2xsm: 375px;
   --breakpoint-xsm: 425px;
-  --breakpoint-3xl: 2000px;
   --breakpoint-sm: 640px;
   --breakpoint-md: 768px;
   --breakpoint-lg: 1024px;
@@ -224,6 +233,74 @@
   --border: var(--color-gray-200);
   --input: var(--color-gray-300);
   --ring: var(--color-brand-300);
+
+  /* ───────────────────────────────────────────────────────────────
+     Layout tokens — the layout-primitive layer's single source of
+     truth. Components and pages should reference these instead of
+     introducing new one-off pixel/rem values for structural sizing.
+     (Colour/typography tokens live above; this is spacing, sizing,
+     and the app shell only.)
+     ─────────────────────────────────────────────────────────────── */
+
+  /* Content boundary */
+  --layout-content-max: 1440px;
+  /* A single fluid value instead of three discrete stepped ones behind
+     media queries — this is the core of the "never a visible jump"
+     philosophy: gutters (and the other spacing tokens below) grow and
+     shrink continuously with the viewport, the same way Stripe's own
+     spacing does, rather than snapping between fixed values at
+     specific breakpoints. clamp(min, preferred, max) reads as: never
+     smaller than the min, never larger than the max, and the
+     `preferred` (a vw-based value) does the smooth interpolation
+     between them for everything in between. */
+  --layout-page-gutter: clamp(16px, 3vw, 32px);
+
+  /* Rhythm */
+  --layout-section-gap: clamp(16px, 2vw, 24px);
+  --layout-card-gap: clamp(12px, 1.5vw, 16px);
+  --layout-grid-gap: clamp(8px, 1vw, 12px);
+  --layout-grid-gap-tight: clamp(6px, 0.6vw, 8px);
+
+  /* Component sizing */
+  --control-height-sm: 36px;
+  --control-height-md: 40px;
+  --control-height-lg: 48px;
+  --control-width-search: 280px;
+  --control-width-search-sm: 240px;
+
+  /* Radius */
+  --radius-control: 10px;
+  --radius-card: 16px;
+  --radius-panel: 20px;
+
+  /* Table */
+  --table-row-height: 56px;
+
+  /* Conversations table column contract — flexible content column,
+     controlled metadata/action columns. Centralised so the table
+     component can eventually own these instead of the page. */
+  --table-conversations-customer-width: 34%;
+  --table-conversations-channel-width: 128px;
+  --table-conversations-intent-width: 108px;
+  --table-conversations-status-width: 108px;
+  --table-conversations-lead-width: 104px;
+  --table-conversations-actions-width: 128px;
+
+  /* App shell — single source of truth for sidebar width so the
+     sidebar itself and the main-content offset can never drift out
+     of sync or jump at a different breakpoint from one another. */
+  --sidebar-width-collapsed: 90px;
+  --sidebar-width-expanded: 240px;
+  --sidebar-width-mobile: 290px;
+
+  /* The whole app shell (sidebar + topbar + content together) caps at
+     this width and centers itself on very wide viewports (large
+     monitors, or a normal monitor zoomed far out), instead of the
+     sidebar and topbar stretching to the literal browser edges while
+     only inner page content stays centered. Below this width the cap
+     has no effect at all — the shell simply fills the viewport as
+     before. */
+  --layout-shell-max: 1920px;
 }
 
 .dark {
@@ -486,7 +563,7 @@
 }
 
 @utility menu-dropdown-item-active {
-  @apply bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400;
+  @apply bg-brand-50 text-brand-500 dark:bg-brand-500/12 dark:text-brand-400;
 }
 
 @utility menu-dropdown-item-inactive {
@@ -546,7 +623,7 @@
 /* ApexCharts dark/light overrides, ported from TailAdmin (needed once
    charts on the Overview page migrate off Recharts). */
 .apexcharts-legend-text {
-  @apply pl-5! !text-gray-700 dark:!text-gray-400;
+  @apply pl-5! text-gray-700! dark:text-gray-400!;
   font-family: 'Outfit', sans-serif !important;
   font-size: 13px !important;
   font-weight: 400 !important;
@@ -560,40 +637,48 @@
 }
 
 .apexcharts-text {
-  @apply !fill-gray-700 dark:!fill-gray-400;
+  @apply fill-gray-700! dark:fill-gray-400!;
 }
 
 .apexcharts-tooltip.apexcharts-theme-light {
-  @apply gap-1 !rounded-[10px] !border-gray-200 p-3 !shadow-theme-sm dark:!border-gray-800 dark:!bg-gray-900;
+  @apply gap-1 rounded-[10px]! border-gray-200! p-3 shadow-theme-sm! dark:border-gray-800! dark:bg-gray-900!;
 }
 
 .apexcharts-tooltip-series-group {
-  @apply !p-0;
+  @apply p-0!;
 }
 
 .apexcharts-tooltip-y-group {
-  @apply !p-0;
+  @apply p-0!;
 }
 
 .apexcharts-tooltip-title {
-  @apply !mb-0 !border-b-0 !bg-transparent !p-0 !type-caption !leading-4 !text-gray-800 dark:!text-white/90;
+  @apply mb-0! border-b-0! bg-transparent! p-0! type-caption! leading-4! text-gray-800! dark:text-white/90!;
   font-family: 'Outfit', sans-serif !important;
 }
 
 .apexcharts-tooltip-text {
-  @apply !text-theme-xs !text-gray-700 dark:!text-white/90;
+  @apply text-theme-xs! text-gray-700! dark:text-white/90!;
   font-family: 'Outfit', sans-serif !important;
 }
 
 .apexcharts-tooltip-text-y-value {
-  @apply !font-medium;
+  @apply font-medium!;
 }
 
 .apexcharts-gridline {
-  @apply !stroke-gray-100 dark:!stroke-gray-800;
+  @apply stroke-gray-100! dark:stroke-gray-800!;
 }
 
 .billing-banner {
+  /* Not independently sticky/positioned: it's rendered inside the
+     sticky header+banner wrapper in (dashboard)/layout.tsx, which is
+     the single element responsible for staying pinned to the top of
+     the viewport. If this ever needs to be used somewhere without
+     that wrapper, that's the place to add `position: sticky; top: 0`
+     back — as its own header-aware offset, not `top: 0` again, or it
+     will re-create the "banner hides under the header" bug this was
+     fixed for. */
   padding: 10px 20px;
   font-size: 13px;
   font-weight: 500;
@@ -601,9 +686,6 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  position: sticky;
-  top: 0;
-  z-index: 50;
 }
 
 .billing-banner-warning {

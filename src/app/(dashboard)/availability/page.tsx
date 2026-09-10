@@ -294,10 +294,10 @@ const applyCompletedOverrides = (items: Booking[]) => {
 };
 
 const SELECT_CLASS =
-  'h-10 w-full appearance-none rounded-[10px] border border-gray-300 bg-transparent px-3.5 py-2 pr-8 type-small text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800';
+  'h-10 w-full appearance-none rounded-(--radius-control) border border-gray-300 bg-transparent px-3.5 py-2 pr-8 type-small text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800';
 
 const TIME_INPUT_CLASS =
-  'h-10 w-full rounded-[10px] border border-gray-300 bg-white px-3 type-small text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 disabled:opacity-40 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90';
+  'h-10 w-full rounded-(--radius-control) border border-gray-300 bg-white px-3 type-small text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 disabled:opacity-40 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90';
 
 /* Avatar */
 function Avatar({
@@ -366,7 +366,7 @@ function DetailRow({
 }) {
   return (
     <div className='flex items-center gap-3'>
-      <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-gray-100 text-gray-400 dark:bg-white/[0.06] dark:text-gray-500'>
+      <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-(--radius-control) bg-gray-100 text-gray-400 dark:bg-white/6 dark:text-gray-500'>
         {icon}
       </div>
       <div className='min-w-0'>
@@ -1175,7 +1175,7 @@ function AvailabilityContent() {
 
   /* Main */
   return (
-    <div className='min-w-0 max-w-full overflow-x-hidden'>
+    <div className='min-w-0 overflow-x-hidden py-4'>
       {/* No availability warning */}
       {!hasAvailability && (
         <div className='mb-6 flex items-center gap-3 rounded-xl border border-warning-200 bg-warning-50 px-4 py-3 type-small font-medium text-warning-700 dark:border-warning-500/25 dark:bg-warning-500/10 dark:text-orange-300'>
@@ -1193,8 +1193,8 @@ function AvailabilityContent() {
       )}
 
       {/* Bookings list */}
-      <div className='min-w-0 max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]'>
-        <div className='flex flex-col gap-4 border-b border-gray-100 px-5 py-5 dark:border-white/[0.05] sm:px-6 lg:flex-row lg:items-center lg:justify-between'>
+      <div className='min-w-0 max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3'>
+        <div className='flex flex-col gap-4 border-b border-gray-100 px-5 py-5 dark:border-white/5 sm:px-6 lg:flex-row lg:items-center lg:justify-between'>
           <h3 className='type-body font-semibold text-gray-800 dark:text-white/90'>
             Bookings
           </h3>
@@ -1222,7 +1222,7 @@ function AvailabilityContent() {
         </div>
 
         <div className='min-w-0 px-5 py-5 sm:px-6'>
-          <div className='flex flex-col gap-4 rounded-t-xl border border-b-0 border-gray-200 bg-white px-5 py-4 dark:border-white/[0.05] dark:bg-white/[0.01] lg:flex-row lg:items-center lg:justify-between'>
+          <div className='flex flex-col gap-4 rounded-t-xl border border-b-0 border-gray-200 bg-white px-5 py-4 dark:border-white/5 dark:bg-white/1 lg:flex-row lg:items-center lg:justify-between'>
             <div className='flex items-center gap-3'>
               <h4 className='type-card-title font-semibold text-gray-800 dark:text-white/90'>
                 {activeBookingLabel}
@@ -1232,14 +1232,14 @@ function AvailabilityContent() {
               </span>
             </div>
             <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end'>
-              <div className='relative w-full sm:w-[260px]'>
+              <div className='relative w-full sm:w-65'>
                 <Search className='pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400' />
                 <input
                   type='search'
                   value={bookingSearch}
                   onChange={(event) => setBookingSearch(event.target.value)}
                   placeholder='Search...'
-                  className='h-10 w-full rounded-[10px] border border-gray-300 bg-white py-2 pl-11 pr-4 type-small text-gray-800 shadow-theme-xs outline-none placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-gray-500'
+                  className='h-10 w-full rounded-(--radius-control) border border-gray-300 bg-white py-2 pl-11 pr-4 type-small text-gray-800 shadow-theme-xs outline-none placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-gray-500'
                 />
               </div>
               {/* Channel filter */}
@@ -1251,7 +1251,7 @@ function AvailabilityContent() {
                       openBookingFilter === 'channel' ? null : 'channel',
                     )
                   }
-                  className='min-w-[165px]'
+                  className='min-w-41.25'
                 >
                   <Radio size={14} className='shrink-0' />
                   {bookingChannelFilter.length > 0 && (
@@ -1262,7 +1262,7 @@ function AvailabilityContent() {
                           <span
                             key={channel}
                             className={cn(
-                              'flex h-[18px] w-[18px] items-center justify-center rounded-full bg-white dark:bg-gray-900',
+                              'flex h-4.5 w-4.5 items-center justify-center rounded-full bg-white dark:bg-gray-900',
                               i > 0 && '-ml-1.5',
                             )}
                           >
@@ -1289,10 +1289,10 @@ function AvailabilityContent() {
                       type='button'
                       onClick={() => setBookingChannelFilter([])}
                       className={cn(
-                        'flex w-full items-center justify-between rounded-[10px] px-3 py-2 text-left type-small font-medium transition',
+                        'flex w-full items-center justify-between rounded-(--radius-control) px-3 py-2 text-left type-small font-medium transition',
                         bookingChannelFilter.length === 0
                           ? 'bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'
-                          : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/[0.04]',
+                          : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/4',
                       )}
                     >
                       <span className='inline-flex items-center gap-2'>
@@ -1315,10 +1315,10 @@ function AvailabilityContent() {
                           type='button'
                           onClick={() => toggleBookingChannel(channel)}
                           className={cn(
-                            'flex w-full items-center justify-between rounded-[10px] px-3 py-2 text-left type-small font-medium capitalize transition',
+                            'flex w-full items-center justify-between rounded-(--radius-control) px-3 py-2 text-left type-small font-medium capitalize transition',
                             active
                               ? 'bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'
-                              : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/[0.04]',
+                              : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/4',
                           )}
                         >
                           <span className='inline-flex min-w-0 items-center gap-2'>
@@ -1386,10 +1386,10 @@ function AvailabilityContent() {
                             setOpenBookingFilter(null);
                           }}
                           className={cn(
-                            'flex w-full items-center justify-between rounded-[10px] px-3 py-2 text-left type-small font-medium transition',
+                            'flex w-full items-center justify-between rounded-(--radius-control) px-3 py-2 text-left type-small font-medium transition',
                             isActive
                               ? 'bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'
-                              : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/[0.04]',
+                              : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/4',
                           )}
                         >
                           <span className='inline-flex items-center gap-2'>
@@ -1438,20 +1438,20 @@ function AvailabilityContent() {
             </div>
           </div>
 
-          <div className='min-w-0 max-w-full overflow-hidden rounded-b-xl border border-gray-200 dark:border-white/[0.05]'>
+          <div className='min-w-0 max-w-full overflow-hidden rounded-b-xl border border-gray-200 dark:border-white/5'>
             <div className='w-full overflow-x-auto'>
-              <table className='lashvae-column-dividers min-h-65 min-w-[1560px] table-fixed'>
+              <table className='lashvae-column-dividers min-h-65 min-w-390 table-fixed'>
                 <colgroup>
-                  <col className='w-[200px]' />
-                  <col className='w-[155px]' />
-                  <col className='w-[210px]' />
-                  <col className='w-[135px]' />
-                  <col className='w-[135px]' />
-                  <col className='w-[210px]' />
-                  <col className='w-[170px]' />
-                  <col className='w-[345px]' />
+                  <col className='w-50' />
+                  <col className='w-38.75' />
+                  <col className='w-52.5' />
+                  <col className='w-33.75' />
+                  <col className='w-33.75' />
+                  <col className='w-52.5' />
+                  <col className='w-42.5' />
+                  <col className='w-86.25' />
                 </colgroup>
-                <thead className='border-b border-gray-100 dark:border-white/[0.05]'>
+                <thead className='border-b border-gray-100 dark:border-white/5'>
                   <tr>
                     {[
                       { label: 'Customer', key: 'customer' },
@@ -1507,7 +1507,7 @@ function AvailabilityContent() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className='divide-y divide-gray-100 dark:divide-white/[0.05]'>
+                <tbody className='divide-y divide-gray-100 dark:divide-white/5'>
                   {paginatedBookings.length === 0 ? (
                     <tr>
                       <td
@@ -1541,7 +1541,7 @@ function AvailabilityContent() {
                       return (
                         <tr
                           key={booking.id}
-                          className='h-[52px] transition hover:bg-gray-50 dark:hover:bg-white/[0.02]'
+                          className='h-13 transition hover:bg-gray-50 dark:hover:bg-white/2'
                         >
                           <td className='px-5 py-3 sm:px-6'>
                             <div
@@ -1560,9 +1560,9 @@ function AvailabilityContent() {
                                   <span className='block truncate'>
                                     {displayName}
                                   </span>
-                                  <span className='pointer-events-none absolute left-0 top-full z-50 mt-1 hidden max-w-[280px] group-hover:block'>
-                                    <span className='absolute -top-1 left-3 h-2 w-2 rotate-45 rounded-[2px] bg-gray-900' />
-                                    <span className='relative block rounded-[10px] bg-gray-900 px-3 py-1.5 type-caption font-medium text-white shadow-lg'>
+                                  <span className='pointer-events-none absolute left-0 top-full z-50 mt-1 hidden max-w-70 group-hover:block'>
+                                    <span className='absolute -top-1 left-3 h-2 w-2 rotate-45 rounded-xs bg-gray-900' />
+                                    <span className='relative block rounded-(--radius-control) bg-gray-900 px-3 py-1.5 type-caption font-medium text-white shadow-lg'>
                                       {displayName}
                                     </span>
                                   </span>
@@ -1627,7 +1627,7 @@ function AvailabilityContent() {
                                   disabled={isLoading}
                                   title='Mark as completed'
                                   aria-label='Mark as completed'
-                                  className='inline-flex h-8 items-center gap-2 rounded-[10px] bg-brand-500 px-3 type-small font-medium text-white shadow-theme-xs hover:bg-brand-600 disabled:opacity-50'
+                                  className='inline-flex h-8 items-center gap-2 rounded-(--radius-control) bg-brand-500 px-3 type-small font-medium text-white shadow-theme-xs hover:bg-brand-600 disabled:opacity-50'
                                 >
                                   {isLoading ? (
                                     <Loader2 className='h-3.5 w-3.5 animate-spin' />
@@ -1645,7 +1645,7 @@ function AvailabilityContent() {
                                   disabled={isLoading}
                                   title='Reschedule'
                                   aria-label='Reschedule booking'
-                                  className='inline-flex h-8 items-center gap-2 rounded-[10px] border border-gray-300 bg-white px-3 type-small font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/[0.03]'
+                                  className='inline-flex h-8 items-center gap-2 rounded-(--radius-control) border border-gray-300 bg-white px-3 type-small font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/3'
                                 >
                                   <RotateCcw size={14} />
                                   Reschedule
@@ -1659,7 +1659,7 @@ function AvailabilityContent() {
                                   disabled={isLoading}
                                   title='Cancel booking'
                                   aria-label='Cancel booking'
-                                  className='inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] border border-error-200 bg-error-50 text-error-600 hover:bg-error-100 disabled:opacity-50 dark:border-error-500/25 dark:bg-error-500/10 dark:text-error-400'
+                                  className='inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-(--radius-control) border border-error-200 bg-error-50 text-error-600 hover:bg-error-100 disabled:opacity-50 dark:border-error-500/25 dark:bg-error-500/10 dark:text-error-400'
                                 >
                                   <Trash2 size={14} />
                                 </button>
@@ -1691,9 +1691,9 @@ function AvailabilityContent() {
       <Modal
         isOpen={showManualBooking}
         onClose={closeManualBooking}
-        className='m-4 max-w-[720px]'
+        className='m-4 max-w-180'
       >
-        <div className='flex max-h-[85vh] w-full flex-col overflow-hidden rounded-[20px] bg-white dark:bg-gray-900'>
+        <div className='flex max-h-[85vh] w-full flex-col overflow-hidden rounded-(--radius-panel) bg-white dark:bg-gray-900'>
           <div className='border-b border-gray-100 px-6 py-5 pr-14 dark:border-gray-800'>
             <h2 className='type-card-title font-bold text-gray-800 dark:text-white/90'>
               Add appointment
@@ -1708,7 +1708,7 @@ function AvailabilityContent() {
             {/* Customer details */}
             <section>
               <div className='mb-3.5 flex items-center gap-3'>
-                <div className='flex h-8 w-8 items-center justify-center rounded-[10px] bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
+                <div className='flex h-8 w-8 items-center justify-center rounded-(--radius-control) bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
                   <User size={15} />
                 </div>
                 <div>
@@ -1767,7 +1767,7 @@ function AvailabilityContent() {
 
                 <section>
                   <div className='mb-3.5 flex items-center gap-3'>
-                    <div className='flex h-8 w-8 items-center justify-center rounded-[10px] bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
+                    <div className='flex h-8 w-8 items-center justify-center rounded-(--radius-control) bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
                       <MessageSquare size={15} />
                     </div>
                     <div>
@@ -1780,7 +1780,7 @@ function AvailabilityContent() {
                     </div>
                   </div>
 
-                  <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/[0.02]'>
+                  <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/2'>
                     <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                       {customCustomerFields.map((field) => (
                         <div
@@ -1846,7 +1846,7 @@ function AvailabilityContent() {
             {/* Appointment details */}
             <section>
               <div className='mb-3.5 flex items-center gap-3'>
-                <div className='flex h-8 w-8 items-center justify-center rounded-[10px] bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
+                <div className='flex h-8 w-8 items-center justify-center rounded-(--radius-control) bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
                   <CalendarClock size={15} />
                 </div>
                 <div>
@@ -1966,9 +1966,9 @@ function AvailabilityContent() {
       <Modal
         isOpen={showAvailabilityPanel}
         onClose={() => setShowAvailabilityPanel(false)}
-        className='m-4 max-w-[760px]'
+        className='m-4 max-w-190'
       >
-        <div className='flex max-h-[85vh] w-full flex-col overflow-hidden rounded-[20px] bg-white dark:bg-gray-900'>
+        <div className='flex max-h-[85vh] w-full flex-col overflow-hidden rounded-(--radius-panel) bg-white dark:bg-gray-900'>
           <div className='border-b border-gray-100 px-6 py-5 pr-14 dark:border-gray-800'>
             <Badge color='primary' startIcon={<CalendarDays size={13} />}>
               Availability
@@ -1988,7 +1988,7 @@ function AvailabilityContent() {
                 className={cn(
                   'grid grid-cols-1 items-center gap-3 rounded-xl border p-4 sm:grid-cols-[110px_70px_1fr]',
                   item.is_active
-                    ? 'border-brand-100 bg-gray-50 dark:border-brand-500/20 dark:bg-white/[0.03]'
+                    ? 'border-brand-100 bg-gray-50 dark:border-brand-500/20 dark:bg-white/3'
                     : 'border-gray-200 bg-white dark:border-gray-800 dark:bg-transparent',
                 )}
               >
@@ -2011,10 +2011,10 @@ function AvailabilityContent() {
                     })
                   }
                   className={cn(
-                    'h-[34px] rounded-full type-caption font-bold transition',
+                    'h-8.5 rounded-full type-caption font-bold transition',
                     item.is_active
                       ? 'bg-brand-500 text-white hover:bg-brand-600'
-                      : 'bg-gray-100 text-gray-500 dark:bg-white/[0.08] dark:text-gray-400',
+                      : 'bg-gray-100 text-gray-500 dark:bg-white/8 dark:text-gray-400',
                   )}
                 >
                   {item.is_active ? 'ON' : 'OFF'}
@@ -2074,9 +2074,9 @@ function AvailabilityContent() {
         <Modal
           isOpen
           onClose={() => setRescheduleBooking(null)}
-          className='m-4 max-w-[480px]'
+          className='m-4 max-w-120'
         >
-          <div className='w-full rounded-[20px] bg-white dark:bg-gray-900'>
+          <div className='w-full rounded-(--radius-panel) bg-white dark:bg-gray-900'>
             <div className='flex items-center gap-3 border-b border-gray-100 px-6 py-5 pr-14 dark:border-gray-800'>
               {(() => {
                 const { profilePic, displayName } =
@@ -2178,9 +2178,9 @@ function AvailabilityContent() {
             <Modal
               isOpen
               onClose={() => setSelectedBooking(null)}
-              className='m-4 max-w-[440px]'
+              className='m-4 max-w-110'
             >
-              <div className='max-h-[85vh] w-full overflow-y-auto rounded-[20px] bg-white dark:bg-gray-900'>
+              <div className='max-h-[85vh] w-full overflow-y-auto rounded-(--radius-panel) bg-white dark:bg-gray-900'>
                 <div className='flex flex-col items-center border-b border-gray-100 px-6 py-8 dark:border-gray-800'>
                   <div className='relative'>
                     <Avatar name={displayName} src={profilePic} size={72} />
@@ -2270,7 +2270,7 @@ function AvailabilityContent() {
                       Notes
                     </p>
                     <div className='flex items-start gap-3'>
-                      <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] bg-gray-100 text-gray-400 dark:bg-white/[0.06] dark:text-gray-500'>
+                      <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-(--radius-control) bg-gray-100 text-gray-400 dark:bg-white/6 dark:text-gray-500'>
                         <FileText size={14} />
                       </div>
                       <span className='type-small font-medium leading-relaxed text-gray-700 dark:text-gray-300'>
@@ -2315,9 +2315,9 @@ function AvailabilityContent() {
       <Modal
         isOpen={!!bookingToCancel}
         onClose={() => setBookingToCancel(null)}
-        className='m-4 max-w-[420px]'
+        className='m-4 max-w-105'
       >
-        <div className='w-full rounded-[20px] bg-white p-6 dark:bg-gray-900'>
+        <div className='w-full rounded-(--radius-panel) bg-white p-6 dark:bg-gray-900'>
           <div className='mb-4 flex items-center gap-3'>
             <div className='flex h-10 w-10 items-center justify-center rounded-full bg-error-50 type-card-title font-bold text-error-500 dark:bg-error-500/15 dark:text-error-400'>
               !
@@ -2347,9 +2347,9 @@ function AvailabilityContent() {
       <Modal
         isOpen={!!bookingToComplete}
         onClose={() => setBookingToComplete(null)}
-        className='m-4 max-w-[420px]'
+        className='m-4 max-w-105'
       >
-        <div className='w-full rounded-[20px] bg-white p-6 dark:bg-gray-900'>
+        <div className='w-full rounded-(--radius-panel) bg-white p-6 dark:bg-gray-900'>
           <div className='mb-4 flex items-center gap-3'>
             <div className='flex h-10 w-10 items-center justify-center rounded-full bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
               <CheckCircle2 size={18} />

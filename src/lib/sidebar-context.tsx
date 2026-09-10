@@ -1,11 +1,42 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 
-type ScreenBucket = "mobile" | "smallDesktop" | "desktop";
+type ScreenBucket = "mobile" | "compact" | "desktop";
 
 function getBucket(width: number): ScreenBucket {
+  // Three genuinely different layout regimes, based on how much width
+  // is actually available — not tied to any specific browser zoom
+  // percentage (a screen at 100% and a bigger screen zoomed out can
+  // land on the same width, and should behave the same way).
+  //
+  //   < 1024       : mobile     — sidebar becomes an overlay/drawer.
+  //                  Must match the CSS shell's `lg:` (1024px) grid
+  //                  breakpoint in `(dashboard)/layout.tsx` /
+  //                  `AppSidebar.tsx` exactly: below `lg`, the aside
+  //                  is `fixed` + `-translate-x-full` (only visible
+  //                  when `isMobileOpen`), and only becomes an in-flow
+  //                  `sticky` grid column at `lg` and up. If this
+  //                  threshold and the CSS breakpoint ever disagree,
+  //                  there's a dead width range where this context
+  //                  thinks the sidebar should be a persistent
+  //                  collapsed rail but the CSS still has it hidden as
+  //                  a closed mobile drawer.
+  //   1024 – 1149   : compact    — a collapsed icon-only rail is always
+  //                  visible; hovering it temporarily expands over the
+  //                  content, and it auto-collapses when the pointer
+  //                  moves back into the main content area (see
+  //                  AppSidebar.tsx's onMouseEnter/onMouseLeave — that
+  //                  hover mechanism already exists and works for any
+  //                  collapsed state, so this bucket just needs to
+  //                  leave `isExpanded` false and let it do its job).
+  //                  This is the state a normal laptop screen lands in
+  //                  around ~125% browser zoom.
+  //   >= 1150       : desktop    — sidebar fully expanded, exactly as
+  //                  at 100% zoom. A normal laptop screen at ~110% zoom
+  //                  should still land comfortably in this bucket —
+  //                  110% is not meant to look any different from 100%.
   if (width < 1024) return "mobile";
-  if (width < 1280) return "smallDesktop";
+  if (width < 1150) return "compact";
   return "desktop";
 }
 
@@ -47,11 +78,20 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
 
       // Only reset the expanded default when crossing into a new size
       // bucket, so it doesn't fight a manual toggle during same-bucket
-      // resizes. Small desktop (1024-1279px) defaults to collapsed so
-      // pages get more room; full desktop (1280px+) defaults expanded.
+      // resizes.
+      //   desktop -> force expanded (matches 100%/110% zoom).
+      //   compact -> force collapsed; the sidebar's own hover
+      //              mechanism (onMouseEnter/onMouseLeave) takes over
+      //              from here to temporarily expand it and
+      //              auto-collapse again, without this context needing
+      //              to know anything about hover itself.
+      //   mobile  -> isExpanded is irrelevant here (isMobile ? false
+      //              below overrides it), the drawer's own
+      //              isMobileOpen/toggleMobileSidebar handles that
+      //              case entirely separately.
       if (prevBucket.current !== bucket) {
-        if (bucket === "smallDesktop") setIsExpanded(false);
         if (bucket === "desktop") setIsExpanded(true);
+        if (bucket === "compact") setIsExpanded(false);
         prevBucket.current = bucket;
       }
     };

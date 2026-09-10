@@ -56,14 +56,17 @@ type SearchResult = {
   email: string | null;
 };
 
+type PriceCurrency = '' | 'usd' | 'gbp' | 'inr';
+type BillingCycle = '' | 'monthly' | 'annual';
+
 const EMPTY_FORM = {
   conversations_per_month: '' as string | number,
   growth_reports_enabled: '' as '' | 'true' | 'false',
   custom_price_lookup_key: '',
   // Price is entered in MAJOR units (e.g. 2000 = £2,000); converted to minor on save.
   custom_price_amount: '' as string | number,
-  custom_price_currency: '' as '' | 'usd' | 'gbp' | 'inr',
-  custom_billing_cycle: '' as '' | 'monthly' | 'annual',
+  custom_price_currency: '' as PriceCurrency,
+  custom_billing_cycle: '' as BillingCycle,
   notes: '',
   is_active: true,
 };
@@ -108,7 +111,7 @@ function GroupLabel({ children }: { children: React.ReactNode }) {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className='rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-3 dark:border-white/10 dark:bg-white/[0.03]'>
+    <div className='rounded-xl border border-gray-200 bg-gray-50 px-3.5 py-3 dark:border-white/10 dark:bg-white/3'>
       <div className='type-caption font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500'>
         {label}
       </div>
@@ -174,8 +177,8 @@ function PricingForm() {
       custom_price_lookup_key: ov.custom_price_lookup_key ?? '',
       custom_price_amount:
         ov.custom_price_amount != null ? ov.custom_price_amount / 100 : '',
-      custom_price_currency: (ov.custom_price_currency as any) ?? '',
-      custom_billing_cycle: (ov.custom_billing_cycle as any) ?? '',
+      custom_price_currency: (ov.custom_price_currency as PriceCurrency | null) ?? '',
+      custom_billing_cycle: (ov.custom_billing_cycle as BillingCycle | null) ?? '',
       notes: ov.notes ?? '',
       is_active: ov.is_active,
     });
@@ -201,8 +204,8 @@ function PricingForm() {
       setData(resp);
       setTenantId(id);
       hydrateForm(resp.override);
-    } catch (err: any) {
-      setError(err?.message ?? 'Failed to load tenant');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to load tenant');
     } finally {
       setLoading(false);
     }
@@ -212,6 +215,10 @@ function PricingForm() {
   useEffect(() => {
     const q = query.trim();
     if (q.length < 2) {
+      // Resets local UI-only state (a flag, warning, or preview value)
+      // when the relevant prop/dependency changes — not deriving render
+      // output from state.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setResults([]);
       return;
     }
@@ -250,7 +257,16 @@ function PricingForm() {
     setError('');
     try {
       // Only send fields that are set; blanks mean "no override for this field".
-      const body: Record<string, any> = { is_active: form.is_active };
+      const body: {
+        is_active: boolean;
+        conversations_per_month?: number | null;
+        growth_reports_enabled?: boolean | null;
+        custom_price_lookup_key?: string | null;
+        custom_price_amount?: number | null;
+        custom_price_currency?: PriceCurrency | null;
+        custom_billing_cycle?: BillingCycle | null;
+        notes?: string | null;
+      } = { is_active: form.is_active };
       body.conversations_per_month =
         form.conversations_per_month === ''
           ? null
@@ -281,8 +297,8 @@ function PricingForm() {
       });
       hydrateForm(resp.override);
       flash('Deal saved.');
-    } catch (err: any) {
-      setError(err?.message ?? 'Failed to save deal');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to save deal');
     } finally {
       setBusy(null);
     }
@@ -333,8 +349,8 @@ function PricingForm() {
           await navigator.clipboard?.writeText(resp.payment_link_url);
         } catch {}
       }
-    } catch (err: any) {
-      setError(err?.message ?? 'Failed to create payment link');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to create payment link');
     } finally {
       setBusy(null);
     }
@@ -355,8 +371,8 @@ function PricingForm() {
       );
       flash('Override removed.');
       await loadTenant();
-    } catch (err: any) {
-      setError(err?.message ?? 'Failed to remove override');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to remove override');
     } finally {
       setBusy(null);
     }
@@ -372,7 +388,7 @@ function PricingForm() {
     setBusy('credits');
     setError('');
     try {
-      const body: Record<string, any> = { credits };
+      const body: { credits: number; validity_days?: number; notes?: string } = { credits };
       if (creditForm.validity_days)
         body.validity_days = Number(creditForm.validity_days);
       if (creditForm.notes.trim()) body.notes = creditForm.notes.trim();
@@ -387,8 +403,8 @@ function PricingForm() {
         ).toLocaleDateString()}).`,
       );
       setCreditForm({ credits: '', validity_days: '182', notes: '' });
-    } catch (err: any) {
-      setError(err?.message ?? 'Failed to grant credits');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to grant credits');
     } finally {
       setBusy(null);
     }
@@ -459,7 +475,7 @@ function PricingForm() {
         )}
 
         {showResults && results.length > 0 && (
-          <div className='absolute left-0 right-0 z-20 mt-1 max-h-[340px] overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-gray-900'>
+          <div className='absolute left-0 right-0 z-20 mt-1 max-h-85 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-gray-900'>
             {results.map((r) => (
               <button
                 key={r.tenant_id}
@@ -633,7 +649,7 @@ function PricingForm() {
                     onChange={(e) =>
                       setForm({
                         ...form,
-                        custom_price_currency: e.target.value as any,
+                        custom_price_currency: e.target.value as PriceCurrency,
                       })
                     }
                   >
@@ -651,7 +667,7 @@ function PricingForm() {
                     onChange={(e) =>
                       setForm({
                         ...form,
-                        custom_billing_cycle: e.target.value as any,
+                        custom_billing_cycle: e.target.value as BillingCycle,
                       })
                     }
                   >

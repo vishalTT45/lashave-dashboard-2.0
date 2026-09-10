@@ -38,6 +38,10 @@ export function UserDropdown() {
   }, []);
 
    useEffect(() => {
+     // Resets local UI-only state (a flag, warning, or preview value)
+     // when the relevant prop/dependency changes — not deriving render
+     // output from state.
+     // eslint-disable-next-line react-hooks/set-state-in-effect
      setAvatarFailed(false);
    }, [me?.user.avatar_url]);
 
@@ -75,7 +79,7 @@ export function UserDropdown() {
       <Dropdown
         isOpen={isOpen}
         onClose={closeDropdown}
-        className='mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark'
+        className='mt-4.25 flex w-65 flex-col rounded-2xl border border-gray-200 bg-white p-3 shadow-theme-lg dark:border-gray-800 dark:bg-gray-dark'
       >
         <div className='px-1'>
           <span className='block truncate type-small font-medium text-gray-700 dark:text-gray-400'>
@@ -92,7 +96,7 @@ export function UserDropdown() {
               onItemClick={closeDropdown}
               tag='a'
               href='/channels'
-              className='group flex items-center gap-3 rounded-[10px] px-3 py-2 type-small font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300'
+              className='group flex items-center gap-3 rounded-(--radius-control) px-3 py-2 type-small font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300'
             >
               <Radio className='icon-small.5 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300' />
               Channels
@@ -103,7 +107,7 @@ export function UserDropdown() {
               onItemClick={closeDropdown}
               tag='a'
               href='/profile'
-              className='group flex items-center gap-3 rounded-[10px] px-3 py-2 type-small font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300'
+              className='group flex items-center gap-3 rounded-(--radius-control) px-3 py-2 type-small font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300'
             >
               <UserIcon className='icon-small.5 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300' />
               Profile
@@ -121,7 +125,7 @@ export function UserDropdown() {
                 onItemClick={closeDropdown}
                 tag='a'
                 href='/super-admin/tenants'
-                className='group flex items-center gap-3 rounded-[10px] px-3 py-2 type-small font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300'
+                className='group flex items-center gap-3 rounded-(--radius-control) px-3 py-2 type-small font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300'
               >
                 <Building2 className='icon-small.5 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300' />
                 Tenants
@@ -132,7 +136,7 @@ export function UserDropdown() {
                 onItemClick={closeDropdown}
                 tag='a'
                 href='/super-admin/create-tenant'
-                className='group flex items-center gap-3 rounded-[10px] px-3 py-2 type-small font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300'
+                className='group flex items-center gap-3 rounded-(--radius-control) px-3 py-2 type-small font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300'
               >
                 <PlusCircle className='icon-small.5 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300' />
                 Create Tenant
@@ -143,7 +147,7 @@ export function UserDropdown() {
                 onItemClick={closeDropdown}
                 tag='a'
                 href='/super-admin/pricing'
-                className='group flex items-center gap-3 rounded-[10px] px-3 py-2 type-small font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300'
+                className='group flex items-center gap-3 rounded-(--radius-control) px-3 py-2 type-small font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300'
               >
                 <CreditCard className='icon-small.5 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300' />
                 Pricing
@@ -157,7 +161,7 @@ export function UserDropdown() {
             closeDropdown();
             logout();
           }}
-          className='group mt-3 flex items-center gap-3 rounded-[10px] px-3 py-2 text-left type-small font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300'
+          className='group mt-3 flex items-center gap-3 rounded-(--radius-control) px-3 py-2 text-left type-small font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300'
         >
           <LogOut className='icon-small.5 text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-300' />
           Sign out

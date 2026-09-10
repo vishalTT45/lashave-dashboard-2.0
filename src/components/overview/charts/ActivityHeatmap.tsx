@@ -150,7 +150,7 @@ export function ActivityHeatmap({
                 >
                   {day}
                 </span>
-                <div className='flex gap-[2px] flex-1'>
+                <div className='flex gap-0.5 flex-1'>
                   {HOURS.map((h) => {
                     const v = grid.data[d][h];
                     const isHov = hovCell?.d === d && hovCell?.h === h;

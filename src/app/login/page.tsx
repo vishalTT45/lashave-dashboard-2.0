@@ -128,7 +128,7 @@ function Field({
           type={isPassword && visible ? 'text' : type}
           placeholder={placeholder}
           autoComplete={autoComplete}
-          className='h-10 w-full rounded-[10px] border border-gray-300 bg-transparent px-4 py-2 type-small text-gray-800 shadow-theme-xs outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-3 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-blue-400'
+          className='h-10 w-full rounded-(--radius-control) border border-gray-300 bg-transparent px-4 py-2 type-small text-gray-800 shadow-theme-xs outline-none transition placeholder:text-gray-400 focus:border-blue-500 focus:ring-3 focus:ring-blue-500/20 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-blue-400'
         />
         {isPassword && (
           <button
@@ -156,7 +156,7 @@ function Alert({
 
   return (
     <div
-      className={`rounded-[10px] border px-4 py-3 type-small ${
+      className={`rounded-(--radius-control) border px-4 py-3 type-small ${
         type === 'success'
           ? 'border-success-200 bg-success-50 text-success-700 dark:border-success-500/25 dark:bg-success-500/10 dark:text-success-400'
           : 'border-error-200 bg-error-50 text-error-600 dark:border-error-500/25 dark:bg-error-500/10 dark:text-error-400'
@@ -180,7 +180,7 @@ function SubmitButton({
     <button
       type='submit'
       disabled={loading || disabled}
-      className='flex w-full items-center justify-center rounded-[10px] bg-blue-600 px-4 py-3 type-small font-medium text-white shadow-theme-xs transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-gray-900'
+      className='flex w-full items-center justify-center rounded-(--radius-control) bg-blue-600 px-4 py-3 type-small font-medium text-white shadow-theme-xs transition hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-gray-900'
     >
       {loading ? 'Please wait...' : children}
     </button>
@@ -203,7 +203,7 @@ function OtpInput({
       inputMode='numeric'
       autoComplete='one-time-code'
       placeholder='000000'
-      className='h-12 w-full rounded-[10px] border border-gray-300 bg-transparent px-4 text-center type-card-title font-semibold tracking-[0.35em] text-gray-800 shadow-theme-xs outline-none placeholder:text-gray-300 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800'
+      className='h-12 w-full rounded-(--radius-control) border border-gray-300 bg-transparent px-4 text-center type-card-title font-semibold tracking-[0.35em] text-gray-800 shadow-theme-xs outline-none placeholder:text-gray-300 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800'
     />
   );
 }
@@ -499,7 +499,7 @@ function AuthPageInner() {
             </div>
 
             {showTabs && (
-              <div className='mb-6 grid grid-cols-2 gap-2 rounded-[10px] bg-gray-100 p-1 dark:bg-white/[0.05]'>
+              <div className='mb-6 grid grid-cols-2 gap-2 rounded-(--radius-control) bg-gray-100 p-1 dark:bg-white/5'>
                 {(['login', 'signup'] as const).map((item) => (
                   <button
                     key={item}
@@ -508,7 +508,7 @@ function AuthPageInner() {
                       setTab(item);
                       go(item);
                     }}
-                    className={`rounded-[10px] px-3 py-2 type-small font-medium transition ${
+                    className={`rounded-(--radius-control) px-3 py-2 type-small font-medium transition ${
                       tab === item
                         ? 'bg-white text-blue-600 shadow-theme-xs dark:bg-gray-900 dark:text-blue-400'
                         : 'text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400'
@@ -765,7 +765,7 @@ function AuthPageInner() {
                     setTab('login');
                     go('login');
                   }}
-                  className='flex w-full items-center justify-center rounded-[10px] bg-brand-500 px-4 py-3 type-small font-medium text-white shadow-theme-xs transition hover:bg-brand-600'
+                  className='flex w-full items-center justify-center rounded-(--radius-control) bg-brand-500 px-4 py-3 type-small font-medium text-white shadow-theme-xs transition hover:bg-brand-600'
                 >
                   Back to Sign In
                 </button>
@@ -788,7 +788,7 @@ function AuthPageInner() {
         </section>
 
         <section className='relative hidden w-full flex-1 items-center justify-center overflow-hidden bg-[#4249C6] px-10 lg:flex lg:w-1/2'>
-          <div className='absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.18)_1px,transparent_1px)] bg-[size:200px_200px] opacity-70' />
+          <div className='absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.18)_1px,transparent_1px)] bg-size-[200px_200px] opacity-70' />
           <div className='relative flex w-full max-w-md flex-col items-center text-center'>
             <div className='relative z-10 flex flex-col items-center'>
               <div className='mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-white p-2.5 shadow-theme-lg'>
@@ -797,7 +797,7 @@ function AuthPageInner() {
                   width={60}
                   height={60}
                   alt='Lashvae'
-                  className='h-[60px] w-[60px] object-contain'
+                  className='h-15 w-15 object-contain'
                   priority
                 />
               </div>

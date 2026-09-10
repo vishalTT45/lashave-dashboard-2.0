@@ -293,7 +293,7 @@ function PlatformIcon({
   if (!cfg?.logoSrc) {
     return (
       <span
-        className="inline-flex h-[21px] w-[21px] shrink-0 items-center justify-center rounded-md text-[15px]"
+        className="inline-flex h-5.25 w-5.25 shrink-0 items-center justify-center rounded-md text-[15px]"
         style={{ background: cfg.bg }}
       >
         📡
@@ -366,7 +366,7 @@ function CloseButton({ onClose }: { onClose: () => void }) {
   const [hover, setHover] = useState(false);
 
   const base =
-    'inline-flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full border transition duration-150 ease-out focus:outline-none focus:ring-3 focus:ring-brand-500/20 focus:border-brand-300';
+    'inline-flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-full border transition duration-150 ease-out focus:outline-none focus:ring-3 focus:ring-brand-500/20 focus:border-brand-300';
   const idle =
     'border-border bg-muted text-muted-foreground hover:scale-[1.06]';
   const hoverCls = hover
@@ -398,7 +398,7 @@ export default function BookingPanel() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(true);
-  const [isEnabled, setIsEnabled] = useState<Boolean>();
+  const [isEnabled, setIsEnabled] = useState<boolean>();
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
@@ -547,11 +547,11 @@ export default function BookingPanel() {
         onClick={() => {
           window.location.href = '/availability';
         }}
-        className="cursor-pointer transition hover:bg-gray-50 dark:hover:bg-white/[0.02]"
+        className="cursor-pointer transition hover:bg-gray-50 dark:hover:bg-white/2"
       >
         <td className="px-5 py-3 sm:px-6">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="relative h-[34px] w-[34px] shrink-0">
+            <div className="relative h-8.5 w-8.5 shrink-0">
               <CustomerAvatar name={name} profilePic={b.profile_pic_url} />
             </div>
             <div className="min-w-0 flex-1">
@@ -627,7 +627,7 @@ export default function BookingPanel() {
         <span className="truncate type-small">Bookings</span>
         {todayCount > 0 && (
           <span
-            className="inline-flex h-[18px] min-w-[18px] shrink-0 items-center justify-center rounded-full px-1.5 type-micro font-semibold text-white"
+            className="inline-flex h-4.5 min-w-4.5 shrink-0 items-center justify-center rounded-full px-1.5 type-micro font-semibold text-white"
             style={{ background: 'var(--color-theme-pink-500)' }}
           >
             {todayCount}
@@ -648,7 +648,7 @@ export default function BookingPanel() {
   const hasRows = totalShown > 0;
 
   return (
-    <div className="min-w-0 w-full max-w-full overflow-hidden rounded-xl border border-gray-200 bg-card shadow-sm backdrop-blur-sm dark:border-white/[0.05]">
+    <div className="min-w-0 w-full max-w-full overflow-hidden rounded-xl border border-gray-200 bg-card shadow-sm backdrop-blur-sm dark:border-white/5">
       <style>{`
         .bp-scroll::-webkit-scrollbar { height: 8px; width: 8px; }
         .bp-scroll::-webkit-scrollbar-track { background: transparent; }
@@ -671,7 +671,7 @@ export default function BookingPanel() {
       {/* HEADER */}
       <div
         className={`relative px-5 pt-5 pb-4 sm:px-6 ${
-          hasRows ? 'border-b border-gray-100 dark:border-white/[0.05]' : ''
+          hasRows ? 'border-b border-gray-100 dark:border-white/5' : ''
         }`}
       >
         <div className="flex items-start justify-between gap-3">
@@ -716,7 +716,7 @@ export default function BookingPanel() {
 
           <div className="flex shrink-0 items-center gap-2.5">
             {todayCount > 0 && (
-              <div className="relative inline-flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-error-500 via-theme-pink-500 to-orange-500 text-[15px] font-bold text-white shadow-[0_10px_30px_-12px_var(--color-theme-pink-500)]">
+              <div className="relative inline-flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-error-500 via-theme-pink-500 to-orange-500 text-[15px] font-bold text-white shadow-[0_10px_30px_-12px_var(--color-theme-pink-500)]">
                 {todayCount}
                 <span className="bp-pulse-ring pointer-events-none absolute inset-0 rounded-full border-[3px] border-white/40" />
               </div>
@@ -731,7 +731,7 @@ export default function BookingPanel() {
         <>
           {/* TABLE */}
           <div className="bp-scroll overflow-x-auto">
-            <table className="lashvae-column-dividers min-w-[760px] w-full table-fixed">
+            <table className="lashvae-column-dividers min-w-190 w-full table-fixed">
               <colgroup>
                 <col className="w-[27%]" />
                 <col className="w-[18%]" />
@@ -739,7 +739,7 @@ export default function BookingPanel() {
                 <col className="w-[15%]" />
                 <col className="w-[13%]" />
               </colgroup>
-              <thead className="border-b border-gray-100 dark:border-white/[0.05]">
+              <thead className="border-b border-gray-100 dark:border-white/5">
                 <tr>
                   <th className={TABLE_HEAD_CELL}>Customer</th>
                   <th className={TABLE_HEAD_CELL}>Channel</th>
@@ -749,7 +749,7 @@ export default function BookingPanel() {
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
+              <tbody className="divide-y divide-gray-100 dark:divide-white/5">
                 {todayBookings.map((b) => (
                   <BookingTableRow key={b.id} b={b} section="today" />
                 ))}
@@ -762,7 +762,7 @@ export default function BookingPanel() {
           </div>
 
           {/* FOOTER */}
-          <div className="flex items-center justify-between gap-3 border-t border-gray-100 px-5 py-3 dark:border-white/[0.05] sm:px-6">
+          <div className="flex items-center justify-between gap-3 border-t border-gray-100 px-5 py-3 dark:border-white/5 sm:px-6">
             <p className="type-micro text-gray-500 dark:text-gray-400">
               Showing{' '}
               <span className="font-semibold text-gray-800 dark:text-white/90">
@@ -775,7 +775,7 @@ export default function BookingPanel() {
               onClick={() => {
                 window.location.href = '/availability';
               }}
-              className="inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-[10px] bg-brand-500 px-3.5 type-small font-medium text-white shadow-theme-xs transition hover:bg-brand-600 focus:outline-none focus:ring-3 focus:ring-brand-500/20"
+              className="inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-(--radius-control) bg-brand-500 px-3.5 type-small font-medium text-white shadow-theme-xs transition hover:bg-brand-600 focus:outline-none focus:ring-3 focus:ring-brand-500/20"
             >
               View All Bookings
               <svg
@@ -811,6 +811,10 @@ function CustomerAvatar({
   const [broken, setBroken] = useState(false);
 
   useEffect(() => {
+    // Resets local UI-only state (a flag, warning, or preview value)
+    // when the relevant prop/dependency changes — not deriving render
+    // output from state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setBroken(false);
   }, [profilePic]);
 
@@ -820,7 +824,7 @@ function CustomerAvatar({
   if (broken || !profilePic) {
     return (
       <div
-        className="flex h-[34px] w-[34px] shrink-0 items-center justify-center overflow-hidden rounded-full font-bold text-white shadow-[0_4px_14px_-6px_rgba(15,23,42,0.25)]"
+        className="flex h-8.5 w-8.5 shrink-0 items-center justify-center overflow-hidden rounded-full font-bold text-white shadow-[0_4px_14px_-6px_rgba(15,23,42,0.25)]"
         style={{ background: gradient }}
       >
         <span className="type-small leading-none">{initial}</span>
@@ -834,7 +838,7 @@ function CustomerAvatar({
       src={profilePic}
       alt={name}
       onError={() => setBroken(true)}
-      className="h-[34px] w-[34px] shrink-0 rounded-full object-cover shadow-[0_4px_14px_-6px_rgba(15,23,42,0.25)]"
+      className="h-8.5 w-8.5 shrink-0 rounded-full object-cover shadow-[0_4px_14px_-6px_rgba(15,23,42,0.25)]"
     />
   );
 }

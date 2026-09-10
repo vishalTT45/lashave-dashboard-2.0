@@ -40,7 +40,7 @@ export function Modal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[99999] flex items-center justify-center overflow-y-auto">
+    <div className="fixed inset-0 z-99999 flex items-center justify-center overflow-y-auto">
       {!isFullscreen && (
         <div
           className="fixed inset-0 h-full w-full bg-gray-400/50 backdrop-blur-[32px]"
@@ -52,7 +52,7 @@ export function Modal({
         className={cn(
           isFullscreen
             ? "h-full w-full"
-            : "relative w-full rounded-[20px] bg-white dark:bg-gray-900",
+            : "relative w-full rounded-(--radius-panel) bg-white dark:bg-gray-900",
           className
         )}
         onClick={(e) => e.stopPropagation()}
@@ -60,7 +60,7 @@ export function Modal({
         {showCloseButton && (
           <button
             onClick={onClose}
-            className="absolute right-3 top-3 z-999 flex h-10 w-10 items-center justify-center rounded-[10px] bg-gray-100 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white sm:right-6 sm:top-6"
+            className="absolute right-3 top-3 z-999 flex h-10 w-10 items-center justify-center rounded-(--radius-control) bg-gray-100 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white sm:right-6 sm:top-6"
           >
             <svg className="icon-default" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path

@@ -8,6 +8,7 @@ import {
   useChannelFilter,
 } from '@/components/channel-filter';
 import { DateFilter } from '@/components/date-filter';
+import { Grid, Split } from '@/components/layout/primitives';
 import { RequireAuth } from '@/components/require-auth';
 import { Button } from '@/components/ui/button';
 import { TablePagination } from '@/components/ui/table-pagination';
@@ -266,7 +267,7 @@ const STAT_TONE: Record<string, string> = {
     'bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-orange-400',
   success:
     'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500',
-  gray: 'bg-gray-100 text-gray-700 dark:bg-white/[0.06] dark:text-gray-300',
+  gray: 'bg-gray-100 text-gray-700 dark:bg-white/6 dark:text-gray-300',
 };
 function StatTile({
   label,
@@ -303,7 +304,7 @@ function StatTile({
         <div className='type-body font-bold leading-tight text-gray-800 dark:text-white/90'>
           {formatCompact(value)}
         </div>
-        <div className='truncate type-micro leading-[1.25] text-gray-500 dark:text-gray-400'>
+        <div className='truncate type-micro leading-tight text-gray-500 dark:text-gray-400'>
           {label}
         </div>
       </div>
@@ -327,6 +328,10 @@ function ConversationAvatar({
   const image = broken ? undefined : rawImage;
 
   useEffect(() => {
+    // Resets local UI-only state (a flag, warning, or preview value)
+    // when the relevant prop/dependency changes — not deriving render
+    // output from state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setBroken(false);
   }, [rawImage]);
 
@@ -470,8 +475,8 @@ function ConversationTable({
     INBOX_TABS.find((tab) => tab.key === status) ?? INBOX_TABS[0];
 
   return (
-    <div className='min-w-0 max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]'>
-      <div className='flex flex-col gap-1.5 border-b border-gray-100 px-4 py-3 dark:border-white/[0.05] sm:flex-row sm:items-center sm:justify-between sm:px-5 '>
+    <div className='min-w-0 max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3'>
+      <div className='flex flex-col gap-1.5 border-b border-gray-100 px-4 py-3 dark:border-white/5 sm:flex-row sm:items-center sm:justify-between sm:px-5 '>
         <h3 className='type-small font-semibold text-gray-800 dark:text-white/90'>
           Inbox
         </h3>
@@ -481,12 +486,12 @@ function ConversationTable({
       </div>
 
       <div className='min-w-0 py-4'>
-        <div className='flex flex-col gap-3 rounded-t-xl border border-b-0 border-gray-200 bg-white px-4 py-3 dark:border-white/[0.05] dark:bg-white/[0.01] sm:px-5 lg:flex-row lg:items-center lg:justify-between '>
+        <div className='flex flex-col gap-3 rounded-t-xl border border-b-0 border-gray-200 bg-white px-4 py-3 dark:border-white/5 dark:bg-white/1 sm:px-5 lg:flex-row lg:items-center lg:justify-between '>
           <h4 className='type-body font-semibold text-gray-800 dark:text-white/90'>
             {activeTab.label} conversations
           </h4>
           <div className='flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end '>
-            <div className='relative w-full sm:w-[280px]'>
+            <div className='relative w-full sm:w-(--control-width-search)'>
               <Search className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400' />
               <input
                 type='search'
@@ -494,7 +499,7 @@ function ConversationTable({
                 onChange={(e) => setQ(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && onSearchSubmit()}
                 placeholder='Search by username or ID'
-                className='h-9 w-full rounded-[10px] border border-gray-300 bg-white py-2 pl-10 pr-4 type-small text-gray-800 shadow-theme-xs outline-none placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-gray-500'
+                className='h-9 w-full rounded-(--radius-control) border border-gray-300 bg-white py-2 pl-10 pr-4 type-small text-gray-800 shadow-theme-xs outline-none placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-gray-500'
               />
             </div>
 
@@ -552,10 +557,10 @@ function ConversationTable({
                           setOpenFilter(null);
                         }}
                         className={cn(
-                          'flex w-full items-center justify-between rounded-[10px] px-3 py-2 text-left type-small font-medium transition',
+                          'flex w-full items-center justify-between rounded-(--radius-control) px-3 py-2 text-left type-small font-medium transition',
                           isActive
                             ? 'bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'
-                            : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/[0.04]',
+                            : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/4',
                         )}
                       >
                         <span className='inline-flex items-center gap-2'>
@@ -598,10 +603,10 @@ function ConversationTable({
                           setOpenFilter(null);
                         }}
                         className={cn(
-                          'flex w-full items-center justify-between rounded-[10px] px-3 py-2 text-left type-small font-medium transition',
+                          'flex w-full items-center justify-between rounded-(--radius-control) px-3 py-2 text-left type-small font-medium transition',
                           isActive
                             ? 'bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'
-                            : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/[0.04]',
+                            : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/4',
                         )}
                       >
                         <span className='inline-flex items-center gap-2'>
@@ -639,7 +644,7 @@ function ConversationTable({
               type='button'
               onClick={() => setFilterLead((value) => !value)}
               className={cn(
-                'inline-flex h-9 shrink-0 items-center gap-2 rounded-[10px] px-3.5 type-small font-medium transition',
+                'inline-flex h-9 shrink-0 items-center gap-2 rounded-(--radius-control) px-3.5 type-small font-medium transition',
                 filterLead
                   ? 'bg-brand-500 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/5',
@@ -655,18 +660,29 @@ function ConversationTable({
           </div>
         </div>
 
-        <div className='min-w-0 max-w-full overflow-hidden rounded-b-xl border border-gray-200 dark:border-white/[0.05]'>
-          <table className='lashvae-column-dividers w-full table-fixed min-h-80'>
+        {/* Table structure stays fixed on desktop (flexible customer
+            column + controlled metadata/action columns). On
+            tablet/mobile the row scrolls horizontally instead of
+            columns randomly collapsing or getting clipped. */}
+        <div className='min-w-0 max-w-full overflow-hidden rounded-b-xl border border-gray-200 dark:border-white/5'>
+          <div className='w-full overflow-x-auto'>
+          <table className='lashvae-column-dividers w-full min-w-180 table-fixed min-h-80'>
             <colgroup>
-              <col className='w-[34%]' /> {/* Customer — flexible */}
-              <col className='w-[128px]' /> {/* Channel */}
-              <col className='w-[108px]' /> {/* Intent */}
-              <col className='w-[108px]' /> {/* Status */}
-              <col className='w-[104px]' /> {/* Lead */}
-              <col className='w-[128px]' /> {/* Actions */}
+              {/* Customer — flexible */}
+              <col className='w-(--table-conversations-customer-width)' />
+              {/* Channel */}
+              <col className='w-(--table-conversations-channel-width)' />
+              {/* Intent */}
+              <col className='w-(--table-conversations-intent-width)' />
+              {/* Status */}
+              <col className='w-(--table-conversations-status-width)' />
+              {/* Lead */}
+              <col className='w-(--table-conversations-lead-width)' />
+              {/* Actions */}
+              <col className='w-(--table-conversations-actions-width)' />
             </colgroup>
 
-            <thead className='border-b border-gray-100 dark:border-white/[0.05]'>
+            <thead className='border-b border-gray-100 dark:border-white/5'>
               <tr>
                 {[
                   'Customer',
@@ -689,7 +705,7 @@ function ConversationTable({
               </tr>
             </thead>
 
-            <tbody className='divide-y divide-gray-100 dark:divide-white/[0.05]'>
+            <tbody className='divide-y divide-gray-100 dark:divide-white/5'>
               {loading && (
                 <tr>
                   <td
@@ -736,7 +752,7 @@ function ConversationTable({
                   return (
                     <tr
                       key={item.id}
-                      className='transition hover:bg-gray-50 dark:hover:bg-white/[0.02]'
+                      className='transition hover:bg-gray-50 dark:hover:bg-white/2'
                     >
                       {/* Customer */}
                       <td className='px-3 py-2.5 sm:px-4'>
@@ -756,10 +772,10 @@ function ConversationTable({
                               <span className='group relative block min-w-0 flex-1 type-small font-semibold text-gray-800 dark:text-white/90'>
                                 <span className='block truncate'>{name}</span>
 
-                                <span className='pointer-events-none absolute left-0 top-full z-50 mt-1 hidden max-w-[280px] group-hover:block'>
-                                  <span className='absolute -top-1 left-3 h-2 w-2 rotate-45 rounded-[2px] bg-gray-900' />
+                                <span className='pointer-events-none absolute left-0 top-full z-50 mt-1 hidden max-w-70 group-hover:block'>
+                                  <span className='absolute -top-1 left-3 h-2 w-2 rotate-45 rounded-xs bg-gray-900' />
 
-                                  <span className='relative block rounded-[10px] bg-gray-900 px-3 py-1.5 type-caption font-medium text-white shadow-lg'>
+                                  <span className='relative block rounded-(--radius-control) bg-gray-900 px-3 py-1.5 type-caption font-medium text-white shadow-lg'>
                                     {name}
                                   </span>
                                 </span>
@@ -853,7 +869,7 @@ function ConversationTable({
                         <Link
                           href={`/conversations/${item.id}`}
                           title='View conversation'
-                          className='inline-flex h-7 items-center justify-center gap-1 whitespace-nowrap rounded-[8px] bg-brand-500 px-2.5 type-micro font-semibold text-white shadow-theme-xs transition hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30'
+                          className='inline-flex h-7 items-center justify-center gap-1 whitespace-nowrap rounded-lg bg-brand-500 px-2.5 type-micro font-semibold text-white shadow-theme-xs transition hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-500/30'
                         >
                           <Eye size={12} />
                           View
@@ -864,6 +880,7 @@ function ConversationTable({
                 })}
             </tbody>
           </table>
+          </div>
         </div>
         <TablePagination
           page={page}
@@ -1033,10 +1050,18 @@ export default function ConversationsPage() {
   }, []);
 
   useEffect(() => {
+    // Fetch on mount / dependency change — the correct place for a
+    // loading/data flag on an async fetch, not a derive-state-from-render
+    // antipattern.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadConversations();
   }, [loadConversations]);
 
   useEffect(() => {
+    // Fetch on mount / dependency change — the correct place for a
+    // loading/data flag on an async fetch, not a derive-state-from-render
+    // antipattern.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadStats();
   }, [loadStats]);
 
@@ -1111,9 +1136,9 @@ export default function ConversationsPage() {
 
   return (
     <RequireAuth>
-      <div className='mx-auto w-full max-w-[1440px] px-4 py-5 sm:px-6 lg:px-8'>
-        <div className='rounded-2xl border border-gray-200 bg-white p-4.5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] dark:border-gray-800 dark:bg-white/[0.03] sm:p-5'>
-          <div className='flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between'>
+      <div className='py-5'>
+        <div className='rounded-2xl border border-gray-200 bg-white p-4.5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] dark:border-gray-800 dark:bg-white/3 sm:p-5'>
+          <Split at='xl'>
             <div>
               <p className='type-small font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400'>
                 Conversations
@@ -1129,7 +1154,7 @@ export default function ConversationsPage() {
 
             <div className='flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3'>
               <button
-                className='inline-flex h-8 items-center justify-center gap-2 rounded-[10px] border border-gray-200 bg-white px-3.5 type-small font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-300 dark:hover:bg-white/[0.05]'
+                className='inline-flex h-8 items-center justify-center gap-2 rounded-(--radius-control) border border-gray-200 bg-white px-3.5 type-small font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-800 dark:bg-white/3 dark:text-gray-300 dark:hover:bg-white/5'
                 onClick={() => {
                   void Promise.all([loadConversations(), loadStats()]);
                 }}
@@ -1142,9 +1167,12 @@ export default function ConversationsPage() {
                 Last refreshed {lastRefresh.toLocaleTimeString()}
               </div>
             </div>
-          </div>
+          </Split>
 
-          <div className='mt-5 grid grid-cols-2 gap-2 lg:grid-cols-4 3xl:grid-cols-8'>
+          {/* Stable desktop composition: 2 cols on mobile, 4 on tablet,
+              8 on desktop (1024px+) — the column count no longer changes
+              at an ultra-wide breakpoint or with browser zoom. */}
+          <Grid className='mt-5' columns={{ mobile: 2, tablet: 4, desktop: 8 }} gap='xs'>
             {STAT_FILTERS.map((stat) => (
               <StatTile
                 key={stat.key}
@@ -1158,7 +1186,7 @@ export default function ConversationsPage() {
                 }
               />
             ))}
-          </div>
+          </Grid>
         </div>
 
         {err && (

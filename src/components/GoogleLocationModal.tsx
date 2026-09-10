@@ -71,10 +71,11 @@ export default function GoogleLocationModal({
       if (!currentLocationId && data.locations?.length === 1) {
         setSelected(data.locations[0].location_id);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setErr(
-        error?.message ||
-          'Could not load locations. Google may be rate limiting. Try again in a moment.',
+        error instanceof Error
+          ? error.message
+          : 'Could not load locations. Google may be rate limiting. Try again in a moment.',
       );
     } finally {
       setLoading(false);
@@ -82,6 +83,10 @@ export default function GoogleLocationModal({
   }, [channelId, currentLocationId]);
 
   useEffect(() => {
+    // Fetch on mount / dependency change — the correct place for a
+    // loading/data flag on an async fetch, not a derive-state-from-render
+    // antipattern.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchLocations();
   }, [fetchLocations]);
 
@@ -124,8 +129,8 @@ export default function GoogleLocationModal({
 
       onSaved(location);
       onClose();
-    } catch (error: any) {
-      setErr(error?.message || 'Could not save the location. Try again.');
+    } catch (error: unknown) {
+      setErr(error instanceof Error ? error.message : 'Could not save the location. Try again.');
     } finally {
       setSaving(false);
     }
@@ -135,10 +140,10 @@ export default function GoogleLocationModal({
     <Modal
       isOpen
       onClose={() => !saving && onClose()}
-      className="m-4 max-w-[680px]"
+      className="m-4 max-w-170"
       showCloseButton={false}
     >
-      <div className="flex max-h-[85vh] w-full flex-col overflow-hidden rounded-[20px] bg-white dark:bg-gray-900">
+      <div className="flex max-h-[85vh] w-full flex-col overflow-hidden rounded-(--radius-panel) bg-white dark:bg-gray-900">
         <div className="flex items-start justify-between gap-5 border-b border-gray-100 px-6 py-5 pr-5 dark:border-gray-800">
           <div className="min-w-0">
             <Badge
@@ -187,7 +192,7 @@ export default function GoogleLocationModal({
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Filter by name, phone or website"
-                className="h-10 w-full rounded-[10px] border border-gray-300 bg-white py-2 pl-11 pr-4 type-small text-gray-800 shadow-theme-xs outline-none placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-gray-500"
+                className="h-10 w-full rounded-(--radius-control) border border-gray-300 bg-white py-2 pl-11 pr-4 type-small text-gray-800 shadow-theme-xs outline-none placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-gray-500"
               />
             </div>
           )}
@@ -197,12 +202,12 @@ export default function GoogleLocationModal({
               {[0, 1, 2].map((item) => (
                 <div
                   key={item}
-                  className="h-[74px] animate-pulse rounded-xl bg-gray-100 dark:bg-white/[0.06]"
+                  className="h-18.5 animate-pulse rounded-xl bg-gray-100 dark:bg-white/6"
                 />
               ))}
             </div>
           ) : err && locations.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-5 py-10 text-center dark:border-gray-800 dark:bg-white/[0.02]">
+            <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-5 py-10 text-center dark:border-gray-800 dark:bg-white/2">
               <p className="mx-auto max-w-md type-small leading-6 text-gray-500 dark:text-gray-400">
                 {err}
               </p>
@@ -212,7 +217,7 @@ export default function GoogleLocationModal({
               </Button>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-5 py-10 text-center dark:border-gray-800 dark:bg-white/[0.02]">
+            <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-5 py-10 text-center dark:border-gray-800 dark:bg-white/2">
               <p className="mx-auto max-w-md type-small leading-6 text-gray-500 dark:text-gray-400">
                 {query
                   ? 'No location matches that filter.'
@@ -234,7 +239,7 @@ export default function GoogleLocationModal({
                       'grid grid-cols-[40px_1fr_auto] items-center gap-3 rounded-xl border p-4 text-left transition',
                       isSelected
                         ? 'border-brand-300 bg-brand-50 dark:border-brand-700 dark:bg-brand-500/10'
-                        : 'border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-800 dark:bg-white/[0.03] dark:hover:bg-white/[0.05]',
+                        : 'border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-800 dark:bg-white/3 dark:hover:bg-white/5',
                     )}
                   >
                     <span

@@ -96,6 +96,10 @@ export function OnboardingDrawer({
     if (!onCheckDupUrl) return;
     const u = scrapeUrl.trim();
     if (!u) {
+      // Resets local UI-only state (a flag, warning, or preview value)
+      // when the relevant prop/dependency changes — not deriving render
+      // output from state.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDupUrlWarn(false);
       return;
     }
@@ -114,6 +118,10 @@ export function OnboardingDrawer({
   // Dedup check on file pick
   useEffect(() => {
     if (!onCheckDupFile || !uploadFile) {
+      // Resets local UI-only state (a flag, warning, or preview value)
+      // when the relevant prop/dependency changes — not deriving render
+      // output from state.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDupFileWarn(false);
       return;
     }
@@ -149,6 +157,10 @@ export function OnboardingDrawer({
   const currentInputStep = inputSteps[inputIndex] ?? null;
 
   useEffect(() => {
+    // Clamps/adjusts local state in response to a changing dependency
+    // (e.g. pagination bounds, active tab) — reviewed; not a
+    // derive-state-from-render antipattern in this context.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (phase === 'inputs') setInputIndex(0);
   }, [phase]);
 
@@ -360,7 +372,7 @@ export function OnboardingDrawer({
             type='button'
             onClick={onClose}
             aria-label='Close train AI modal'
-            className='inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:text-gray-500 dark:hover:bg-white/[0.05] dark:hover:text-gray-300'
+            className='inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-(--radius-control) text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:text-gray-500 dark:hover:bg-white/5 dark:hover:text-gray-300'
           >
             <X className='h-4 w-4' />
           </button>
@@ -380,7 +392,7 @@ export function OnboardingDrawer({
                   'relative rounded-xl border p-4 text-left transition',
                   selected
                     ? 'border-brand-300 bg-brand-50 shadow-theme-xs dark:border-brand-500/30 dark:bg-brand-500/10'
-                    : 'border-gray-200 bg-white hover:border-brand-200 hover:bg-gray-50 dark:border-gray-800 dark:bg-white/[0.03] dark:hover:border-brand-500/20 dark:hover:bg-white/[0.05]',
+                    : 'border-gray-200 bg-white hover:border-brand-200 hover:bg-gray-50 dark:border-gray-800 dark:bg-white/3 dark:hover:border-brand-500/20 dark:hover:bg-white/5',
                 )}
               >
                 {order !== null && (
@@ -390,9 +402,9 @@ export function OnboardingDrawer({
                 )}
                 <div
                   className={cn(
-                    'mb-4 flex h-10 w-10 items-center justify-center rounded-[10px]',
+                    'mb-4 flex h-10 w-10 items-center justify-center rounded-(--radius-control)',
                     selected
-                      ? 'bg-white text-brand-500 dark:bg-white/[0.06] dark:text-brand-400'
+                      ? 'bg-white text-brand-500 dark:bg-white/6 dark:text-brand-400'
                       : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
                   )}
                 >
@@ -494,7 +506,7 @@ export function OnboardingDrawer({
               type='button'
               onClick={onClose}
               aria-label='Close train AI modal'
-              className='inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:text-gray-500 dark:hover:bg-white/[0.05] dark:hover:text-gray-300'
+              className='inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-(--radius-control) text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:text-gray-500 dark:hover:bg-white/5 dark:hover:text-gray-300'
             >
               <X className='h-4 w-4' />
             </button>
@@ -523,7 +535,7 @@ export function OnboardingDrawer({
               onChange={(e) => setScrapeUrl(e.target.value)}
               placeholder='https://your-site.com'
               aria-invalid={dupUrlWarn}
-              className='h-10 rounded-[10px] bg-white dark:bg-white/[0.03]'
+              className='h-10 rounded-(--radius-control) bg-white dark:bg-white/3'
             />
             {dupUrlChecking && (
               <div className='mt-2 flex items-center gap-2 type-caption text-gray-500 dark:text-gray-400'>
@@ -532,7 +544,7 @@ export function OnboardingDrawer({
               </div>
             )}
             {dupUrlWarn && !dupUrlChecking && (
-              <div className='mt-3 flex gap-2 rounded-[10px] border border-warning-200 bg-warning-50 p-3 type-caption leading-5 text-warning-700 dark:border-warning-500/20 dark:bg-warning-500/10 dark:text-orange-400'>
+              <div className='mt-3 flex gap-2 rounded-(--radius-control) border border-warning-200 bg-warning-50 p-3 type-caption leading-5 text-warning-700 dark:border-warning-500/20 dark:bg-warning-500/10 dark:text-orange-400'>
                 <AlertTriangle className='mt-0.5 h-4 w-4 shrink-0' />
                 It looks like this site has already been scraped. Running it
                 again will create duplicate drafts.
@@ -552,10 +564,10 @@ export function OnboardingDrawer({
                 'flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 text-center transition',
                 dupFileWarn
                   ? 'border-warning-300 bg-warning-50 dark:border-warning-500/30 dark:bg-warning-500/10'
-                  : 'border-gray-300 bg-gray-50 hover:border-brand-300 hover:bg-brand-50 dark:border-gray-700 dark:bg-white/[0.03] dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10',
+                  : 'border-gray-300 bg-gray-50 hover:border-brand-300 hover:bg-brand-50 dark:border-gray-700 dark:bg-white/3 dark:hover:border-brand-500/30 dark:hover:bg-brand-500/10',
               )}
             >
-              <div className='mb-3 flex h-10 w-10 items-center justify-center rounded-[10px] bg-white text-brand-500 shadow-theme-xs dark:bg-white/[0.06] dark:text-brand-400'>
+              <div className='mb-3 flex h-10 w-10 items-center justify-center rounded-(--radius-control) bg-white text-brand-500 shadow-theme-xs dark:bg-white/6 dark:text-brand-400'>
                 <Upload className='h-5 w-5' />
               </div>
               <div className='type-small font-semibold text-gray-800 dark:text-white/90'>
@@ -584,7 +596,7 @@ export function OnboardingDrawer({
               </div>
             )}
             {dupFileWarn && !dupFileChecking && (
-              <div className='mt-3 flex gap-2 rounded-[10px] border border-warning-200 bg-warning-50 p-3 type-caption leading-5 text-warning-700 dark:border-warning-500/20 dark:bg-warning-500/10 dark:text-orange-400'>
+              <div className='mt-3 flex gap-2 rounded-(--radius-control) border border-warning-200 bg-warning-50 p-3 type-caption leading-5 text-warning-700 dark:border-warning-500/20 dark:bg-warning-500/10 dark:text-orange-400'>
                 <AlertTriangle className='mt-0.5 h-4 w-4 shrink-0' />
                 A file with this name has already been uploaded. Continuing will
                 create a duplicate document.
@@ -608,7 +620,7 @@ export function OnboardingDrawer({
                 <select
                   value={docCategory}
                   onChange={(e) => setDocCategory(e.target.value)}
-                  className='h-10 rounded-[10px] border border-gray-200 bg-white px-3 type-small text-gray-700 outline-none transition focus:border-brand-300 focus:ring-3 focus:ring-brand-300/20 dark:border-gray-700 dark:bg-white/[0.03] dark:text-gray-300'
+                  className='h-10 rounded-(--radius-control) border border-gray-200 bg-white px-3 type-small text-gray-700 outline-none transition focus:border-brand-300 focus:ring-3 focus:ring-brand-300/20 dark:border-gray-700 dark:bg-white/3 dark:text-gray-300'
                 >
                   <option value=''>Auto-detect</option>
                   <option value='menu'>Menu</option>
@@ -645,11 +657,11 @@ export function OnboardingDrawer({
                       'rounded-xl border p-4 text-left transition',
                       active
                         ? 'border-brand-300 bg-brand-50 shadow-theme-xs dark:border-brand-500/30 dark:bg-brand-500/10'
-                        : 'border-gray-200 bg-white hover:border-brand-200 hover:bg-gray-50 dark:border-gray-800 dark:bg-white/[0.03] dark:hover:border-brand-500/20 dark:hover:bg-white/[0.05]',
+                        : 'border-gray-200 bg-white hover:border-brand-200 hover:bg-gray-50 dark:border-gray-800 dark:bg-white/3 dark:hover:border-brand-500/20 dark:hover:bg-white/5',
                     )}
                   >
                     <div
-                      className='mb-3 flex h-10 w-10 items-center justify-center rounded-[10px] bg-gray-100 dark:bg-gray-800'
+                      className='mb-3 flex h-10 w-10 items-center justify-center rounded-(--radius-control) bg-gray-100 dark:bg-gray-800'
                     >
                       {BizIcon[biz.id](iconColor)}
                     </div>
@@ -685,7 +697,7 @@ export function OnboardingDrawer({
               }}
               placeholder={currentQ.placeholder}
               rows={3}
-              className='min-h-28 resize-none rounded-[10px] bg-white leading-6 dark:bg-white/[0.03]'
+              className='min-h-28 resize-none rounded-(--radius-control) bg-white leading-6 dark:bg-white/3'
             />
             <div className='mt-2 type-caption text-gray-500 dark:text-gray-400'>
               Optional. Cmd/Ctrl+Enter to continue
@@ -705,7 +717,7 @@ export function OnboardingDrawer({
               onChange={(e) => setAboutBusiness(e.target.value)}
               rows={6}
               placeholder="Example: We're a premium sofa brand. Customers usually ask about pricing, delivery, fabric options and warranty."
-              className='min-h-40 rounded-[10px] bg-white leading-6 dark:bg-white/[0.03]'
+              className='min-h-40 rounded-(--radius-control) bg-white leading-6 dark:bg-white/3'
             />
           </div>
         )}
@@ -753,7 +765,7 @@ export function OnboardingDrawer({
     return shell(
       <div className='p-6 sm:p-6'>
         <div className='mb-5 flex items-start gap-3'>
-          <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
+          <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-(--radius-control) bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
             <Loader2 className='h-5 w-5 animate-spin' />
           </div>
           <div>
@@ -823,7 +835,7 @@ export function OnboardingDrawer({
       </div>
 
       {!bizAlreadyAsked && anyDone && (
-        <div className='mb-4 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/[0.03]'>
+        <div className='mb-4 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/3'>
           <div className='mb-2 type-small font-semibold text-gray-800 dark:text-white/90'>
             Quick one - what kind of business is this?
             {guessedBiz && (
@@ -838,7 +850,7 @@ export function OnboardingDrawer({
             onChange={(e) =>
               setFinalBiz((e.target.value || null) as BizType | null)
             }
-            className='h-10 w-full rounded-[10px] border border-gray-200 bg-white px-3 type-small text-gray-700 outline-none transition focus:border-brand-300 focus:ring-3 focus:ring-brand-300/20 dark:border-gray-700 dark:bg-white/[0.03] dark:text-gray-300'
+            className='h-10 w-full rounded-(--radius-control) border border-gray-200 bg-white px-3 type-small text-gray-700 outline-none transition focus:border-brand-300 focus:ring-3 focus:ring-brand-300/20 dark:border-gray-700 dark:bg-white/3 dark:text-gray-300'
           >
             <option value=''>Skip this</option>
             {BIZ_OPTIONS.map((biz) => (

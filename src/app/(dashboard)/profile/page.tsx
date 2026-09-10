@@ -150,7 +150,7 @@ function Card({
   className?: string;
 }) {
   return (
-    <div className={`rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] ${className}`}>
+    <div className={`rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3 ${className}`}>
       {children}
     </div>
   );
@@ -188,7 +188,7 @@ function FormField({
         onBlur={onBlur}
         placeholder={placeholder}
         className={cn(
-          'h-10 w-full rounded-[10px] border bg-transparent px-4 py-2 type-small text-gray-800 shadow-theme-xs focus:outline-hidden focus:ring-3 dark:bg-gray-900 dark:text-white/90',
+          'h-10 w-full rounded-(--radius-control) border bg-transparent px-4 py-2 type-small text-gray-800 shadow-theme-xs focus:outline-hidden focus:ring-3 dark:bg-gray-900 dark:text-white/90',
           error
             ? 'border-error-500 focus:border-error-500 focus:ring-error-500/10'
             : 'border-gray-300 focus:border-brand-300 focus:ring-brand-500/10 dark:border-gray-700',
@@ -332,7 +332,7 @@ function CompletionChart({ score }: { score: number }) {
   return (
     <Card className='p-6'>
       <SectionHeader title='Profile Completion' subtitle='Completed account and workspace fields' />
-      <div className='mx-auto max-w-[320px]'>
+      <div className='mx-auto max-w-80'>
         <ReactApexChart options={options} series={[score]} type='radialBar' height={290} />
       </div>
       <p className='text-center type-small text-gray-500 dark:text-gray-400'>
@@ -355,19 +355,19 @@ function MetaCard({
 
   return (
     <Card className='p-6 lg:p-6'>
-      <div className='flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between'>
-        <div className='flex flex-col items-center gap-6 text-center xl:flex-row xl:text-left'>
+      <div className='flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between'>
+        <div className='flex flex-col items-center gap-6 text-center lg:flex-row lg:text-left'>
           <AvatarUploader me={me} photoUrl={photoUrl} onUploaded={setPhotoUrl} />
           <div>
             <h2 className='type-h4 font-semibold text-gray-800 dark:text-white/90'>{name}</h2>
-            <div className='mt-2 flex flex-col items-center gap-2 type-small text-gray-500 dark:text-gray-400 xl:flex-row'>
+            <div className='mt-2 flex flex-col items-center gap-2 type-small text-gray-500 dark:text-gray-400 lg:flex-row'>
               <span>{me.user.email}</span>
-              <span className='hidden h-3.5 w-px bg-gray-300 dark:bg-gray-700 xl:block' />
+              <span className='hidden h-3.5 w-px bg-gray-300 dark:bg-gray-700 lg:block' />
               <span>{fieldValue(me.user.location)}</span>
             </div>
           </div>
         </div>
-        <span className='inline-flex items-center justify-center gap-2 rounded-full bg-brand-50 px-3 py-1 type-small font-medium text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400'>
+        <span className='inline-flex items-center justify-center gap-2 rounded-full bg-brand-50 px-3 py-1 type-small font-medium text-brand-500 dark:bg-brand-500/12 dark:text-brand-400'>
           <BadgeCheck className='h-4 w-4' />
           {formatRole(me.user.role)}
         </span>
@@ -380,15 +380,15 @@ function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <p className='mb-2 type-caption text-gray-500 dark:text-gray-400'>{label}</p>
-      <p className='break-words type-small font-medium text-gray-800 dark:text-white/90'>{value}</p>
+      <p className='wrap-break-word type-small font-medium text-gray-800 dark:text-white/90'>{value}</p>
     </div>
   );
 }
 
 function OverviewTab({ me }: { me: MeResp }) {
   return (
-    <div className='grid grid-cols-1 gap-6 xl:grid-cols-12'>
-      <div className='space-y-6 xl:col-span-8'>
+    <div className='grid grid-cols-1 gap-6 lg:grid-cols-12'>
+      <div className='space-y-6 lg:col-span-8'>
         <Card className='p-6 lg:p-6'>
           <SectionHeader title='Personal Information' subtitle='Primary account profile fields' />
           <div className='grid grid-cols-1 gap-5 md:grid-cols-2'>
@@ -411,7 +411,7 @@ function OverviewTab({ me }: { me: MeResp }) {
           </div>
         </Card>
       </div>
-      <div className='xl:col-span-4'>
+      <div className='lg:col-span-4'>
         <CompletionChart score={profileScore(me)} />
       </div>
     </div>
@@ -540,15 +540,15 @@ function DetailsTab({ me }: { me: MeResp }) {
 
       {apiErr && <div className='mb-5'><AlertBox>{apiErr}</AlertBox></div>}
 
-      <div className='mb-6 inline-flex rounded-[10px] border border-gray-200 bg-gray-50 p-1 dark:border-gray-800 dark:bg-gray-900'>
+      <div className='mb-6 inline-flex rounded-(--radius-control) border border-gray-200 bg-gray-50 p-1 dark:border-gray-800 dark:bg-gray-900'>
         {(['personal', 'company'] as const).map((item) => (
           <button
             key={item}
             type='button'
             onClick={() => setMode(item)}
-            className={`rounded-[10px] px-4 py-2 type-small font-medium capitalize transition ${
+            className={`rounded-(--radius-control) px-4 py-2 type-small font-medium capitalize transition ${
               mode === item
-                ? 'bg-white text-brand-500 shadow-theme-xs dark:bg-white/[0.05] dark:text-brand-400'
+                ? 'bg-white text-brand-500 shadow-theme-xs dark:bg-white/5 dark:text-brand-400'
                 : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white/90'
             }`}
           >
@@ -611,7 +611,7 @@ function DetailsTab({ me }: { me: MeResp }) {
                   value={otpCode}
                   onChange={(event) => setOtpCode(event.target.value.replace(/\D/g, '').slice(0, 6))}
                   placeholder='000000'
-                  className='mt-4 h-10 max-w-[180px] rounded-[10px] border-gray-300 text-center type-card-title tracking-[0.35em] shadow-theme-xs focus-visible:border-brand-300 focus-visible:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900'
+                  className='mt-4 h-10 max-w-45 rounded-(--radius-control) border-gray-300 text-center type-card-title tracking-[0.35em] shadow-theme-xs focus-visible:border-brand-300 focus-visible:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900'
                 />
                 <div className='mt-4 flex flex-wrap items-center gap-3'>
                   <Button type='button' size='sm' onClick={() => void handleVerifyEmailOtp()} disabled={otpBusy}>
@@ -700,8 +700,8 @@ function DeleteAccountSection() {
       </Card>
 
       {showModal && (
-        <div className='fixed inset-0 z-[10000] flex items-center justify-center bg-gray-400/50 p-4 backdrop-blur-[12px]'>
-          <div className='w-full max-w-[440px] rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-lg dark:border-gray-800 dark:bg-gray-900'>
+        <div className='fixed inset-0 z-10000 flex items-center justify-center bg-gray-400/50 p-4 backdrop-blur-md'>
+          <div className='w-full max-w-110 rounded-2xl border border-gray-200 bg-white p-6 shadow-theme-lg dark:border-gray-800 dark:bg-gray-900'>
             <div className='mb-5 flex items-start justify-between gap-4'>
               <div>
                 <h3 className='type-card-title font-semibold text-gray-800 dark:text-white/90'>Delete your account?</h3>
@@ -790,12 +790,12 @@ function SecurityTab() {
         </div>
         <div className='mb-6 rounded-2xl border border-gray-200 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-900'>
           <div className='flex items-start gap-3'>
-            <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400'>
+            <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-500 dark:bg-brand-500/12 dark:text-brand-400'>
               <LockKeyhole className='h-5 w-5' />
             </div>
             <div>
               <p className='type-small font-semibold text-gray-800 dark:text-white/90'>Password strength: {strength}</p>
-              <div className='mt-3 h-2 w-full max-w-[320px] rounded-full bg-gray-200 dark:bg-gray-800'>
+              <div className='mt-3 h-2 w-full max-w-80 rounded-full bg-gray-200 dark:bg-gray-800'>
                 <div className='h-2 rounded-full bg-brand-500 transition-all' style={{ width: `${strengthPct}%` }} />
               </div>
             </div>
@@ -1123,7 +1123,7 @@ Customer requested action: Yes
               }
               onBlur={() => handleBlur('subject', subject)}
               className={cn(
-                'h-10 w-full rounded-[10px] border bg-transparent px-4 py-2 type-small text-gray-800 shadow-theme-xs focus:outline-hidden focus:ring-3 dark:bg-gray-900 dark:text-white/90',
+                'h-10 w-full rounded-(--radius-control) border bg-transparent px-4 py-2 type-small text-gray-800 shadow-theme-xs focus:outline-hidden focus:ring-3 dark:bg-gray-900 dark:text-white/90',
                 touched.subject && errors.subject
                   ? 'border-error-500 focus:border-error-500 focus:ring-error-500/10'
                   : 'border-gray-300 focus:border-brand-300 focus:ring-brand-500/10 dark:border-gray-700',
@@ -1161,7 +1161,7 @@ Customer requested action: Yes
             onBlur={() => handleBlur('message', message)}
             placeholder='Tell us about your question or request.'
             className={cn(
-              'min-h-[150px] rounded-[10px] shadow-theme-xs dark:bg-gray-900',
+              'min-h-37.5 rounded-(--radius-control) shadow-theme-xs dark:bg-gray-900',
               touched.message && errors.message
                 ? 'border-error-500 focus-visible:border-error-500 focus-visible:ring-error-500/10'
                 : 'border-gray-300 focus-visible:border-brand-300 focus-visible:ring-brand-500/10 dark:border-gray-700',
@@ -1219,7 +1219,7 @@ Customer requested action: Yes
                 <select
                   value={dsarType}
                   onChange={(event) => setDsarType(event.target.value)}
-                  className='h-10 w-full rounded-[10px] border border-gray-300 bg-transparent px-4 py-2 type-small text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90'
+                  className='h-10 w-full rounded-(--radius-control) border border-gray-300 bg-transparent px-4 py-2 type-small text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90'
                 >
                   <option value='' disabled>
                     Select request type
@@ -1239,7 +1239,7 @@ Customer requested action: Yes
                 <select
                   value={dsarChannel}
                   onChange={(event) => setDsarChannel(event.target.value)}
-                  className='h-10 w-full rounded-[10px] border border-gray-300 bg-transparent px-4 py-2 type-small text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90'
+                  className='h-10 w-full rounded-(--radius-control) border border-gray-300 bg-transparent px-4 py-2 type-small text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90'
                 >
                   <option value='' disabled>
                     Select channel
@@ -1261,7 +1261,7 @@ Customer requested action: Yes
                 <select
                   value={identifierType}
                   onChange={(event) => setIdentifierType(event.target.value)}
-                  className='h-10 w-full rounded-[10px] border border-gray-300 bg-transparent px-4 py-2 type-small text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90'
+                  className='h-10 w-full rounded-(--radius-control) border border-gray-300 bg-transparent px-4 py-2 type-small text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90'
                 >
                   <option value='' disabled>
                     Select identifier type
@@ -1292,11 +1292,11 @@ Customer requested action: Yes
                 value={dsarNotes}
                 onChange={(event) => setDsarNotes(event.target.value)}
                 placeholder='Any extra context for our team (optional)'
-                className='min-h-[110px] rounded-[10px] border-gray-300 shadow-theme-xs focus-visible:border-brand-300 focus-visible:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900'
+                className='min-h-27.5 rounded-(--radius-control) border-gray-300 shadow-theme-xs focus-visible:border-brand-300 focus-visible:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900'
               />
             </label>
 
-            <label className='mt-5 flex cursor-pointer items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/[0.03]'>
+            <label className='mt-5 flex cursor-pointer items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-white/3'>
               <input
                 type='checkbox'
                 checked={dsarConfirmed}
@@ -1361,11 +1361,11 @@ Customer requested action: Yes
 function LoadingProfile() {
   return (
     <div className='mx-auto max-w-screen-2xl p-4 md:p-6'>
-      <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6'>
-        <div className='mb-5 h-6 w-24 animate-pulse rounded-[10px] bg-gray-100 dark:bg-white/[0.05] lg:mb-7' />
+      <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3 lg:p-6'>
+        <div className='mb-5 h-6 w-24 animate-pulse rounded-(--radius-control) bg-gray-100 dark:bg-white/5 lg:mb-7' />
         <div className='space-y-6'>
-          <div className='h-[148px] animate-pulse rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/[0.05]' />
-          <div className='h-[420px] animate-pulse rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/[0.05]' />
+          <div className='h-37 animate-pulse rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/5' />
+          <div className='h-105 animate-pulse rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/5' />
         </div>
       </div>
     </div>
@@ -1422,12 +1422,12 @@ function ProfileContent() {
 
   return (
     <div className='mx-auto max-w-screen-2xl p-4 md:p-6'>
-      <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6'>
+      <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3 lg:p-6'>
         <div className='mb-5 flex items-center gap-3 lg:mb-7'>
           <button
             type='button'
             onClick={() => router.push('/settings')}
-            className='flex h-9 w-9 items-center justify-center rounded-[10px] border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400 dark:hover:bg-white/[0.05]'
+            className='flex h-9 w-9 items-center justify-center rounded-(--radius-control) border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 dark:border-gray-800 dark:bg-white/3 dark:text-gray-400 dark:hover:bg-white/5'
             aria-label='Back to settings'
           >
             <ArrowLeft className='h-4.5 w-4.5' />
@@ -1445,8 +1445,8 @@ function ProfileContent() {
 
         {!me && !fetchErr ? (
           <div className='space-y-6'>
-            <div className='h-[148px] animate-pulse rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/[0.05]' />
-            <div className='h-[420px] animate-pulse rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/[0.05]' />
+            <div className='h-37 animate-pulse rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/5' />
+            <div className='h-105 animate-pulse rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/5' />
           </div>
         ) : me ? (
           <div className='space-y-6'>
@@ -1458,7 +1458,7 @@ function ProfileContent() {
                   <button
                     type='button'
                     onClick={() => setProfileMenuOpen((p) => !p)}
-                    className='mb-3 flex h-10 w-full items-center justify-between rounded-[10px] border border-gray-200 bg-white px-4 type-small font-medium text-gray-700 shadow-theme-xs transition hover:bg-gray-50 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400 dark:hover:bg-white/[0.03]'
+                    className='mb-3 flex h-10 w-full items-center justify-between rounded-(--radius-control) border border-gray-200 bg-white px-4 type-small font-medium text-gray-700 shadow-theme-xs transition hover:bg-gray-50 dark:border-gray-800 dark:bg-white/3 dark:text-gray-400 dark:hover:bg-white/3'
                   >
                     <span>Profile Menu</span>
                     <Menu size={18} />
@@ -1466,7 +1466,7 @@ function ProfileContent() {
                 )}
 
                 {(!isMobile || profileMenuOpen) && (
-                  <div className='rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]'>
+                  <div className='rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3'>
                     <div className='border-b border-gray-100 px-5 py-4 dark:border-gray-800'>
                       <h3 className='type-card-title font-semibold text-gray-800 dark:text-white/90'>
                         Profile
@@ -1489,16 +1489,16 @@ function ProfileContent() {
                               setProfileMenuOpen(false);
                             }}
                             className={cn(
-                              'flex w-full items-center justify-between gap-3 rounded-[10px] px-3 py-3 text-left transition',
+                              'flex w-full items-center justify-between gap-3 rounded-(--radius-control) px-3 py-3 text-left transition',
                               active
-                                ? 'bg-brand-50 dark:bg-brand-500/[0.12]'
-                                : 'hover:bg-gray-50 dark:hover:bg-white/[0.03]',
+                                ? 'bg-brand-50 dark:bg-brand-500/12'
+                                : 'hover:bg-gray-50 dark:hover:bg-white/3',
                             )}
                           >
                             <span className='flex items-center gap-3'>
                               <span
                                 className={cn(
-                                  'flex h-9 w-9 items-center justify-center rounded-[10px]',
+                                  'flex h-9 w-9 items-center justify-center rounded-(--radius-control)',
                                   active
                                     ? 'bg-white text-brand-500 shadow-theme-xs dark:bg-white/10 dark:text-brand-400'
                                     : 'text-gray-500 dark:text-gray-400',

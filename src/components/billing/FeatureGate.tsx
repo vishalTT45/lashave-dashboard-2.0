@@ -61,7 +61,7 @@ export function FeatureGate({
 
   if (loading) {
     return (
-      <div className='rounded-2xl border border-gray-200 bg-white p-8 text-center type-small text-gray-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400'>
+      <div className='rounded-2xl border border-gray-200 bg-white p-8 text-center type-small text-gray-500 dark:border-gray-800 dark:bg-white/3 dark:text-gray-400'>
         Checking plan access…
       </div>
     );
@@ -117,7 +117,7 @@ export function FeatureLockCard({
   badge: string;
 }) {
   return (
-    <Card className='mx-auto max-w-2xl border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]'>
+    <Card className='mx-auto max-w-2xl border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3'>
       <CardHeader className='items-center text-center'>
         <div className='mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
           <LockKeyhole className='h-6 w-6' />
@@ -126,7 +126,7 @@ export function FeatureLockCard({
         <CardDescription className='max-w-lg'>{description}</CardDescription>
       </CardHeader>
       <CardContent className='flex flex-col items-center gap-3 pb-8'>
-        <span className='rounded-full border border-gray-200 bg-gray-50 px-3 py-1 type-caption font-medium text-gray-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400'>
+        <span className='rounded-full border border-gray-200 bg-gray-50 px-3 py-1 type-caption font-medium text-gray-500 dark:border-gray-800 dark:bg-white/3 dark:text-gray-400'>
           Requires {badge}
         </span>
         <Button asChild>

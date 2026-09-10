@@ -34,7 +34,7 @@ export function TablePagination({
   if (totalItems <= pageSize) return null;
 
   return (
-    <div className='flex flex-col gap-3 border-t border-gray-100 px-5 py-4 dark:border-white/[0.05] sm:flex-row sm:items-center sm:justify-between'>
+    <div className='flex flex-col gap-3 border-t border-gray-100 px-5 py-4 dark:border-white/5 sm:flex-row sm:items-center sm:justify-between'>
       <p className='type-small text-gray-500 dark:text-gray-400'>
         Showing {(currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, totalItems)} of {totalItems}
       </p>
@@ -43,7 +43,7 @@ export function TablePagination({
           type='button'
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className='mr-2.5 flex h-10 items-center justify-center gap-2 rounded-[10px] border border-gray-300 bg-white px-3.5 py-2 type-small text-gray-700 shadow-theme-xs hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]'
+          className='mr-2.5 flex h-10 items-center justify-center gap-2 rounded-(--radius-control) border border-gray-300 bg-white px-3.5 py-2 type-small text-gray-700 shadow-theme-xs hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/3'
         >
           <ChevronLeft className='h-4 w-4' />
           Previous
@@ -54,10 +54,10 @@ export function TablePagination({
               key={item}
               type='button'
               onClick={() => onPageChange(item)}
-              className={`flex h-10 w-10 items-center justify-center rounded-[10px] type-small font-medium ${
+              className={`flex h-10 w-10 items-center justify-center rounded-(--radius-control) type-small font-medium ${
                 currentPage === item
                   ? 'bg-brand-500 text-white'
-                  : 'text-gray-700 hover:bg-blue-500/[0.08] hover:text-brand-500 dark:text-gray-400 dark:hover:text-brand-500'
+                  : 'text-gray-700 hover:bg-blue-500/8 hover:text-brand-500 dark:text-gray-400 dark:hover:text-brand-500'
               }`}
             >
               {item}
@@ -68,7 +68,7 @@ export function TablePagination({
           type='button'
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className='ml-2.5 flex h-10 items-center justify-center gap-2 rounded-[10px] border border-gray-300 bg-white px-3.5 py-2 type-small text-gray-700 shadow-theme-xs hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]'
+          className='ml-2.5 flex h-10 items-center justify-center gap-2 rounded-(--radius-control) border border-gray-300 bg-white px-3.5 py-2 type-small text-gray-700 shadow-theme-xs hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/3'
         >
           Next
           <ChevronRight className='h-4 w-4' />

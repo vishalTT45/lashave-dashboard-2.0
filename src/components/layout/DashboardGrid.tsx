@@ -29,8 +29,10 @@
 
 import type { CSSProperties, ReactNode } from "react";
 
-/* shared gap used in every grid */
-const GAP = "0.75rem";
+/* shared gap used in every grid — sourced from the foundation's
+   --layout-grid-gap token (globals.css) so this file and the generic
+   primitives in primitives.tsx never drift apart. */
+const GAP = "var(--layout-grid-gap)";
 
 /* ── shared prop shape (no polymorphic `as` — that caused the error) ── */
 interface DivProps {

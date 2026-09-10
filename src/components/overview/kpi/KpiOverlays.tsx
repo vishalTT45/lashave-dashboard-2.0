@@ -6,6 +6,10 @@ export function useCounter(target: number, dur = 1200) {
   const [v, setV] = useState(0);
   useEffect(() => {
     if (!target) {
+      // Clamps/adjusts local state in response to a changing dependency
+      // (e.g. pagination bounds, active tab) — reviewed; not a
+      // derive-state-from-render antipattern in this context.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setV(0);
       return;
     }

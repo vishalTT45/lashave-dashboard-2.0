@@ -85,8 +85,23 @@ export function AppSidebar() {
 
   return (
     <aside
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 left-0 z-50 h-screen border-r border-[var(--app-primary)] bg-[var(--app-primary)] px-5 text-[var(--app-sidebar-text)] transition-all duration-300 ease-in-out
-        ${isMobileOpen ? 'w-[290px]' : isExpanded || isHovered ? 'w-[240px] xl:w-[290px]' : 'w-[90px]'}
+      // Position: `fixed` + full-viewport `left-0` on mobile (the
+      // classic slide-in-overlay pattern, using -translate-x-full to
+      // hide/show it). At desktop (lg+) it switches to `sticky` and is
+      // simply the first column of the shell's CSS Grid — no `left`
+      // calc needed at all, since the grid places it correctly and
+      // keeps it in sync with the content column natively. This
+      // replaces an earlier version that computed `left` via
+      // `calc((100vw - shell-max) / 2)` to align with the centered
+      // shell: that worked, but it meant three independent systems
+      // (the sidebar's `left`, the content's `margin-left`, and the
+      // content's `width`) were all separately trying to agree on the
+      // same layout — exactly the kind of drift that caused the
+      // gap/scroll/transition-jank bugs. The grid has one source of
+      // truth instead: whatever is in its first column IS the
+      // sidebar's position, always, at any viewport width or zoom.
+      className={`fixed lg:sticky mt-16 flex flex-col lg:mt-0 top-0 left-0 lg:left-auto z-50 h-screen border-r border-(--app-primary) bg-(--app-primary) px-5 text-(--app-sidebar-text) transition-[width,transform] duration-300 ease-in-out
+        ${isMobileOpen ? 'w-(--sidebar-width-mobile)' : isExpanded || isHovered ? 'w-(--sidebar-width-expanded)' : 'w-(--sidebar-width-collapsed)'}
         ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0`}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
@@ -103,7 +118,7 @@ export function AppSidebar() {
             height={showLabel ? 36 : 32}
           />
           {showLabel && (
-            <span className='type-card-title font-semibold tracking-wide text-[var(--app-sidebar-text)]'>
+            <span className='type-card-title font-semibold tracking-wide text-(--app-sidebar-text)'>
               LASHVAE AI
             </span>
           )}

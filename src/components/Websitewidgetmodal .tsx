@@ -7,6 +7,22 @@ type GuideType = 'builder' | 'custom' | 'unsure';
 type BuilderPlatform = 'wordpress' | 'shopify' | 'webflow' | 'wix' | 'squarespace' | 'other';
 type CodeFramework = 'html' | 'react' | 'nextjs' | 'wordpress' | 'shopify' | 'webflow' | 'angular' | 'other';
 
+/* The API sometimes returns widget fields nested under `config`, and
+   sometimes flat on the widget object itself — the component reads
+   both shapes (see `const config = widget?.config || widget` below),
+   so both are declared optional here. */
+type WebsiteWidgetConfig = {
+  is_active?: boolean;
+  widget_key?: string;
+};
+
+type WebsiteWidgetData = WebsiteWidgetConfig & {
+  config?: WebsiteWidgetConfig;
+  embed_code?: string;
+  script?: string;
+  embedCode?: string;
+};
+
 /* ─────────────────────────────────────────────
    Main Modal
    ───────────────────────────────────────────── */
@@ -23,7 +39,7 @@ export default function WebsiteWidgetModal({
   isDark: boolean;
   loading: boolean;
   saving: boolean;
-  widget: any;
+  widget: WebsiteWidgetData | null;
   onClose: () => void;
   onEnable: () => void;
   onDisable: () => void | Promise<void>;
@@ -953,7 +969,7 @@ Let me know once it's live. Thanks!`;
               Send this to your developer
             </div>
             <div style={{ fontSize: 12, color: textSecondary, marginTop: 2 }}>
-              Don't know how your website is built? Copy this message and send it to whoever manages your site.
+              Don&apos;t know how your website is built? Copy this message and send it to whoever manages your site.
             </div>
           </div>
         </div>

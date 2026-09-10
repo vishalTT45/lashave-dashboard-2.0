@@ -13,7 +13,6 @@ import type { ApexOptions } from 'apexcharts';
 import {
   AlertTriangle,
   Check,
-  ChevronDown,
   Clock,
   Copy,
   Download,
@@ -30,6 +29,7 @@ import {
   Zap,
 } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import Link from 'next/link';
 import React, {
   useCallback,
@@ -93,11 +93,18 @@ type LeadItem = {
     mood?: Mood;
     urgency?: string;
     objections?: string[];
+    last_text?: string;
+    last_message?: string;
+    latest_message?: string;
   };
+  last_text?: string;
+  last_message?: string;
+  latest_message?: string;
+  text_preview?: string;
   updated_at: string | null;
 };
 
-function getLeadLastText(lead: any, fallback = 'No message preview') {
+function getLeadLastText(lead: LeadItem, fallback = 'No message preview') {
   return (
     lead?.meta?.last_text ||
     lead?.meta?.last_message ||
@@ -130,6 +137,16 @@ const PALETTE = {
 
 const AXIS_LABEL = { light: '#667085', dark: '#98A2B3' };
 const GRID_LINE = { light: '#F2F4F7', dark: '#1D2939' };
+
+const KnownChannels = [
+  'instagram',
+  'facebook',
+  'whatsapp',
+  'telegram',
+  'youtube',
+  'website',
+  'google',
+] as const;
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 const REPORT_ENDPOINT = '/admin/stats/report/generate';
@@ -165,32 +182,39 @@ const PIPE_CFG: Record<string, { color: string; bg: string }> = {
 const CHANNEL_CFG: Record<string, { color: string; logo: React.ReactNode }> = {
   instagram: {
     color: '#E4405F',
-    logo: <img src='/instagram.svg' width={16} height={16} alt='Instagram' />,
+    logo: (
+      <Image src='/instagram.svg' width={16} height={16} alt='Instagram' />
+    ),
   },
   facebook: {
     color: '#1877F2',
-    logo: <img src='/facebook.svg' width={16} height={16} alt='Facebook' />,
+    logo: <Image src='/facebook.svg' width={16} height={16} alt='Facebook' />,
   },
   whatsapp: {
     color: '#25D366',
-    logo: <img src='/whatsapp.svg' width={16} height={16} alt='WhatsApp' />,
+    logo: <Image src='/whatsapp.svg' width={16} height={16} alt='WhatsApp' />,
   },
   telegram: {
     color: '#229ED9',
-    logo: <img src='/telegram.svg' width={16} height={16} alt='Telegram' />,
+    logo: <Image src='/telegram.svg' width={16} height={16} alt='Telegram' />,
   },
   youtube: {
     color: '#FF0000',
-    logo: <img src='/youtube.svg' width={16} height={16} alt='YouTube' />,
+    logo: <Image src='/youtube.svg' width={16} height={16} alt='YouTube' />,
   },
   google: {
     color: '#4285F4',
-    logo: <img src='/google-map.svg' width={16} height={16} alt='Google' />,
+    logo: <Image src='/google-map.svg' width={16} height={16} alt='Google' />,
   },
   website: {
     color: '#465FFF',
     logo: (
-      <img src='/brand-logo/website.png' width={16} height={16} alt='Google' />
+      <Image
+        src='/brand-logo/website.png'
+        width={16}
+        height={16}
+        alt='Google'
+      />
     ),
   },
 };
@@ -248,7 +272,21 @@ const SEGMENT_CFG: Record<
 };
 
 // ─── Adapters ────────────────────────────────────────────────────────────────
-function adaptOverview(raw: any) {
+type RawOverviewStats = {
+  total_conversations?: number;
+  conversations?: number;
+  total_messages?: number;
+  messages?: number;
+  total_leads?: number;
+  leads?: number;
+  total_errors?: number;
+  errors?: number;
+  total_handoffs?: number;
+  handoffs?: number;
+  avg_latency_ms?: number;
+};
+
+function adaptOverview(raw: RawOverviewStats) {
   return {
     conversations: raw.total_conversations ?? raw.conversations ?? 0,
     messages: raw.total_messages ?? raw.messages ?? 0,
@@ -259,7 +297,16 @@ function adaptOverview(raw: any) {
   };
 }
 
-function adaptReturning(raw: any) {
+type RawReturningStats = {
+  total_returning?: number;
+  total_returning_users?: number;
+  avg_returns?: number;
+  avg_returns_per_user?: number;
+  return_rate?: number | null;
+  return_rate_pct?: number;
+};
+
+function adaptReturning(raw: RawReturningStats) {
   return {
     total_returning: raw.total_returning ?? raw.total_returning_users ?? 0,
     avg_returns: Math.round(raw.avg_returns ?? raw.avg_returns_per_user ?? 0),
@@ -270,11 +317,17 @@ function adaptReturning(raw: any) {
   };
 }
 
-function adaptTopics(raw: any): TopicItem[] {
+type RawTopicsResponse =
+  | TopicItem[]
+  | { primary_breakdown?: TopicItem[] }
+  | null
+  | undefined;
+
+function adaptTopics(raw: RawTopicsResponse): TopicItem[] {
   if (Array.isArray(raw))
-    return raw.map((r: any) => ({ topic: r.topic, count: r.count }));
+    return raw.map((r) => ({ topic: r.topic, count: r.count }));
   if (Array.isArray(raw?.primary_breakdown)) {
-    return raw.primary_breakdown.map((r: any) => ({
+    return raw.primary_breakdown.map((r) => ({
       topic: r.topic,
       count: r.count,
     }));
@@ -282,7 +335,17 @@ function adaptTopics(raw: any): TopicItem[] {
   return [];
 }
 
-function adaptDepth(raw: any): DepthItem[] {
+type RawDepthResponse =
+  | DepthItem[]
+  | {
+      depth_distribution?: Record<string, number>;
+      avg_intent_detected_at_message?: number | null;
+      avg_lead_created_at_message?: number | null;
+    }
+  | null
+  | undefined;
+
+function adaptDepth(raw: RawDepthResponse): DepthItem[] {
   if (Array.isArray(raw)) return raw;
   const dist = raw?.depth_distribution ?? {};
   const avgIntent = raw?.avg_intent_detected_at_message ?? null;
@@ -315,6 +378,28 @@ function adaptDepth(raw: any): DepthItem[] {
   ];
 }
 
+type RawPipelineResponse = {
+  by_status?: { status: string; count?: number }[];
+  pipeline?: Record<string, number>;
+  [key: string]: unknown;
+};
+
+type RawTimeseriesRow = {
+  bucket?: string;
+  t?: string;
+  messages?: number;
+  conversations?: number;
+  leads?: number;
+  errors?: number;
+  v?: number;
+};
+
+type RawTimeseriesResponse =
+  | RawTimeseriesRow[]
+  | { points?: { t: string; v: number }[] }
+  | null
+  | undefined;
+
 async function fetchTimeseries(
   auth: boolean,
   rangeQuery = '',
@@ -323,18 +408,32 @@ async function fetchTimeseries(
   const opts = { auth };
   const extra = rangeQuery ? `&${rangeQuery}` : '';
   const [msgs, convs, leads, errs] = await Promise.allSettled([
-    apiFetch<any>(`${base}?metric=messages&interval=hour${extra}`, opts),
-    apiFetch<any>(`${base}?metric=conversations&interval=hour${extra}`, opts),
-    apiFetch<any>(`${base}?metric=leads&interval=hour${extra}`, opts),
-    apiFetch<any>(`${base}?metric=errors&interval=hour${extra}`, opts),
+    apiFetch<RawTimeseriesResponse>(
+      `${base}?metric=messages&interval=hour${extra}`,
+      opts,
+    ),
+    apiFetch<RawTimeseriesResponse>(
+      `${base}?metric=conversations&interval=hour${extra}`,
+      opts,
+    ),
+    apiFetch<RawTimeseriesResponse>(
+      `${base}?metric=leads&interval=hour${extra}`,
+      opts,
+    ),
+    apiFetch<RawTimeseriesResponse>(
+      `${base}?metric=errors&interval=hour${extra}`,
+      opts,
+    ),
   ]);
 
-  const pts = (res: PromiseSettledResult<any>): { t: string; v: number }[] => {
+  const pts = (
+    res: PromiseSettledResult<RawTimeseriesResponse>,
+  ): { t: string; v: number }[] => {
     if (res.status !== 'fulfilled') return [];
     const val = res.value;
     if (Array.isArray(val)) {
-      return val.map((p: any) => ({
-        t: p.bucket ?? p.t,
+      return val.map((p) => ({
+        t: p.bucket ?? p.t ?? '',
         v: p.messages ?? p.conversations ?? p.leads ?? p.errors ?? p.v ?? 0,
       }));
     }
@@ -405,7 +504,7 @@ const getSegment = (lead: LeadItem): Segment => {
 };
 
 const CARD =
-  'rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]';
+  'rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3';
 
 function ChartCard({
   title,
@@ -432,7 +531,6 @@ function ChartCard({
 }
 
 // ─── Toolbar controls ────────────────────────────────────────────────────────
-type SortOption = 'name_asc' | 'name_desc' | 'updated';
 
 // type CustomerSortOption = 'name_asc' | 'name_desc' | 'score' | 'updated';
 
@@ -471,7 +569,7 @@ function CustomerTabControls({
         <button
           type='button'
           onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
-          className='flex items-center gap-1.5 whitespace-nowrap rounded-[10px] border border-gray-200 bg-white px-3.5 py-2 type-caption font-semibold text-gray-600 shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300'
+          className='flex items-center gap-1.5 whitespace-nowrap rounded-(--radius-control) border border-gray-200 bg-white px-3.5 py-2 type-caption font-semibold text-gray-600 shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300'
         >
           <span>Sort: {sortLabel}</span>
 
@@ -486,7 +584,7 @@ function CustomerTabControls({
         </button>
 
         {sortDropdownOpen && (
-          <div className='absolute right-0 top-[calc(100%+6px)] z-30 min-w-[160px] overflow-hidden rounded-[10px] border border-gray-200 bg-white shadow-theme-lg dark:border-gray-700 dark:bg-gray-900'>
+          <div className='absolute right-0 top-[calc(100%+6px)] z-30 min-w-40 overflow-hidden rounded-(--radius-control) border border-gray-200 bg-white shadow-theme-lg dark:border-gray-700 dark:bg-gray-900'>
             {sortOptions.map((option) => {
               const active = sortOption === option.value;
 
@@ -501,8 +599,8 @@ function CustomerTabControls({
                   className={cn(
                     'flex w-full items-center justify-between px-3.5 py-2 text-left type-caption font-medium transition',
                     active
-                      ? 'bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400'
-                      : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/[0.03]',
+                      ? 'bg-brand-50 text-brand-500 dark:bg-brand-500/12 dark:text-brand-400'
+                      : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/3',
                   )}
                 >
                   <span>{option.label}</span>
@@ -532,8 +630,8 @@ function WeeklyReportButton() {
     try {
       await apiFetch(REPORT_ENDPOINT, { method: 'POST', auth: true });
       setReportMsg('Report queued — check your email shortly');
-    } catch (e: any) {
-      const msg = e?.message || '';
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : '';
       if (msg.includes('404')) setReportMsg(`404 — endpoint not found`);
       else setReportMsg(msg || 'Failed to generate report');
     } finally {
@@ -548,7 +646,7 @@ function WeeklyReportButton() {
         {reporting ? 'Generating…' : 'Weekly Report'}
       </Button>
       {reportMsg && (
-        <div className='max-w-[220px] text-right type-caption text-gray-500 dark:text-gray-400'>
+        <div className='max-w-55 text-right type-caption text-gray-500 dark:text-gray-400'>
           {reportMsg}
         </div>
       )}
@@ -860,7 +958,7 @@ function MetricCard({
 }) {
   const toneClass: Record<string, string> = {
     brand:
-      'bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400',
+      'bg-brand-50 text-brand-500 dark:bg-brand-500/12 dark:text-brand-400',
     success:
       'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500',
     warning:
@@ -929,7 +1027,7 @@ function CustomerTableRow({
   return (
     <tr
       onClick={onClick}
-      className='cursor-pointer transition hover:bg-gray-50 dark:hover:bg-white/[0.02]'
+      className='cursor-pointer transition hover:bg-gray-50 dark:hover:bg-white/2'
     >
       <td className='px-5 py-3 sm:px-6'>
         <div className='flex items-center gap-3'>
@@ -954,16 +1052,16 @@ function CustomerTableRow({
             </div>
           )}
           <div className='min-w-0'>
-            <span className='group relative block max-w-[220px] type-small font-medium text-gray-800 dark:text-white/90'>
+            <span className='group relative block max-w-55 type-small font-medium text-gray-800 dark:text-white/90'>
               <span className='block truncate'>{label}</span>
-              <span className='pointer-events-none absolute left-0 top-full z-50 mt-1 hidden max-w-[280px] group-hover:block'>
-                <span className='absolute -top-1 left-3 h-2 w-2 rotate-45 rounded-[2px] bg-gray-900' />
-                <span className='relative block rounded-[10px] bg-gray-900 px-3 py-1.5 type-caption font-medium text-white shadow-lg'>
+              <span className='pointer-events-none absolute left-0 top-full z-50 mt-1 hidden max-w-70 group-hover:block'>
+                <span className='absolute -top-1 left-3 h-2 w-2 rotate-45 rounded-xs bg-gray-900' />
+                <span className='relative block rounded-(--radius-control) bg-gray-900 px-3 py-1.5 type-caption font-medium text-white shadow-lg'>
                   {label}
                 </span>
               </span>
             </span>
-            <span className='mt-1 block max-w-[260px] truncate type-caption text-gray-500 dark:text-gray-400'>
+            <span className='mt-1 block max-w-65 truncate type-caption text-gray-500 dark:text-gray-400'>
               {preview}
             </span>
           </div>
@@ -984,7 +1082,7 @@ function CustomerTableRow({
       </td>
 
       <td className='px-6 py-3 type-small text-gray-500 dark:text-gray-400'>
-        <span className='block max-w-[200px] truncate'>{email || '-'}</span>
+        <span className='block max-w-50 truncate'>{email || '-'}</span>
       </td>
 
       <td className='px-6 py-3 type-small text-gray-500 dark:text-gray-400'>
@@ -1007,7 +1105,7 @@ function CustomerTableRow({
         <Link
           href={conversationHref}
           onClick={(event) => event.stopPropagation()}
-          className='inline-flex h-8 items-center gap-2 whitespace-nowrap rounded-[10px] bg-brand-500 px-3 type-small font-medium text-white shadow-theme-xs hover:bg-brand-600'
+          className='inline-flex h-8 items-center gap-2 whitespace-nowrap rounded-(--radius-control) bg-brand-500 px-3 type-small font-medium text-white shadow-theme-xs hover:bg-brand-600'
         >
           <Eye size={14} />
           View conversation
@@ -1125,8 +1223,8 @@ function CustomerModal({
   };
 
   return (
-    <Modal isOpen onClose={onClose} className='m-4 max-w-[700px]'>
-      <div className='no-scrollbar relative flex max-h-[85vh] w-full flex-col overflow-hidden rounded-[20px] bg-white dark:bg-gray-900'>
+    <Modal isOpen onClose={onClose} className='m-4 max-w-175'>
+      <div className='no-scrollbar relative flex max-h-[85vh] w-full flex-col overflow-hidden rounded-(--radius-panel) bg-white dark:bg-gray-900'>
         {/* Header */}
         <div className='flex flex-col items-center gap-4 border-b border-gray-100 px-6 pb-6 pr-14 pt-8 dark:border-gray-800 sm:flex-row sm:items-center sm:text-left'>
           {profilePic ? (
@@ -1194,7 +1292,7 @@ function CustomerModal({
                   className='shrink-0 text-gray-400 dark:text-gray-500'
                 />
 
-                <span className='max-w-[210px] truncate type-caption text-gray-500 dark:text-gray-400'>
+                <span className='max-w-52.5 truncate type-caption text-gray-500 dark:text-gray-400'>
                   {emails[0] || 'No email'}
                 </span>
 
@@ -1214,7 +1312,7 @@ function CustomerModal({
               </div>
 
               <div className='flex min-w-0 items-center gap-1.5'>
-                <span className='max-w-[180px] truncate type-caption text-gray-500 dark:text-gray-400'>
+                <span className='max-w-45 truncate type-caption text-gray-500 dark:text-gray-400'>
                   {phones[0] || 'No phone'}
                 </span>
 
@@ -1250,7 +1348,7 @@ function CustomerModal({
         {/* Scrollable body */}
         <div className='custom-scrollbar flex-1 overflow-y-auto px-6 py-6'>
           {lastText && (
-            <div className='mb-6 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/[0.03]'>
+            <div className='mb-6 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/3'>
               <p className='mb-1 type-caption text-gray-500 dark:text-gray-400'>
                 Last message
               </p>
@@ -1433,159 +1531,6 @@ function CustomerModal({
   );
 }
 
-function ChannelDropdown({
-  channels,
-  selectedChannels,
-  setSelectedChannels,
-}: {
-  channels: string[];
-  selectedChannels: string[];
-  setSelectedChannels: (channels: string[]) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleOutsideClick);
-
-    return () => {
-      document.removeEventListener('mousedown', handleOutsideClick);
-    };
-  }, [open]);
-
-  const availableChannels = channels.length
-    ? channels
-    : ['instagram', 'facebook', 'whatsapp', 'telegram', 'youtube'];
-
-  const allSelected =
-    availableChannels.length > 0 &&
-    availableChannels.every((channel) => selectedChannels.includes(channel));
-
-  const buttonLabel =
-    selectedChannels.length === 0
-      ? 'All Channels'
-      : selectedChannels.length === 1
-        ? selectedChannels[0].charAt(0).toUpperCase() +
-          selectedChannels[0].slice(1)
-        : `${selectedChannels.length} Channels`;
-
-  const toggleChannel = (channel: string) => {
-    setSelectedChannels(
-      selectedChannels.includes(channel)
-        ? selectedChannels.filter((item) => item !== channel)
-        : [...selectedChannels, channel],
-    );
-  };
-
-  const toggleAll = () => {
-    setSelectedChannels(allSelected ? [] : availableChannels);
-  };
-
-  return (
-    <div ref={dropdownRef} className='relative min-w-[180px]'>
-      <button
-        type='button'
-        onClick={() => setOpen((current) => !current)}
-        className='flex w-full items-center gap-2 rounded-[10px] border border-gray-200 bg-white px-3.5 py-2 text-left type-caption font-semibold text-gray-700 shadow-theme-xs dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300'
-      >
-        {selectedChannels.length === 1 ? (
-          CHANNEL_CFG[selectedChannels[0]]?.logo || (
-            <Globe size={14} className='text-gray-400 dark:text-gray-500' />
-          )
-        ) : (
-          <Globe size={14} className='text-gray-400 dark:text-gray-500' />
-        )}
-
-        <span className='truncate'>{buttonLabel}</span>
-
-        <ChevronDown
-          size={14}
-          className={cn(
-            'ml-auto shrink-0 text-gray-400 transition-transform dark:text-gray-500',
-            open && 'rotate-180',
-          )}
-        />
-      </button>
-
-      {open && (
-        <div className='absolute inset-x-0 top-[calc(100%+6px)] z-30 overflow-hidden rounded-[10px] border border-gray-200 bg-white p-1 shadow-theme-lg dark:border-gray-700 dark:bg-gray-900'>
-          <button
-            type='button'
-            onClick={toggleAll}
-            className='flex w-full items-center gap-2 rounded-[8px] px-3 py-2 text-left type-caption font-medium text-gray-600 transition hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/[0.03]'
-          >
-            <span
-              className={cn(
-                'flex h-4 w-4 shrink-0 items-center justify-center rounded border',
-                allSelected
-                  ? 'border-brand-500 bg-brand-500 text-white'
-                  : 'border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-900',
-              )}
-            >
-              {allSelected && <Check size={11} strokeWidth={3} />}
-            </span>
-
-            <Globe size={15} className='text-gray-400 dark:text-gray-500' />
-
-            <span>All Channels</span>
-          </button>
-
-          <div className='my-1 border-t border-gray-100 dark:border-gray-800' />
-
-          {availableChannels.map((channel) => {
-            const selected = selectedChannels.includes(channel);
-            const cfg = CHANNEL_CFG[channel];
-
-            return (
-              <button
-                key={channel}
-                type='button'
-                onClick={() => toggleChannel(channel)}
-                className={cn(
-                  'flex w-full items-center gap-2 rounded-[8px] px-3 py-2 text-left type-caption font-medium transition',
-                  selected
-                    ? 'bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400'
-                    : 'text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/[0.03]',
-                )}
-              >
-                <span
-                  className={cn(
-                    'flex h-4 w-4 shrink-0 items-center justify-center rounded border',
-                    selected
-                      ? 'border-brand-500 bg-brand-500 text-white'
-                      : 'border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-900',
-                  )}
-                >
-                  {selected && <Check size={11} strokeWidth={3} />}
-                </span>
-
-                {cfg?.logo || (
-                  <Globe
-                    size={15}
-                    className='text-gray-400 dark:text-gray-500'
-                  />
-                )}
-
-                <span className='capitalize'>{channel}</span>
-              </button>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ─── Customers Tab
 // type CustomerSortOption =
@@ -1647,7 +1592,6 @@ function CustomersTab({
   const contactFilterRef = useRef<HTMLDivElement>(null);
 
   const LIMIT = 30;
-  const now = Date.now();
   const ACTIVE_DAYS = 7;
   const TRENDING_SCORE = 7;
 
@@ -1667,10 +1611,10 @@ function CustomersTab({
     (lead: LeadItem) =>
       Boolean(
         lead.updated_at &&
-        (now - new Date(lead.updated_at).getTime()) / (1000 * 60 * 60 * 24) <=
+        (Date.now() - new Date(lead.updated_at).getTime()) / (1000 * 60 * 60 * 24) <=
           ACTIVE_DAYS,
       ),
-    [now],
+    [],
   );
 
   const isDormantLead = useCallback(
@@ -1746,18 +1690,15 @@ function CustomersTab({
   );
 
   useEffect(() => {
+    // Fetch on mount and again whenever the debounced search query changes
+    // (`load` is recreated when `debQ` changes). This is a standard
+    // fetch-on-dependency-change effect; `load`'s synchronous
+    // `setLoading(true)` at the top of an async fetch is the correct place
+    // for a loading flag, not a derive-state-from-render antipattern, so
+    // the newer set-state-in-effect check is a false positive here.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load(0);
   }, [load]);
-
-  const KnownChannels = [
-    'instagram',
-    'facebook',
-    'whatsapp',
-    'telegram',
-    'youtube',
-    'website',
-    'google',
-  ] as const;
 
   const channels = useMemo<string[]>(() => {
     const leadChannels = leads
@@ -1911,8 +1852,8 @@ function CustomersTab({
         />
       )}
 
-      <div className='min-w-0 max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]'>
-        <div className='flex flex-col gap-2 border-b border-gray-100 px-5 py-5 dark:border-white/[0.05] sm:flex-row sm:items-center sm:justify-between sm:px-6'>
+      <div className='min-w-0 max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3'>
+        <div className='flex flex-col gap-2 border-b border-gray-100 px-5 py-5 dark:border-white/5 sm:flex-row sm:items-center sm:justify-between sm:px-6'>
           <h3 className='type-body font-semibold text-gray-800 dark:text-white/90'>
             Customers
           </h3>
@@ -1923,7 +1864,7 @@ function CustomersTab({
         </div>
 
         <div className='min-w-0 px-5 py-5 sm:px-6'>
-          <div className='flex flex-col gap-4 rounded-t-xl border border-b-0 border-gray-200 bg-white px-5 py-4 dark:border-white/[0.05] dark:bg-white/[0.01] lg:flex-row lg:items-center lg:justify-between'>
+          <div className='flex flex-col gap-4 rounded-t-xl border border-b-0 border-gray-200 bg-white px-5 py-4 dark:border-white/5 dark:bg-white/1 lg:flex-row lg:items-center lg:justify-between'>
             <div>
               <h4 className='type-card-title font-semibold text-gray-800 dark:text-white/90'>
                 {activeContactFilter.label}
@@ -1935,7 +1876,7 @@ function CustomersTab({
             </div>
 
             <div className='flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end'>
-              <div className='relative w-full sm:w-[270px]'>
+              <div className='relative w-full sm:w-67.5'>
                 <Search className='pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400' />
 
                 <input
@@ -1943,7 +1884,7 @@ function CustomersTab({
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   placeholder='Search name, intent, service'
-                  className='h-10 w-full rounded-[10px] border border-gray-300 bg-white py-2 pl-11 pr-4 type-small text-gray-800 shadow-theme-xs outline-none placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-gray-500'
+                  className='h-10 w-full rounded-(--radius-control) border border-gray-300 bg-white py-2 pl-11 pr-4 type-small text-gray-800 shadow-theme-xs outline-none placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-gray-500'
                 />
               </div>
 
@@ -1954,7 +1895,7 @@ function CustomersTab({
                   onClick={() =>
                     setOpenFilter(openFilter === 'channel' ? null : 'channel')
                   }
-                  className='min-w-[165px]'
+                  className='min-w-41.25'
                 >
                   <Radio size={14} className='shrink-0' />
 
@@ -1964,7 +1905,7 @@ function CustomersTab({
                         <span
                           key={channel}
                           className={cn(
-                            'flex h-[18px] w-[18px] items-center justify-center rounded-full bg-white dark:bg-gray-900',
+                            'flex h-4.5 w-4.5 items-center justify-center rounded-full bg-white dark:bg-gray-900',
                             i > 0 && '-ml-1.5',
                           )}
                         >
@@ -1983,10 +1924,10 @@ function CustomersTab({
                       type='button'
                       onClick={() => setChanFilter([])}
                       className={cn(
-                        'flex w-full items-center justify-between rounded-[10px] px-3 py-2 text-left type-small font-medium transition',
+                        'flex w-full items-center justify-between rounded-(--radius-control) px-3 py-2 text-left type-small font-medium transition',
                         chanFilter.length === 0
                           ? 'bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'
-                          : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/[0.04]',
+                          : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/4',
                       )}
                     >
                       <span className='inline-flex items-center gap-2'>
@@ -2012,10 +1953,10 @@ function CustomersTab({
                           type='button'
                           onClick={() => toggleChannel(channel)}
                           className={cn(
-                            'flex w-full items-center justify-between rounded-[10px] px-3 py-2 text-left type-small font-medium capitalize transition',
+                            'flex w-full items-center justify-between rounded-(--radius-control) px-3 py-2 text-left type-small font-medium capitalize transition',
                             active
                               ? 'bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'
-                              : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/[0.04]',
+                              : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/4',
                           )}
                         >
                           <span className='inline-flex min-w-0 items-center gap-2'>
@@ -2080,10 +2021,10 @@ function CustomersTab({
                             setOpenFilter(null);
                           }}
                           className={cn(
-                            'flex w-full items-center justify-between rounded-[10px] px-3 py-2 text-left type-small font-medium transition',
+                            'flex w-full items-center justify-between rounded-(--radius-control) px-3 py-2 text-left type-small font-medium transition',
                             active
                               ? 'bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'
-                              : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/[0.04]',
+                              : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/4',
                           )}
                         >
                           <span>{cfg.label}</span>
@@ -2100,21 +2041,21 @@ function CustomersTab({
             </div>
           </div>
 
-          <div className='min-w-0 max-w-full overflow-hidden rounded-b-xl border border-gray-200 dark:border-white/[0.05]'>
+          <div className='min-w-0 max-w-full overflow-hidden rounded-b-xl border border-gray-200 dark:border-white/5'>
             <div className='w-full overflow-x-auto'>
-              <table className='lashvae-column-dividers min-h-72 min-w-[1480px] table-fixed'>
+              <table className='lashvae-column-dividers min-h-72 min-w-370 table-fixed'>
                 <colgroup>
-                  <col className='w-[300px]' />
-                  <col className='w-[150px]' />
-                  <col className='w-[220px]' />
-                  <col className='w-[155px]' />
-                  <col className='w-[150px]' />
-                  <col className='w-[140px]' />
-                  <col className='w-[145px]' />
-                  <col className='w-[220px]' />
+                  <col className='w-75' />
+                  <col className='w-37.5' />
+                  <col className='w-55' />
+                  <col className='w-38.75' />
+                  <col className='w-37.5' />
+                  <col className='w-35' />
+                  <col className='w-36.25' />
+                  <col className='w-55' />
                 </colgroup>
 
-                <thead className='border-b border-gray-100 dark:border-white/[0.05]'>
+                <thead className='border-b border-gray-100 dark:border-white/5'>
                   <tr>
                     {[
                       'Customer',
@@ -2136,7 +2077,7 @@ function CustomersTab({
                   </tr>
                 </thead>
 
-                <tbody className='divide-y divide-gray-100 dark:divide-white/[0.05]'>
+                <tbody className='divide-y divide-gray-100 dark:divide-white/5'>
                   {loading && (
                     <tr>
                       <td
@@ -2251,13 +2192,24 @@ function OverviewTab({
 
     (async () => {
       const [ov, dp, rt, tp, pipe] = await Promise.allSettled([
-        apiFetch<any>(withRange('/admin/stats/overview'), { auth: true }),
-        apiFetch<any>(withRange('/admin/stats/depth'), { auth: true }),
-        apiFetch<any>(withRange('/admin/stats/returning-users'), {
+        apiFetch<RawOverviewStats>(withRange('/admin/stats/overview'), {
           auth: true,
         }),
-        apiFetch<any>(withRange('/admin/stats/topics'), { auth: true }),
-        apiFetch<any>('/admin/leads/pipeline', { auth: true }),
+        apiFetch<RawDepthResponse>(withRange('/admin/stats/depth'), {
+          auth: true,
+        }),
+        apiFetch<RawReturningStats>(
+          withRange('/admin/stats/returning-users'),
+          {
+            auth: true,
+          },
+        ),
+        apiFetch<RawTopicsResponse>(withRange('/admin/stats/topics'), {
+          auth: true,
+        }),
+        apiFetch<RawPipelineResponse>('/admin/leads/pipeline', {
+          auth: true,
+        }),
       ]);
 
       if (ov.status === 'fulfilled') setOverview(adaptOverview(ov.value));
@@ -2265,9 +2217,9 @@ function OverviewTab({
       if (rt.status === 'fulfilled') setReturning(adaptReturning(rt.value));
       if (tp.status === 'fulfilled') setTopics(adaptTopics(tp.value));
       if (pipe.status === 'fulfilled') {
-        const raw = pipe.value as any;
+        const raw = pipe.value;
         let flat: Record<string, number> = {};
-        if (Array.isArray(raw?.by_status)) {
+        if (raw && Array.isArray(raw.by_status)) {
           for (const item of raw.by_status) flat[item.status] = item.count ?? 0;
         } else if (raw?.pipeline && typeof raw.pipeline === 'object') {
           flat = raw.pipeline;
@@ -2377,7 +2329,7 @@ const topicDonut = topics.map((t) => ({
           {overview ? (
             <>
               <ConversionGauge value={convRate} isDark={isDark} />
-              <p className='mx-auto -mt-6 max-w-[280px] text-center type-small text-gray-500 dark:text-gray-400'>
+              <p className='mx-auto -mt-6 max-w-70 text-center type-small text-gray-500 dark:text-gray-400'>
                 {overview.leads} of {overview.conversations} conversations
                 became leads.
               </p>
@@ -2392,7 +2344,7 @@ const topicDonut = topics.map((t) => ({
               <div className='type-h2 font-bold text-gray-800 dark:text-white/90'>
                 {peakLabel}
               </div>
-              <div className='mt-3 rounded-[10px] border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-white/[0.03]'>
+              <div className='mt-3 rounded-(--radius-control) border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-white/3'>
                 <div className='type-caption uppercase tracking-wide text-gray-400 dark:text-gray-500'>
                   Peak messages
                 </div>
@@ -2412,7 +2364,7 @@ const topicDonut = topics.map((t) => ({
         >
           {timeseries && timeseries.length > 1 ? (
             <div className='max-w-full overflow-x-auto custom-scrollbar'>
-              <div className='min-w-[720px] xl:min-w-full'>
+              <div className='min-w-180 xl:min-w-full'>
                 <ActivityAreaChart data={timeseries} isDark={isDark} />
               </div>
             </div>
@@ -2448,7 +2400,7 @@ const topicDonut = topics.map((t) => ({
                     <span className='w-20 shrink-0 type-caption font-medium capitalize text-gray-500 dark:text-gray-400'>
                       {s.key}
                     </span>
-                    <div className='h-2.5 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-white/[0.05]'>
+                    <div className='h-2.5 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-white/5'>
                       <div
                         className='h-full rounded-full transition-all duration-700'
                         style={{
@@ -2482,7 +2434,7 @@ const topicDonut = topics.map((t) => ({
                   </div>
                 </div>
                 <div className='flex flex-1 flex-col gap-2'>
-                  <div className='rounded-[10px] border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-white/[0.03]'>
+                  <div className='rounded-(--radius-control) border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-white/3'>
                     <div className='type-caption uppercase tracking-wide text-gray-400 dark:text-gray-500'>
                       Total returning
                     </div>
@@ -2490,7 +2442,7 @@ const topicDonut = topics.map((t) => ({
                       {num(returning.total_returning)}
                     </div>
                   </div>
-                  <div className='rounded-[10px] border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-white/[0.03]'>
+                  <div className='rounded-(--radius-control) border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-white/3'>
                     <div className='type-caption uppercase tracking-wide text-gray-400 dark:text-gray-500'>
                       Avg returns/user
                     </div>
@@ -2546,9 +2498,10 @@ export default function AnalyticsPage() {
 
   return (
     <RequireAuth>
-      <LockedAccountBanner />
-      <ConversationLimitBanner />
-      <PageBreadcrumb pageTitle='Analytics' />
+      <div className='py-4'>
+        <LockedAccountBanner />
+        <ConversationLimitBanner />
+        <PageBreadcrumb pageTitle='Analytics' />
 
       <div className='mb-6 flex flex-wrap items-start justify-end gap-3'>
         {tab === 'overview' && (
@@ -2579,7 +2532,7 @@ export default function AnalyticsPage() {
         )}
       </div>
 
-      <div className='mb-6 inline-flex gap-1 rounded-xl border border-gray-200 bg-gray-100 p-1 dark:border-gray-800 dark:bg-white/[0.03]'>
+      <div className='mb-6 inline-flex gap-1 rounded-xl border border-gray-200 bg-gray-100 p-1 dark:border-gray-800 dark:bg-white/3'>
         {TABS.map((t) => {
           const active = tab === t.id;
 
@@ -2589,7 +2542,7 @@ export default function AnalyticsPage() {
               type='button'
               onClick={() => setTab(t.id)}
               className={cn(
-                'rounded-[10px] px-4 py-2 type-small font-semibold transition',
+                'rounded-(--radius-control) px-4 py-2 type-small font-semibold transition',
                 active
                   ? 'bg-white text-brand-500 shadow-theme-xs dark:bg-white/10 dark:text-brand-400'
                   : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300',
@@ -2613,6 +2566,7 @@ export default function AnalyticsPage() {
             exportTrigger={exportTrigger}
           />
         )}
+      </div>
       </div>
     </RequireAuth>
   );

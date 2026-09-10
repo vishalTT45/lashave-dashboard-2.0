@@ -218,7 +218,7 @@ function Card({
 }) {
   return (
     <div
-      className={`rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] ${className}`}
+      className={`rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3 ${className}`}
     >
       {children}
     </div>
@@ -334,7 +334,7 @@ function LatencyChart({
           />
         </div>
       ) : (
-        <div className='flex h-[140px] items-center justify-center type-caption text-gray-500 dark:text-gray-400'>
+        <div className='flex h-35 items-center justify-center type-caption text-gray-500 dark:text-gray-400'>
           No latency data
         </div>
       )}
@@ -357,7 +357,7 @@ function MessageBubble({
       <div
         className={`max-w-[78%] rounded-2xl px-4 py-3 ${
           fromCustomer
-            ? 'rounded-tl-md border border-gray-200 bg-white text-gray-700 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-300'
+            ? 'rounded-tl-md border border-gray-200 bg-white text-gray-700 dark:border-gray-800 dark:bg-white/3 dark:text-gray-300'
             : fromHuman
               ? 'rounded-tr-md bg-gray-800 text-white dark:bg-white/10'
               : `rounded-tr-md ${theme.bubble} ${theme.bubbleText}`
@@ -382,7 +382,7 @@ function MessageBubble({
 function DetailSkeleton() {
   return (
     <div className='mx-auto max-w-screen-2xl p-4 md:p-6'>
-      <div className='h-[calc(100vh-150px)] animate-pulse rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/[0.05]' />
+      <div className='h-[calc(100vh-150px)] animate-pulse rounded-2xl border border-gray-200 bg-gray-100 dark:border-gray-800 dark:bg-white/5' />
     </div>
   );
 }
@@ -540,13 +540,13 @@ export default function ConversationDetailPage() {
 
   return (
     <RequireAuth>
-      <div className='mx-auto w-full max-w-[1440px] px-4 py-5 sm:px-6 lg:px-8'>
+      <div className='py-5'>
         <div className='mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between'>
           <div className='flex items-center gap-3'>
             <button
               type='button'
               onClick={() => router.push('/conversations')}
-              className='flex h-9 w-9 items-center justify-center rounded-[10px] border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400 dark:hover:bg-white/[0.05]'
+              className='flex h-9 w-9 items-center justify-center rounded-(--radius-control) border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 dark:border-gray-800 dark:bg-white/3 dark:text-gray-400 dark:hover:bg-white/5'
               aria-label='Back to conversations'
             >
               <ArrowLeft className='h-4.5 w-4.5' />
@@ -564,7 +564,7 @@ export default function ConversationDetailPage() {
             <button
               type='button'
               onClick={() => void load()}
-              className='inline-flex h-9 items-center gap-1.5 rounded-[10px] border border-gray-200 bg-white px-3.5 type-small font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-300'
+              className='inline-flex h-9 items-center gap-1.5 rounded-(--radius-control) border border-gray-200 bg-white px-3.5 type-small font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-800 dark:bg-white/3 dark:text-gray-300'
             >
               <RefreshCw className='h-4 w-4' />
               Refresh
@@ -641,7 +641,7 @@ export default function ConversationDetailPage() {
 
             {/* Metric tiles — 4 in a row, compact */}
             <div className='grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-2.5'>
-              <div className='rounded-xl border border-gray-100 bg-gray-50 px-2.5 py-2 dark:border-white/[0.05] dark:bg-white/[0.02]'>
+              <div className='rounded-xl border border-gray-100 bg-gray-50 px-2.5 py-2 dark:border-white/5 dark:bg-white/2'>
                 <p className='type-caption font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500'>
                   Msgs
                 </p>
@@ -649,7 +649,7 @@ export default function ConversationDetailPage() {
                   {messages.length}
                 </p>
               </div>
-              <div className='rounded-xl border border-gray-100 bg-gray-50 px-2.5 py-2 dark:border-white/[0.05] dark:bg-white/[0.02]'>
+              <div className='rounded-xl border border-gray-100 bg-gray-50 px-2.5 py-2 dark:border-white/5 dark:bg-white/2'>
                 <p className='type-caption font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500'>
                   Avg
                 </p>
@@ -657,7 +657,7 @@ export default function ConversationDetailPage() {
                   {avgLatency != null ? formatLatency(avgLatency) : '—'}
                 </p>
               </div>
-              <div className='rounded-xl border border-gray-100 bg-gray-50 px-2.5 py-2 dark:border-white/[0.05] dark:bg-white/[0.02]'>
+              <div className='rounded-xl border border-gray-100 bg-gray-50 px-2.5 py-2 dark:border-white/5 dark:bg-white/2'>
                 <p className='type-caption font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500'>
                   Mood
                 </p>
@@ -666,7 +666,7 @@ export default function ConversationDetailPage() {
                   <span className='truncate'>{mood?.label || '—'}</span>
                 </p>
               </div>
-              <div className='rounded-xl border border-gray-100 bg-gray-50 px-2.5 py-2 dark:border-white/[0.05] dark:bg-white/[0.02]'>
+              <div className='rounded-xl border border-gray-100 bg-gray-50 px-2.5 py-2 dark:border-white/5 dark:bg-white/2'>
                 <p className='type-caption font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500'>
                   Opened
                 </p>
@@ -678,7 +678,7 @@ export default function ConversationDetailPage() {
           </div>
 
           {convo?.summary && (
-            <div className='mt-4 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 dark:border-white/[0.05] dark:bg-white/[0.02]'>
+            <div className='mt-4 rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 dark:border-white/5 dark:bg-white/2'>
               <p className='type-caption font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400'>
                 Conversation summary
               </p>
@@ -690,11 +690,11 @@ export default function ConversationDetailPage() {
         </Card>
 
         {/* Main 2-col content: Messages (col-8) | stacked sidebar (col-4) */}
-        <div className='grid grid-cols-1 gap-4 xl:grid-cols-12 xl:gap-4'>
-          <div className='xl:col-span-8'>
+        <div className='grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-4'>
+          <div className='lg:col-span-8'>
             <Card className='overflow-hidden'>
               {/* Messages header */}
-              <div className='flex items-center justify-between border-b border-gray-100 px-5 py-2.5 dark:border-white/[0.05] sm:px-6'>
+              <div className='flex items-center justify-between border-b border-gray-100 px-5 py-2.5 dark:border-white/5 sm:px-6'>
                 <div className='flex items-center gap-1.5'>
                   <h3 className='type-card-title font-semibold text-gray-800 dark:text-white/90'>
                     Messages
@@ -709,7 +709,7 @@ export default function ConversationDetailPage() {
               </div>
 
               {/* Messages body */}
-              <div className='h-[420px] space-y-3 overflow-y-auto bg-gray-50 px-5 py-3.5 custom-scrollbar dark:bg-gray-900 sm:px-6'>
+              <div className='h-105 space-y-3 overflow-y-auto bg-gray-50 px-5 py-3.5 custom-scrollbar dark:bg-gray-900 sm:px-6'>
                 {messages.length === 0 ? (
                   <div className='flex h-full items-center justify-center type-small text-gray-500 dark:text-gray-400'>
                     No messages found
@@ -727,7 +727,7 @@ export default function ConversationDetailPage() {
               </div>
 
               {/* Reply input + action buttons (compact inline) */}
-              <div className='border-t border-gray-100 bg-white px-5 py-3 dark:border-white/[0.05] dark:bg-white/[0.03] sm:px-6 sm:py-3.5'>
+              <div className='border-t border-gray-100 bg-white px-5 py-3 dark:border-white/5 dark:bg-white/3 sm:px-6 sm:py-3.5'>
                 <div className='flex items-center gap-2'>
                   <input
                     type='text'
@@ -784,7 +784,7 @@ export default function ConversationDetailPage() {
                     type='button'
                     onClick={() => void act(isClosed ? 'reopen' : 'close')}
                     disabled={Boolean(actionLoading)}
-                    className='inline-flex h-8 items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-2.5 type-caption font-semibold text-gray-700 disabled:opacity-60 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-300'
+                    className='inline-flex h-8 items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-2.5 type-caption font-semibold text-gray-700 disabled:opacity-60 dark:border-gray-800 dark:bg-white/3 dark:text-gray-300'
                   >
                     {actionLoading === 'close' || actionLoading === 'reopen' ? (
                       <Loader2 className='h-3.5 w-3.5 shrink-0 animate-spin' />
@@ -799,7 +799,7 @@ export default function ConversationDetailPage() {
           </div>
 
           {/* Right sidebar: Message Mix + Pipeline (with Contacts inside) + Response Latency — fills column top-to-bottom */}
-          <div className='grid grid-cols-1 content-start gap-3.5 xl:col-span-4'>
+          <div className='grid grid-cols-1 content-start gap-3.5 lg:col-span-4'>
             <MessageMixChart data={data} isDark={isDark} />
 
             {/* Pipeline stage + Contacts inside (matching original: Contacts nested, not standalone) */}
@@ -814,7 +814,7 @@ export default function ConversationDetailPage() {
                       <select
                         value={leadStatus}
                         onChange={(event) => setLeadStatus(event.target.value)}
-                        className='h-8.5 w-full rounded-[10px] border border-gray-300 bg-transparent px-3 type-caption font-medium text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90'
+                        className='h-8.5 w-full rounded-(--radius-control) border border-gray-300 bg-transparent px-3 type-caption font-medium text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90'
                       >
                         {PIPELINE.map((stage) => (
                           <option key={stage} value={stage}>
@@ -827,7 +827,7 @@ export default function ConversationDetailPage() {
                       type='button'
                       onClick={() => void saveStage()}
                       disabled={savingStage || leadStatus === lead.status}
-                      className='inline-flex h-8.5 w-full items-center justify-center gap-1.5 rounded-[10px] bg-brand-500 px-3 type-caption font-semibold text-white shadow-theme-xs hover:bg-brand-600 disabled:opacity-60'
+                      className='inline-flex h-8.5 w-full items-center justify-center gap-1.5 rounded-(--radius-control) bg-brand-500 px-3 type-caption font-semibold text-white shadow-theme-xs hover:bg-brand-600 disabled:opacity-60'
                     >
                       {savingStage && (
                         <Loader2 className='h-3.5 w-3.5 animate-spin' />
@@ -837,7 +837,7 @@ export default function ConversationDetailPage() {
                   </div>
                   {lead.contacts.emails?.length ||
                   lead.contacts.phones?.length ? (
-                    <div className='mt-2.5 rounded-xl border border-gray-100 bg-gray-50 px-3 py-2.5 dark:border-white/[0.05] dark:bg-white/[0.02]'>
+                    <div className='mt-2.5 rounded-xl border border-gray-100 bg-gray-50 px-3 py-2.5 dark:border-white/5 dark:bg-white/2'>
                       <p className='type-caption font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400'>
                         Contacts
                       </p>
@@ -871,7 +871,7 @@ export default function ConversationDetailPage() {
                   ) : null}
                 </>
               ) : (
-                <div className='mt-2.5 flex items-start gap-2.5 rounded-xl border border-gray-100 bg-gray-50 p-2.5 dark:border-white/[0.05] dark:bg-white/[0.02]'>
+                <div className='mt-2.5 flex items-start gap-2.5 rounded-xl border border-gray-100 bg-gray-50 p-2.5 dark:border-white/5 dark:bg-white/2'>
                   <ShieldAlert className='mt-0.5 h-3.5 w-3.5 text-gray-500 dark:text-gray-400' />
                   <p className='type-caption text-gray-500 dark:text-gray-400'>
                     No lead has been created.

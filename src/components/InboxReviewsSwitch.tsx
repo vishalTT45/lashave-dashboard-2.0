@@ -64,16 +64,16 @@ export function InboxReviewsSwitch({ openCount }: { openCount?: number }) {
       <button
         type='button'
         onClick={() => onReviews && router.push('/conversations')}
-        className={`inline-flex h-10 items-center gap-2 rounded-[10px] px-3 type-small font-medium transition ${
+        className={`inline-flex h-10 items-center gap-2 rounded-(--radius-control) px-3 type-small font-medium transition ${
           !onReviews
-            ? 'bg-white text-brand-500 shadow-theme-xs dark:bg-white/[0.05] dark:text-brand-400'
+            ? 'bg-white text-brand-500 shadow-theme-xs dark:bg-white/5 dark:text-brand-400'
             : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white/90'
         }`}
       >
         <MessageSquare className='h-4 w-4' />
         Inbox
         {openCount != null && openCount > 0 && (
-          <span className='rounded-full bg-gray-100 px-2 py-0.5 type-caption text-gray-700 dark:bg-white/[0.05] dark:text-gray-300'>
+          <span className='rounded-full bg-gray-100 px-2 py-0.5 type-caption text-gray-700 dark:bg-white/5 dark:text-gray-300'>
             {openCount}
           </span>
         )}
@@ -81,9 +81,9 @@ export function InboxReviewsSwitch({ openCount }: { openCount?: number }) {
       <button
         type='button'
         onClick={() => !onReviews && router.push('/conversations/reviews')}
-        className={`inline-flex h-10 items-center gap-2 rounded-[10px] px-3 type-small font-medium transition ${
+        className={`inline-flex h-10 items-center gap-2 rounded-(--radius-control) px-3 type-small font-medium transition ${
           onReviews
-            ? 'bg-white text-brand-500 shadow-theme-xs dark:bg-white/[0.05] dark:text-brand-400'
+            ? 'bg-white text-brand-500 shadow-theme-xs dark:bg-white/5 dark:text-brand-400'
             : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white/90'
         }`}
       >

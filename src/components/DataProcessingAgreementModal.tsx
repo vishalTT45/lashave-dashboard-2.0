@@ -74,10 +74,9 @@ export default function DataProcessingAgreementModal({
       });
 
       onAccepted();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      const detail =
-        err?.message && typeof err.message === 'string' ? err.message : '';
+      const detail = err instanceof Error ? err.message : '';
       const ignore =
         /duplicate/i.test(detail) ||
         /already/i.test(detail) ||

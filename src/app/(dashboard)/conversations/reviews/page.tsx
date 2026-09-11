@@ -157,18 +157,25 @@ const REVIEW_KEYWORDS = [
 ] as const;
 
 type KeywordKey = (typeof REVIEW_KEYWORDS)[number]["key"];
+function friendlyErrorMessage(error: any): string {
+  const raw = error?.message;
+  if (typeof raw === "string" && raw && raw !== "[object Object]") {
+    return raw;
+  }
+  return "Review or location not found on Google, or the Google Business Profile location is unverified.";
+}
 
 const REVIEW_STATUS_TABS: {
   key: FilterKey;
   label: string;
   icon: React.ReactNode;
 }[] = [
-  { key: "needs_reply", label: "Needs reply", icon: <Send size={13} /> },
-  { key: "replied", label: "Replied", icon: <Check size={13} /> },
-  { key: "rating_only", label: "Rating only", icon: <Star size={13} /> },
-  { key: "low_rating", label: "1-2 stars", icon: <AlertTriangle size={13} /> },
-  { key: "critical", label: "Critical", icon: <Flag size={13} /> },
-];
+    { key: "needs_reply", label: "Needs reply", icon: <Send size={13} /> },
+    { key: "replied", label: "Replied", icon: <Check size={13} /> },
+    { key: "rating_only", label: "Rating only", icon: <Star size={13} /> },
+    { key: "low_rating", label: "1-2 stars", icon: <AlertTriangle size={13} /> },
+    { key: "critical", label: "Critical", icon: <Flag size={13} /> },
+  ];
 
 function errorMessage(error: unknown, fallback: string) {
   return error instanceof Error ? error.message : fallback;
@@ -482,7 +489,7 @@ function ReviewRow({
       onMessage("Reply published to Google.", "success");
       await onRefresh();
     } catch (error: unknown) {
-      onMessage(errorMessage(error, "Failed to publish reply."), "error");
+      onMessage(friendlyErrorMessage(error), "error");
     } finally {
       setPublishing(false);
     }
@@ -492,7 +499,7 @@ function ReviewRow({
     setAiProcessing(true);
     try {
       const result = await apiFetch<AiSuggestionResponse>(
-        `/admin/channels/google/review/${encodeURIComponent(review.google_review_id)}/ai-suggest`,
+        `/admin/channels/google/${channelId}/reviews/${encodeURIComponent(review.google_review_id)}/ai-suggest`,
         { method: "POST", auth: true },
       );
       const suggestion = result.suggestion?.trim();
@@ -513,13 +520,13 @@ function ReviewRow({
     setAiProcessing(true);
     try {
       await apiFetch<AiPublishResponse>(
-        `/admin/channels/google/review/${encodeURIComponent(review.google_review_id)}/ai-reply`,
+        `/admin/channels/google/${channelId}/reviews/${encodeURIComponent(review.google_review_id)}/ai-reply`,
         { method: "POST", auth: true },
       );
       onMessage("AI reply published to Google.", "success");
       await onRefresh();
     } catch (error: unknown) {
-      onMessage(errorMessage(error, "Failed to publish AI reply."), "error");
+      onMessage(friendlyErrorMessage(error), "error");
     } finally {
       setAiProcessing(false);
     }
@@ -567,13 +574,12 @@ function ReviewRow({
         </td>
         <td className="px-5 py-4">
           <span
-            className={`inline-flex rounded-full px-3 py-1 type-caption font-medium ${
-              replied
-                ? "bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500"
-                : lowRating || review.is_critical
-                  ? "bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500"
-                  : "bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-orange-400"
-            }`}
+            className={`inline-flex rounded-full px-3 py-1 type-caption font-medium ${replied
+              ? "bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500"
+              : lowRating || review.is_critical
+                ? "bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500"
+                : "bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-orange-400"
+              }`}
           >
             {replied
               ? "Replied"
@@ -689,7 +695,7 @@ function ReviewsInner() {
   const [reviewsPage, setReviewsPage] = useState(1);
   const [search, setSearch] = useState("");
   const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [pendingCriticalCount, setPendingCriticalCount] = useState(0);
   const [needsHumanReviewCount, setNeedsHumanReviewCount] = useState(0);
 
@@ -743,9 +749,9 @@ function ReviewsInner() {
         `/admin/channels/google/${selectedChannelId}/reviews`,
         { auth: true },
       );
-      showMessage("Reviews auto pooled.", "success");
 
       setReviews(Array.isArray(data) ? data : []);
+      setError(null);
     } catch (err: unknown) {
       setError(errorMessage(err, "Failed to load reviews."));
     } finally {
@@ -1042,10 +1048,10 @@ function ReviewsInner() {
         selectedKeyword === "all"
           ? true
           : REVIEW_KEYWORDS.some(
-              (keyword) =>
-                keyword.key === selectedKeyword &&
-                reviewMatchesKeyword(review, keyword),
-            );
+            (keyword) =>
+              keyword.key === selectedKeyword &&
+              reviewMatchesKeyword(review, keyword),
+          );
       if (!matchesKeyword) return false;
       if (!normalizedSearch) return true;
 
@@ -1155,11 +1161,10 @@ function ReviewsInner() {
                         setSelectedChannelId(channel.id);
                         setChannelMenuOpen(false);
                       }}
-                      className={`flex w-full items-center justify-between gap-3 rounded-(--radius-control) px-3 py-2 text-left type-small font-medium ${
-                        active
-                          ? "bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400"
-                          : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5"
-                      }`}
+                      className={`flex w-full items-center justify-between gap-3 rounded-[10px] px-3 py-2 text-left type-small font-medium ${active
+                        ? "bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400"
+                        : "text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5"
+                        }`}
                     >
                       <span className="inline-flex min-w-0 items-center gap-2">
                         <img
@@ -1203,9 +1208,8 @@ function ReviewsInner() {
             className="inline-flex h-10 items-center justify-center gap-2 whitespace-nowrap rounded-(--radius-control) border border-gray-200 bg-white px-4 type-small font-medium text-gray-700 disabled:opacity-60"
           >
             <RefreshCw
-              className={`h-4 w-4 shrink-0 ${
-                loadingReviews ? "animate-spin" : ""
-              }`}
+              className={`h-4 w-4 shrink-0 ${loadingReviews ? "animate-spin" : ""
+                }`}
             />
 
             {loadingReviews ? "Syncing..." : "Sync Now"}
@@ -1352,11 +1356,10 @@ function ReviewsInner() {
                   <button
                     type="button"
                     onClick={() => setSelectedKeyword("all")}
-                    className={`h-10 shrink-0 rounded-(--radius-control) px-4 type-small font-medium transition ${
-                      selectedKeyword === "all"
-                        ? "bg-brand-500 text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/5"
-                    }`}
+                    className={`h-10 shrink-0 rounded-[10px] px-4 type-small font-medium transition ${selectedKeyword === "all"
+                      ? "bg-brand-500 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/5"
+                      }`}
                   >
                     All signals
                   </button>
@@ -1369,11 +1372,10 @@ function ReviewsInner() {
                           selectedKeyword === keyword.key ? "all" : keyword.key,
                         )
                       }
-                      className={`h-10 shrink-0 rounded-(--radius-control) px-4 type-small font-medium transition ${
-                        selectedKeyword === keyword.key
-                          ? "bg-brand-500 text-white"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/5"
-                      }`}
+                      className={`h-10 shrink-0 rounded-[10px] px-4 type-small font-medium transition ${selectedKeyword === keyword.key
+                        ? "bg-brand-500 text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/5"
+                        }`}
                     >
                       {keyword.label} {keyword.count}
                     </button>

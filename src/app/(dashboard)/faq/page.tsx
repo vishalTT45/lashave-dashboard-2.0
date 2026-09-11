@@ -5402,7 +5402,7 @@ function DocumentEntityReview({
           const confidence = entityConfidence(entity);
           const priceLabel = entityPriceLabel(entity);
           return (
-            <button
+            <div
               key={entity.entity_id}
               onClick={() => {
                 setActiveId(entity.entity_id);
@@ -5420,7 +5420,7 @@ function DocumentEntityReview({
                 color: th.text,
                 padding: '12px 14px',
                 display: 'grid',
-                gridTemplateColumns: '1fr 86px 92px',
+                gridTemplateColumns: '1fr 86px 120px',
                 gap: 10,
                 alignItems: 'center',
                 textAlign: 'left',
@@ -5462,17 +5462,63 @@ function DocumentEntityReview({
               >
                 {confidenceLabel(confidence)}
               </span>
-              <span
-                style={{
-                  color: th.textSub,
-                  fontSize: 12,
-                  fontWeight: 500,
-                  textTransform: 'capitalize',
-                }}
+              <div
+                className='flex items-center gap-1.5'
+                onClick={(e) => e.stopPropagation()}
               >
-                {entity.approval_status}
-              </span>
-            </button>
+                {entity.approval_status === 'approved' ||
+                entity.approval_status === 'rejected' ? (
+                  <span
+                    style={{
+                      color: th.textSub,
+                      fontSize: 12,
+                      fontWeight: 500,
+                      textTransform: 'capitalize',
+                      marginLeft: 'auto',
+                    }}
+                  >
+                    {entity.approval_status}
+                  </span>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => onReject(entity.entity_id)}
+                      disabled={busyId === entity.entity_id}
+                      style={{
+                        padding: '4px 8px',
+                        fontSize: 11,
+                        fontWeight: 600,
+                        borderRadius: 6,
+                        border: `1px solid ${th.cardBorder}`,
+                        background: 'transparent',
+                        color: th.textSub,
+                        cursor: busyId === entity.entity_id ? 'default' : 'pointer',
+                        opacity: busyId === entity.entity_id ? 0.5 : 1,
+                      }}
+                    >
+                      Reject
+                    </button>
+                    <button
+                      onClick={() => onApprove(entity.entity_id)}
+                      disabled={busyId === entity.entity_id}
+                      style={{
+                        padding: '4px 8px',
+                        fontSize: 11,
+                        fontWeight: 600,
+                        borderRadius: 6,
+                        background: '#059669',
+                        color: '#fff',
+                        border: 'none',
+                        cursor: busyId === entity.entity_id ? 'default' : 'pointer',
+                        opacity: busyId === entity.entity_id ? 0.5 : 1,
+                      }}
+                    >
+                      Approve
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
           );
         })}
         {!entities.length && (

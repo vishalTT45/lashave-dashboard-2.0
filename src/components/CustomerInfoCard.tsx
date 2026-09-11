@@ -30,7 +30,7 @@ export default function CustomerInfoCard({ fieldCount, onOpen }: Props) {
         {["Name", "Phone", "Email"].map((field) => (
           <div
             key={field}
-            className="rounded-[10px] border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-white/[0.02]"
+            className="rounded-(--radius-control) border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-white/2"
           >
             <div className="type-caption font-medium text-gray-500 dark:text-gray-400">
               Field

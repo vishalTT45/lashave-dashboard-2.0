@@ -13,6 +13,71 @@
  */
 
 /* ══════════════════════════════════════════════════════════════════
+   0. LAYOUT PRIMITIVES (foundation)
+   Generic, reusable structural classes consumed by
+   `src/components/layout/primitives.tsx` (<Container>, <Grid>, ...).
+   These carry positioning only — no colour, border, or shadow — so
+   any component can opt in without inheriting visual opinions.
+
+   Layout regimes used throughout this file and the primitives:
+     Mobile   : 0–767px
+     Tablet   : 768–1023px
+     Desktop  : 1024px and up — STABLE. A desktop composition must
+                not change again above 1024px, regardless of monitor
+                width or browser zoom (no arbitrary ultra-wide steps).
+                1024px matches the same threshold the sidebar and
+                every other shared grid (.kpi-grid, .channel-strip,
+                .chart-row-*) already use — one desktop boundary for
+                the whole app, not a second one specific to this
+                primitive. This also gives more zoom-in headroom
+                before any reflow happens than a 1200px cutoff would:
+                on an ordinary laptop screen, 110% zoom easily drops
+                the effective CSS viewport into the 1000-1200px range,
+                and that should still read as "desktop."
+══════════════════════════════════════════════════════════════════ */
+
+/* Centered content boundary + a fluid page gutter — the single
+   definition of the app's content width. Use instead of ad-hoc
+   `mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8`. The gutter itself is
+   `clamp()`-based (see --layout-page-gutter in globals.css) so it
+   scales continuously with viewport width instead of stepping between
+   fixed values at specific breakpoints — there's no threshold here for
+   a browser zoom level to cross. */
+.dashboard-container {
+  width: 100%;
+  max-width: var(--layout-content-max);
+  margin-inline: auto;
+  padding-inline: var(--layout-page-gutter);
+}
+
+/* Generic fixed-column grid with a distinct, STABLE column count per
+   layout regime. Columns are set via inline custom properties
+   (--grid-cols-mobile / -tablet / -desktop) by the <Grid> primitive.
+   Desktop column count never changes again above 1024px. */
+.layout-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-cols-mobile, 1), minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .layout-grid {
+    grid-template-columns: repeat(
+      var(--grid-cols-tablet, var(--grid-cols-mobile, 1)),
+      minmax(0, 1fr)
+    );
+  }
+}
+
+@media (min-width: 1024px) {
+  .layout-grid {
+    grid-template-columns: repeat(
+      var(--grid-cols-desktop, var(--grid-cols-tablet, 1)),
+      minmax(0, 1fr)
+    );
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
    1. RESPONSIVE LAYOUT UTILITIES
    Every page uses <PageShell> which already applies these, but they
    are also available as plain classes for one-off overrides.
@@ -50,7 +115,7 @@
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
+  gap: var(--layout-grid-gap);
 }
 
 @media (min-width: 1024px) {
@@ -64,7 +129,7 @@
 .chart-row-main {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0.75rem;
+  gap: var(--layout-grid-gap);
 }
 
 @media (min-width: 1024px) {
@@ -78,7 +143,7 @@
 .chart-row-secondary {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0.75rem;
+  gap: var(--layout-grid-gap);
 }
 
 @media (min-width: 1024px) {
@@ -213,7 +278,7 @@
 ══════════════════════════════════════════════════════════════════ */
 
 .dash-card {
-  border-radius: 1rem;
+  border-radius: var(--radius-card);
   padding: 1.5rem;
   position: relative;
   overflow: hidden;

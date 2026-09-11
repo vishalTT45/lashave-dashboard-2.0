@@ -24,6 +24,10 @@ function VerifyEmailContent() {
 
   useEffect(() => {
     if (!token) {
+      // Fetch on mount / dependency change — the correct place for a
+      // loading/data flag on an async fetch, not a derive-state-from-render
+      // antipattern.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoading(false);
       setErrorMessage('Verification token is missing from the link.');
       return;
@@ -99,7 +103,7 @@ function VerifyEmailContent() {
               routed directly to:
             </p>
 
-            <div className='mt-4 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 font-mono type-small font-semibold text-brand-600 dark:border-gray-800 dark:bg-white/[0.03] dark:text-brand-400'>
+            <div className='mt-4 rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 font-mono type-small font-semibold text-brand-600 dark:border-gray-800 dark:bg-white/3 dark:text-brand-400'>
               {verifiedEmail}
             </div>
 

@@ -66,7 +66,7 @@ export function ChannelFilterValueLabel({
             className='h-3.5 w-3.5 shrink-0 rounded-sm object-contain'
           />
         )}
-        <span className='max-w-[120px] truncate'>{channelLabel(c)}</span>
+        <span className='max-w-30 truncate'>{channelLabel(c)}</span>
       </span>
     );
   }
@@ -131,6 +131,10 @@ export function ChannelFilter({
   }, []);
 
   useEffect(() => {
+    // Fetch on mount / dependency change — the correct place for a
+    // loading/data flag on an async fetch, not a derive-state-from-render
+    // antipattern.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (selfLoad) load();
   }, [selfLoad, load]);
 
@@ -152,10 +156,10 @@ export function ChannelFilter({
 
   const rowClass = (active: boolean) =>
     cn(
-      'flex w-full items-center justify-between rounded-[10px] px-3 py-2 text-left type-small font-medium transition',
+      'flex w-full items-center justify-between rounded-(--radius-control) px-3 py-2 text-left type-small font-medium transition',
       active
         ? 'bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'
-        : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/[0.04]',
+        : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/4',
     );
 
   return (
@@ -180,7 +184,7 @@ export function ChannelFilter({
         ? Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
-              className='mx-3 my-1 h-4 animate-pulse rounded bg-gray-100 dark:bg-white/[0.06]'
+              className='mx-3 my-1 h-4 animate-pulse rounded bg-gray-100 dark:bg-white/6'
             />
           ))
         : channels.map((c) => {

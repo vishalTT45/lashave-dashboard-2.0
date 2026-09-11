@@ -18,9 +18,6 @@ import {
 import { useOutsideClick } from '@/hooks/useOutsideClick';
 import { apiFetch } from '@/lib/api';
 import {
-  detectCategory,
-  resolveMoodForLead,
-  type Category,
   type Mood,
 } from '@/lib/chat-classifiers';
 import { cn } from '@/lib/utils';
@@ -92,17 +89,6 @@ type FollowUpItem = {
   followup_at?: string | null;
   next_follow_up_at?: string | null;
   scheduled_at?: string | null;
-};
-
-type LeadSentiment = {
-  emoji: string;
-  label: 'Positive' | 'Neutral' | 'Concerned' | 'Negative' | 'Urgent';
-  color: 'success' | 'light' | 'warning' | 'error';
-};
-
-type LeadCategory = {
-  label: 'Enquiry' | 'Complaint' | 'Support' | 'Booking' | 'Order' | 'Feedback';
-  color: 'primary' | 'error' | 'warning' | 'success' | 'info' | 'light';
 };
 
 const PIPELINE = ['new', 'contacted', 'qualified', 'won', 'lost'];
@@ -203,139 +189,6 @@ function formatFollowUpDue(followUp: FollowUpItem) {
   return `Upcoming ${label}`;
 }
 
-function getLeadSentiment(lead: LeadItem): LeadSentiment {
-  const mood = resolveMoodForLead({
-    storedMood: lead.meta?.mood,
-    text_preview: lead.meta?.text_preview,
-    triggers: lead.meta?.triggers,
-    intent: lead.intent,
-  });
-
-  const moodKey = mood.mood?.toLowerCase();
-  if (moodKey === 'urgent') {
-    return {
-      emoji: '🚨',
-      label: 'Urgent',
-      color: 'error',
-    };
-  }
-  if (moodKey === 'frustrated') {
-    return {
-      emoji: '😠',
-      label: 'Negative',
-      color: 'error',
-    };
-  }
-  if (moodKey === 'confused' || moodKey === 'cold') {
-    return {
-      emoji: '😟',
-      label: 'Concerned',
-      color: 'warning',
-    };
-  }
-  if (moodKey === 'happy' || moodKey === 'excited') {
-    return {
-      emoji: '😊',
-      label: 'Positive',
-      color: 'success',
-    };
-  }
-
-  return {
-    emoji: '😐',
-    label: 'Neutral',
-    color: 'light',
-  };
-}
-
-function normalizeLeadCategory(value?: string | null): LeadCategory['label'] | null {
-  const key = (value || '').toLowerCase().trim().replace(/[\s-]+/g, '_');
-  if (!key || key === 'none' || key === 'unknown' || key === 'general') {
-    return null;
-  }
-
-  if (key.includes('complaint') || key.includes('negative')) return 'Complaint';
-  if (key.includes('support') || key.includes('issue') || key.includes('help')) {
-    return 'Support';
-  }
-  if (
-    key.includes('booking') ||
-    key.includes('appointment') ||
-    key.includes('reservation') ||
-    key.includes('schedule')
-  ) {
-    return 'Booking';
-  }
-  if (
-    key.includes('order') ||
-    key.includes('pricing') ||
-    key.includes('purchase') ||
-    key.includes('payment') ||
-    key.includes('plan')
-  ) {
-    return 'Order';
-  }
-  if (key.includes('feedback') || key.includes('review')) return 'Feedback';
-  if (
-    key.includes('enquiry') ||
-    key.includes('inquiry') ||
-    key.includes('demo') ||
-    key.includes('integration') ||
-    key.includes('interest')
-  ) {
-    return 'Enquiry';
-  }
-
-  return null;
-}
-
-function categoryTone(label: LeadCategory['label']): LeadCategory['color'] {
-  const tones: Record<LeadCategory['label'], LeadCategory['color']> = {
-    Enquiry: 'info',
-    Complaint: 'error',
-    Support: 'warning',
-    Booking: 'primary',
-    Order: 'success',
-    Feedback: 'light',
-  };
-
-  return tones[label];
-}
-
-function getLeadCategory(lead: LeadItem): LeadCategory {
-  const backendLabel =
-    normalizeLeadCategory(lead.category) ||
-    normalizeLeadCategory(lead.classification) ||
-    normalizeLeadCategory(lead.conversation_category) ||
-    normalizeLeadCategory(lead.meta?.category) ||
-    normalizeLeadCategory(lead.meta?.classification) ||
-    normalizeLeadCategory(lead.meta?.intent_category) ||
-    normalizeLeadCategory(lead.intent) ||
-    normalizeLeadCategory(lead.service);
-
-  if (backendLabel) {
-    return {
-      label: backendLabel,
-      color: categoryTone(backendLabel),
-    };
-  }
-
-  const detected: Category = detectCategory({
-    text_preview: lead.meta?.text_preview,
-    triggers: lead.meta?.triggers,
-    intent: lead.intent,
-    service: lead.service,
-    mood: lead.meta?.mood?.mood,
-    contacts: lead.contacts,
-  });
-  const fallbackLabel = normalizeLeadCategory(detected) || 'Enquiry';
-
-  return {
-    label: fallbackLabel,
-    color: categoryTone(fallbackLabel),
-  };
-}
-
 function getDisplayInfo(lead: LeadItem) {
   const uid = lead.external_user_id || '';
 
@@ -396,6 +249,10 @@ function LeadAvatar({ lead, label }: { lead: LeadItem; label: string }) {
     null;
 
   useEffect(() => {
+    // Resets local UI-only state (a flag, warning, or preview value)
+    // when the relevant prop/dependency changes — not deriving render
+    // output from state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setImgFailed(false);
   }, [src]);
 
@@ -458,11 +315,11 @@ function MetricCard({
   onClick?: () => void;
 }) {
   const toneBg: Record<string, string> = {
-    brand: 'bg-brand-50/60 dark:bg-brand-500/[0.06]',
-    success: 'bg-success-50/60 dark:bg-success-500/[0.06]',
-    warning: 'bg-warning-50/60 dark:bg-warning-500/[0.06]',
-    error: 'bg-error-50/60 dark:bg-error-500/[0.06]',
-    gray: 'bg-gray-50 dark:bg-white/[0.02]',
+    brand: 'bg-brand-50/60 dark:bg-brand-500/6',
+    success: 'bg-success-50/60 dark:bg-success-500/6',
+    warning: 'bg-warning-50/60 dark:bg-warning-500/6',
+    error: 'bg-error-50/60 dark:bg-error-500/6',
+    gray: 'bg-gray-50 dark:bg-white/2',
   };
 
   return (
@@ -527,7 +384,7 @@ function FollowUpsPanel({ items }: { items: FollowUpItem[] }) {
   );
 
   return (
-    <div className='mb-6 overflow-hidden rounded-2xl border border-brand-200 bg-white shadow-theme-sm dark:border-brand-500/20 dark:bg-white/[0.03]'>
+    <div className='mb-6 overflow-hidden rounded-2xl border border-brand-200 bg-white shadow-theme-sm dark:border-brand-500/20 dark:bg-white/3'>
       <div className='border-b border-brand-100 bg-brand-50/60 px-5 py-5 dark:border-brand-500/15 dark:bg-brand-500/10 sm:px-6'>
         <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
           <div>
@@ -558,7 +415,7 @@ function FollowUpsPanel({ items }: { items: FollowUpItem[] }) {
               </div>
 
               {groupItems.length === 0 ? (
-                <div className='rounded-[10px] border border-dashed border-gray-200 bg-white/70 px-3 py-5 text-center type-caption text-gray-500 dark:border-white/[0.08] dark:bg-white/[0.03] dark:text-gray-400'>
+                <div className='rounded-(--radius-control) border border-dashed border-gray-200 bg-white/70 px-3 py-5 text-center type-caption text-gray-500 dark:border-white/8 dark:bg-white/3 dark:text-gray-400'>
                   No {group.label.toLowerCase()} follow-ups
                 </div>
               ) : (
@@ -567,7 +424,7 @@ function FollowUpsPanel({ items }: { items: FollowUpItem[] }) {
                     <Link
                       key={followUp.conversation_id}
                       href={`/conversations/${followUp.conversation_id}`}
-                      className='block rounded-[10px] border border-white/70 bg-white p-3 shadow-theme-xs transition hover:border-brand-200 hover:bg-white dark:border-white/[0.06] dark:bg-gray-900 dark:hover:border-brand-500/30'
+                      className='block rounded-(--radius-control) border border-white/70 bg-white p-3 shadow-theme-xs transition hover:border-brand-200 hover:bg-white dark:border-white/6 dark:bg-gray-900 dark:hover:border-brand-500/30'
                     >
                       <div className='flex items-start justify-between gap-3'>
                         <div className='min-w-0'>
@@ -648,7 +505,7 @@ function StageSelect({
         type='button'
         disabled={disabled}
         onClick={() => setOpen((value) => !value)}
-        className='flex h-10 w-full items-center justify-between gap-2 rounded-[10px] border border-gray-200 bg-white px-3 type-small font-medium outline-none transition hover:bg-gray-50 disabled:opacity-60 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-white/[0.03]'
+        className='flex h-10 w-full items-center justify-between gap-2 rounded-(--radius-control) border border-gray-200 bg-white px-3 type-small font-medium outline-none transition hover:bg-gray-50 disabled:opacity-60 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-white/3'
         aria-label={`Change stage for ${label}`}
       >
         <span
@@ -684,10 +541,10 @@ function StageSelect({
                   setOpen(false);
                 }}
                 className={cn(
-                  'flex w-full items-center gap-2 rounded-[10px] px-3 py-2 text-left type-small font-medium transition',
+                  'flex w-full items-center gap-2 rounded-(--radius-control) px-3 py-2 text-left type-small font-medium transition',
                   isActive
                     ? 'bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'
-                    : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/[0.04]',
+                    : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/4',
                 )}
               >
                 {tab.icon}
@@ -715,18 +572,18 @@ function LeadWorklist({
   onStatusChange: (leadId: number, status: string) => void;
 }) {
   return (
-    <div className='min-w-0 max-w-full overflow-hidden rounded-b-xl border border-gray-200 dark:border-white/[0.05]'>
+    <div className='min-w-0 max-w-full overflow-hidden rounded-b-xl border border-gray-200 dark:border-white/5'>
       <div className='w-full overflow-x-auto'>
         <table className='lashvae-column-dividers w-full table-fixed min-h-80'>
           <colgroup>
             <col className='w-[30%]' />
-            <col className='w-[150px]' />
-            <col className='w-[140px]' />
-            <col className='w-[220px]' />
-            <col className='w-[112px]' />
-            <col className='w-[180px]' />
+            <col className='w-37.5' />
+            <col className='w-35' />
+            <col className='w-55' />
+            <col className='w-28' />
+            <col className='w-45' />
           </colgroup>
-          <thead className='border-b border-gray-100 dark:border-white/[0.05]'>
+          <thead className='border-b border-gray-100 dark:border-white/5'>
             <tr>
               {[
                 'Lead',
@@ -750,7 +607,7 @@ function LeadWorklist({
               ))}
             </tr>
           </thead>
-          <tbody className='divide-y divide-gray-100 dark:divide-white/[0.05]'>
+          <tbody className='divide-y divide-gray-100 dark:divide-white/5'>
             {loading && items.length === 0 && (
               <tr>
                 <td
@@ -777,12 +634,10 @@ function LeadWorklist({
               const display = getDisplayInfo(lead);
               const email = lead.contacts?.emails?.[0] || '';
               const phone = lead.contacts?.phones?.[0] || '';
-              const sentiment = getLeadSentiment(lead);
-              const category = getLeadCategory(lead);
               return (
                 <tr
                   key={lead.id}
-                  className='transition hover:bg-gray-50 dark:hover:bg-white/[0.02]'
+                  className='transition hover:bg-gray-50 dark:hover:bg-white/2'
                 >
                   <td className='px-5 py-3 sm:px-6'>
                     <div className='flex items-center gap-3'>
@@ -796,9 +651,9 @@ function LeadWorklist({
                             >
                               <Highlight text={display.label} query={searchQ} />
                             </Link>
-                            <span className='pointer-events-none absolute left-0 top-full z-50 mt-1 hidden max-w-[280px] group-hover:block'>
-                              <span className='absolute -top-1 left-3 h-2 w-2 rotate-45 rounded-[2px] bg-gray-900' />
-                              <span className='relative block rounded-[10px] bg-gray-900 px-3 py-1.5 type-caption font-medium text-white shadow-lg'>
+                            <span className='pointer-events-none absolute left-0 top-full z-50 mt-1 hidden max-w-70 group-hover:block'>
+                              <span className='absolute -top-1 left-3 h-2 w-2 rotate-45 rounded-xs bg-gray-900' />
+                              <span className='relative block rounded-(--radius-control) bg-gray-900 px-3 py-1.5 type-caption font-medium text-white shadow-lg'>
                                 {display.label}
                               </span>
                             </span>
@@ -894,7 +749,7 @@ function LeadWorklist({
                     <div className='flex justify-end'>
                       <Link
                         href={`/conversations/${lead.conversation_id}`}
-                        className='inline-flex h-8 w-full max-w-[170px] items-center justify-center gap-1.5 truncate whitespace-nowrap rounded-[10px] bg-brand-500 px-3 type-small font-medium text-white shadow-theme-xs hover:bg-brand-600'
+                        className='inline-flex h-8 w-full max-w-42.5 items-center justify-center gap-1.5 truncate whitespace-nowrap rounded-(--radius-control) bg-brand-500 px-3 type-small font-medium text-white shadow-theme-xs hover:bg-brand-600'
                         title='View conversation'
                       >
                         <Eye size={14} className='shrink-0' />
@@ -1159,10 +1014,6 @@ export default function LeadsPage() {
   const activeStageTab =
     STAGE_TABS.find((tab) => tab.key === filterStatus) ?? STAGE_TABS[0];
 
-  const pipelineTotal = useMemo(
-    () => Object.values(counts).reduce((sum, value) => sum + value, 0),
-    [counts],
-  );
   const qualifiedTotal = (counts.qualified || 0) + (counts.won || 0);
 
   const handleSeeAllLeads = useCallback(() => {
@@ -1200,7 +1051,7 @@ export default function LeadsPage() {
           </div>
         </div>
 
-        <div className='mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4'>
+        <div className='mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4'>
           <MetricCard
             label='Total leads'
             value={total}
@@ -1243,8 +1094,8 @@ export default function LeadsPage() {
 
         <div className='flex flex-col gap-6'>
           <div className='flex flex-col gap-6'>
-            <div className='min-w-0 max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]'>
-              <div className='flex flex-col gap-2 border-b border-gray-100 px-5 py-5 dark:border-white/[0.05] sm:flex-row sm:items-center sm:justify-between sm:px-6'>
+            <div className='min-w-0 max-w-full overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3'>
+              <div className='flex flex-col gap-2 border-b border-gray-100 px-5 py-5 dark:border-white/5 sm:flex-row sm:items-center sm:justify-between sm:px-6'>
                 <h3 className='type-body font-semibold text-gray-800 dark:text-white/90'>
                   Lead pipeline
                 </h3>
@@ -1254,12 +1105,12 @@ export default function LeadsPage() {
               </div>
 
               <div className='min-w-0 px-5 py-5 sm:px-6'>
-                <div className='flex flex-col gap-4 rounded-t-xl border border-b-0 border-gray-200 bg-white px-5 py-4 dark:border-white/[0.05] dark:bg-white/[0.01] lg:flex-row lg:items-center lg:justify-between'>
+                <div className='flex flex-col gap-4 rounded-t-xl border border-b-0 border-gray-200 bg-white px-5 py-4 dark:border-white/5 dark:bg-white/1 lg:flex-row lg:items-center lg:justify-between'>
                   <h4 className='type-card-title font-semibold text-gray-800 dark:text-white/90'>
                     {activeStageTab.label} leads
                   </h4>
                   <div className='flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end'>
-                    <div className='relative w-full sm:w-[369px]'>
+                    <div className='relative w-full sm:w-92.25'>
                       <Search className='pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500 dark:text-gray-400' />
                       <input
                         type='search'
@@ -1269,7 +1120,7 @@ export default function LeadsPage() {
                           setSearching(!!event.target.value);
                         }}
                         placeholder='Search name, intent, service, or message'
-                        className='h-10 w-full rounded-[10px] border border-gray-300 bg-white py-2 pl-11 pr-9 type-small text-gray-800 shadow-theme-xs outline-none placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-gray-500'
+                        className='h-10 w-full rounded-(--radius-control) border border-gray-300 bg-white py-2 pl-11 pr-9 type-small text-gray-800 shadow-theme-xs outline-none placeholder:text-gray-400 focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-gray-500'
                       />
                       {searchQ && !searching && (
                         <button
@@ -1339,10 +1190,10 @@ export default function LeadsPage() {
                                   setOpenFilter(null);
                                 }}
                                 className={cn(
-                                  'flex w-full items-center justify-between rounded-[10px] px-3 py-2 text-left type-small font-medium transition',
+                                  'flex w-full items-center justify-between rounded-(--radius-control) px-3 py-2 text-left type-small font-medium transition',
                                   isActive
                                     ? 'bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'
-                                    : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/[0.04]',
+                                    : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/4',
                                 )}
                               >
                                 <span className='inline-flex items-center gap-2'>
@@ -1380,7 +1231,7 @@ export default function LeadsPage() {
                 </div>
 
                 {debouncedQ && !loading && (
-                  <div className='border-x border-gray-200 bg-white px-5 py-3 type-small text-brand-500 dark:border-white/[0.05] dark:bg-white/[0.01] dark:text-brand-400'>
+                  <div className='border-x border-gray-200 bg-white px-5 py-3 type-small text-brand-500 dark:border-white/5 dark:bg-white/1 dark:text-brand-400'>
                     {total > 0
                       ? `${total} leads match "${debouncedQ}"`
                       : `No leads match "${debouncedQ}"`}
@@ -1388,7 +1239,7 @@ export default function LeadsPage() {
                 )}
 
                 {err && (
-                  <div className='mt-3 flex items-center gap-2 rounded-[10px] border border-error-200 bg-error-50 px-4 py-3 type-small text-error-600 dark:border-error-500/30 dark:bg-error-500/15 dark:text-error-500'>
+                  <div className='mt-3 flex items-center gap-2 rounded-(--radius-control) border border-error-200 bg-error-50 px-4 py-3 type-small text-error-600 dark:border-error-500/30 dark:bg-error-500/15 dark:text-error-500'>
                     <AlertTriangle className='icon-small shrink-0' />
                     {err}
                   </div>
@@ -1412,7 +1263,7 @@ export default function LeadsPage() {
           </div>
 
           <div className='flex flex-col gap-6'>
-            <div className='rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]'>
+            <div className='rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3'>
               <div className='border-b border-gray-100 px-6 py-5 dark:border-gray-800'>
                 <div className='flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
                   <div>
@@ -1429,7 +1280,7 @@ export default function LeadsPage() {
               </div>
 
               <div className='grid gap-4 p-4 sm:p-6 lg:grid-cols-2'>
-                <div className='flex flex-col gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/[0.02]'>
+                <div className='flex flex-col gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/2'>
                   <div className='flex items-center gap-2 type-caption font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400'>
                     <Tag className='icon-tiny' />
                     Active keywords
@@ -1438,7 +1289,7 @@ export default function LeadsPage() {
                     Each keyword adds 2 points. Strong intent terms can qualify
                     a conversation automatically.
                   </p>
-                  <div className='flex min-h-24 flex-1 flex-wrap content-start gap-2 rounded-[10px] border border-gray-200 bg-white p-3 dark:border-gray-800 dark:bg-gray-900'>
+                  <div className='flex min-h-24 flex-1 flex-wrap content-start gap-2 rounded-(--radius-control) border border-gray-200 bg-white p-3 dark:border-gray-800 dark:bg-gray-900'>
                     {keywords.length === 0 ? (
                       <span className='self-center type-small text-gray-400 dark:text-gray-500'>
                         No keywords added yet
@@ -1461,7 +1312,7 @@ export default function LeadsPage() {
                   </div>
                 </div>
 
-                <div className='flex flex-col gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/[0.02]'>
+                <div className='flex flex-col gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/2'>
                   <div className='flex items-center gap-2 type-caption font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400'>
                     <Plus className='icon-tiny' />
                     Add a keyword
@@ -1472,10 +1323,10 @@ export default function LeadsPage() {
                       onChange={(event) => setKwInput(event.target.value)}
                       onKeyDown={(event) => event.key === 'Enter' && addKw()}
                       placeholder='e.g. pricing, urgent'
-                      className='h-10 rounded-[10px] bg-white dark:bg-gray-900'
+                      className='h-10 rounded-(--radius-control) bg-white dark:bg-gray-900'
                     />
                     <Button
-                      className='h-10 shrink-0 rounded-[10px] px-5'
+                      className='h-10 shrink-0 rounded-(--radius-control) px-5'
                       onClick={addKw}
                       disabled={!kwInput.trim()}
                     >
@@ -1505,10 +1356,10 @@ export default function LeadsPage() {
                                   setKeywords((prev) => [...prev, kw])
                                 }
                                 className={cn(
-                                  'inline-flex items-center rounded-[10px] border px-3 py-1.5 type-caption font-medium transition',
+                                  'inline-flex items-center rounded-(--radius-control) border px-3 py-1.5 type-caption font-medium transition',
                                   already
-                                    ? 'border-gray-200 bg-gray-100 text-gray-400 dark:border-gray-800 dark:bg-white/[0.04] dark:text-gray-500'
-                                    : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-white/[0.03]',
+                                    ? 'border-gray-200 bg-gray-100 text-gray-400 dark:border-gray-800 dark:bg-white/4 dark:text-gray-500'
+                                    : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-white/3',
                                 )}
                               >
                                 {kw}

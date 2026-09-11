@@ -26,7 +26,7 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
   return (
     <thead
       data-slot="table-header"
-      className={cn("border-b border-gray-100 dark:border-white/[0.05]", className)}
+      className={cn("border-b border-gray-100 dark:border-white/5", className)}
       {...props}
     />
   )
@@ -36,7 +36,7 @@ function TableBody({ className, ...props }: React.ComponentProps<"tbody">) {
   return (
     <tbody
       data-slot="table-body"
-      className={cn("divide-y divide-gray-100 dark:divide-white/[0.05] [&_tr:last-child]:border-0", className)}
+      className={cn("divide-y divide-gray-100 dark:divide-white/5 [&_tr:last-child]:border-0", className)}
       {...props}
     />
   )
@@ -60,7 +60,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
     <tr
       data-slot="table-row"
       className={cn(
-        "transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.02] data-[state=selected]:bg-gray-50 dark:data-[state=selected]:bg-white/[0.03]",
+        "transition-colors hover:bg-gray-50 dark:hover:bg-white/2 data-[state=selected]:bg-gray-50 dark:data-[state=selected]:bg-white/3",
         className
       )}
       {...props}
@@ -73,7 +73,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "px-5 py-3 text-left align-middle type-caption font-medium text-gray-500 whitespace-nowrap dark:text-gray-400 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        "px-5 py-3 text-left align-middle type-caption font-medium text-gray-500 whitespace-nowrap dark:text-gray-400 has-[[role=checkbox]]:pr-0 *:[[role=checkbox]]:translate-y-0.5",
         className
       )}
       {...props}
@@ -86,7 +86,7 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
     <td
       data-slot="table-cell"
       className={cn(
-        "px-5 py-4 align-middle type-small text-gray-500 whitespace-nowrap dark:text-gray-400 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        "px-5 py-4 align-middle type-small text-gray-500 whitespace-nowrap dark:text-gray-400 has-[[role=checkbox]]:pr-0 *:[[role=checkbox]]:translate-y-0.5",
         className
       )}
       {...props}

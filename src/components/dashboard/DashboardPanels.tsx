@@ -27,7 +27,7 @@ export const ATTENTION_CFG: Record<string, AttentionCfg> = {
   angry_customer: {
     dot: 'bg-error-500',
     badge:
-      'bg-error-50 text-error-600 dark:bg-error-500/[0.12] dark:text-error-400',
+      'bg-error-50 text-error-600 dark:bg-error-500/12 dark:text-error-400',
     label: 'angry',
   },
   hot_lead: {
@@ -39,7 +39,7 @@ export const ATTENTION_CFG: Record<string, AttentionCfg> = {
   no_team_reply: {
     dot: 'bg-warning-500',
     badge:
-      'bg-warning-50 text-warning-600 dark:bg-warning-500/[0.12] dark:text-warning-400',
+      'bg-warning-50 text-warning-600 dark:bg-warning-500/12 dark:text-warning-400',
     label: 'waiting',
   },
   faq_gap: {
@@ -51,13 +51,13 @@ export const ATTENTION_CFG: Record<string, AttentionCfg> = {
   error: {
     dot: 'bg-error-600',
     badge:
-      'bg-error-50 text-error-700 dark:bg-error-500/[0.15] dark:text-error-400',
+      'bg-error-50 text-error-700 dark:bg-error-500/15 dark:text-error-400',
     label: 'error',
   },
   returning_lead: {
     dot: 'bg-success-500',
     badge:
-      'bg-success-50 text-success-600 dark:bg-success-500/[0.12] dark:text-success-400',
+      'bg-success-50 text-success-600 dark:bg-success-500/12 dark:text-success-400',
     label: 'returning lead',
   },
   payment_issue: {
@@ -69,7 +69,7 @@ export const ATTENTION_CFG: Record<string, AttentionCfg> = {
   dropoff: {
     dot: 'bg-error-500',
     badge:
-      'bg-error-50 text-error-600 dark:bg-error-500/[0.12] dark:text-error-400',
+      'bg-error-50 text-error-600 dark:bg-error-500/12 dark:text-error-400',
     label: 'drop-off',
   },
   returning: {
@@ -81,7 +81,7 @@ export const ATTENTION_CFG: Record<string, AttentionCfg> = {
   lead_won: {
     dot: 'bg-success-500',
     badge:
-      'bg-success-50 text-success-600 dark:bg-success-500/[0.12] dark:text-success-400',
+      'bg-success-50 text-success-600 dark:bg-success-500/12 dark:text-success-400',
     label: 'won',
   },
   lead_qualified: {
@@ -93,7 +93,7 @@ export const ATTENTION_CFG: Record<string, AttentionCfg> = {
   ai_disabled: {
     dot: 'bg-warning-500',
     badge:
-      'bg-warning-50 text-warning-600 dark:bg-warning-500/[0.12] dark:text-warning-400',
+      'bg-warning-50 text-warning-600 dark:bg-warning-500/12 dark:text-warning-400',
     label: 'AI off',
   },
 };
@@ -1107,7 +1107,7 @@ export function FaqGapsPanel({
                   maxWidth: '78%',
                 }}
               >
-                "{gap.query}"
+                &quot;{gap.query}&quot;
               </span>
 
               <span

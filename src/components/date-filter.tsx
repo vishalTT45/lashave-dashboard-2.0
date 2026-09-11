@@ -74,7 +74,7 @@ export function DateFilter({
               aria-label='Close date filter'
               title='Close'
               onClick={onClose}
-              className='inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-gray-500 transition hover:bg-gray-100 hover:text-gray-700 focus:border-brand-300 focus:ring-[3px] focus:ring-brand-500/10 dark:text-gray-400 dark:hover:bg-white/[0.06] dark:hover:text-gray-200'
+              className='inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-gray-500 transition hover:bg-gray-100 hover:text-gray-700 focus:border-brand-300 focus:ring-[3px] focus:ring-brand-500/10 dark:text-gray-400 dark:hover:bg-white/6 dark:hover:text-gray-200'
             >
               <X className='h-4 w-4' />
             </button>
@@ -103,10 +103,10 @@ export function DateFilter({
                   });
                 }}
                 className={cn(
-                  'rounded-[10px] border px-2 py-2 type-caption font-medium transition',
+                  'rounded-(--radius-control) border px-2 py-2 type-caption font-medium transition',
                   activePreset === preset.days
                     ? 'border-brand-300 bg-brand-50 text-brand-500 dark:border-brand-500/30 dark:bg-brand-500/15 dark:text-brand-400'
-                    : 'border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03]',
+                    : 'border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-gray-800 dark:text-gray-400 dark:hover:bg-white/3',
                 )}
               >
                 {preset.label}
@@ -127,7 +127,7 @@ export function DateFilter({
                     to: dateRange?.to ?? toDateStr(new Date()),
                   });
                 }}
-                className='h-9 rounded-[10px] border border-gray-300 bg-transparent px-3 type-small text-gray-700 outline-none focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:text-gray-300'
+                className='h-9 rounded-(--radius-control) border border-gray-300 bg-transparent px-3 type-small text-gray-700 outline-none focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:text-gray-300'
               />
             </label>
 
@@ -143,7 +143,7 @@ export function DateFilter({
                     to: event.target.value,
                   });
                 }}
-                className='h-9 rounded-[10px] border border-gray-300 bg-transparent px-3 type-small text-gray-700 outline-none focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:text-gray-300'
+                className='h-9 rounded-(--radius-control) border border-gray-300 bg-transparent px-3 type-small text-gray-700 outline-none focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:text-gray-300'
               />
             </label>
           </div>

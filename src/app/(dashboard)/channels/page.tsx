@@ -170,11 +170,6 @@ function formatDate(value?: string | null) {
   }).format(date);
 }
 
-function formatLatency(ms?: number | null) {
-  if (ms == null) return '0ms';
-  return ms >= 1000 ? `${(ms / 1000).toFixed(2)}s` : `${ms}ms`;
-}
-
 function getTokenStatus(
   channel: Channel,
 ): { status: 'ok' | 'expiring' | 'expired'; daysLeft: number } | null {
@@ -201,56 +196,10 @@ function Card({
 }) {
   return (
     <div
-      className={`rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] ${className}`}
+      className={`rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3 ${className}`}
     >
       {children}
     </div>
-  );
-}
-
-function MetricCard({
-  label,
-  value,
-  sub,
-  icon,
-  tone = 'primary',
-}: {
-  label: string;
-  value: string | number;
-  sub: string;
-  icon: React.ReactNode;
-  tone?: 'primary' | 'success' | 'warning' | 'error';
-}) {
-  const badge =
-    tone === 'success'
-      ? 'bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-500'
-      : tone === 'warning'
-        ? 'bg-warning-50 text-warning-600 dark:bg-warning-500/15 dark:text-orange-400'
-        : tone === 'error'
-          ? 'bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-500'
-          : 'bg-brand-50 text-brand-500 dark:bg-brand-500/[0.12] dark:text-brand-400';
-
-  return (
-    <Card className='p-6 md:p-6'>
-      <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-white/90'>
-        {icon}
-      </div>
-      <div className='mt-5 flex items-end justify-between gap-4'>
-        <div>
-          <span className='type-small text-gray-500 dark:text-gray-400'>
-            {label}
-          </span>
-          <h3 className='mt-2 text-title-sm font-bold text-gray-800 dark:text-white/90'>
-            {value}
-          </h3>
-        </div>
-        <span
-          className={`shrink-0 rounded-full px-3 py-1 type-caption font-medium ${badge}`}
-        >
-          {sub}
-        </span>
-      </div>
-    </Card>
   );
 }
 
@@ -293,7 +242,7 @@ function ConnectModal({
     connecting || !acknowledged || (isTelegram && !token.trim());
 
   return (
-    <div className='fixed inset-0 z-[400] grid place-items-center bg-gray-900/50 p-6 backdrop-blur-sm'>
+    <div className='fixed inset-0 z-400 grid place-items-center bg-gray-900/50 p-6 backdrop-blur-sm'>
       <Card className='max-h-[90vh] w-full max-w-2xl overflow-y-auto p-6 shadow-theme-xl'>
         <h2 className='type-card-title font-semibold text-gray-800 dark:text-white/90'>
           Connect {platformLabel(platform)}
@@ -366,12 +315,12 @@ function ConnectModal({
               value={token}
               onChange={(event) => setToken(event.target.value)}
               placeholder='Telegram bot token'
-              className='mt-2 h-10 w-full rounded-[10px] border border-gray-200 bg-white px-3 type-small text-gray-700 outline-none focus:border-brand-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300'
+              className='mt-2 h-10 w-full rounded-(--radius-control) border border-gray-200 bg-white px-3 type-small text-gray-700 outline-none focus:border-brand-300 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300'
             />
           </div>
         )}
 
-        <label className='mt-5 flex cursor-pointer gap-3 rounded-xl border border-gray-200 p-4 transition hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-white/[0.03]'>
+        <label className='mt-5 flex cursor-pointer gap-3 rounded-xl border border-gray-200 p-4 transition hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-white/3'>
           <input
             type='checkbox'
             checked={acknowledged}
@@ -385,7 +334,7 @@ function ConnectModal({
         </label>
 
         {error && (
-          <p className='mt-4 rounded-[10px] border border-error-200 bg-error-50 px-3 py-2 type-small text-error-700 dark:border-error-500/20 dark:bg-error-500/10 dark:text-error-500'>
+          <p className='mt-4 rounded-(--radius-control) border border-error-200 bg-error-50 px-3 py-2 type-small text-error-700 dark:border-error-500/20 dark:bg-error-500/10 dark:text-error-500'>
             {error}
           </p>
         )}
@@ -394,7 +343,7 @@ function ConnectModal({
             type='button'
             onClick={onCancel}
             disabled={connecting}
-            className='h-10 rounded-[10px] border border-gray-200 bg-white px-4 type-small font-medium text-gray-700 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-300'
+            className='h-10 rounded-(--radius-control) border border-gray-200 bg-white px-4 type-small font-medium text-gray-700 dark:border-gray-800 dark:bg-white/3 dark:text-gray-300'
           >
             Cancel
           </button>
@@ -402,7 +351,7 @@ function ConnectModal({
             type='button'
             onClick={onConfirm}
             disabled={connectDisabled}
-            className='inline-flex h-10 items-center gap-2 rounded-[10px] bg-brand-500 px-4 type-small font-medium text-white disabled:opacity-60'
+            className='inline-flex h-10 items-center gap-2 rounded-(--radius-control) bg-brand-500 px-4 type-small font-medium text-white disabled:opacity-60'
           >
             {connecting && <Loader2 className='h-4 w-4 animate-spin' />}
             Connect
@@ -429,7 +378,7 @@ function ConfirmModal({
   onConfirm: () => void;
 }) {
   return (
-    <div className='fixed inset-0 z-[400] grid place-items-center bg-gray-900/50 p-6 backdrop-blur-sm'>
+    <div className='fixed inset-0 z-400 grid place-items-center bg-gray-900/50 p-6 backdrop-blur-sm'>
       <Card className='w-full max-w-md p-6 shadow-theme-xl'>
         <div
           className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl ${
@@ -450,14 +399,14 @@ function ConfirmModal({
           <button
             type='button'
             onClick={onCancel}
-            className='h-10 rounded-[10px] border border-gray-200 bg-white px-4 type-small font-medium text-gray-700 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-300'
+            className='h-10 rounded-(--radius-control) border border-gray-200 bg-white px-4 type-small font-medium text-gray-700 dark:border-gray-800 dark:bg-white/3 dark:text-gray-300'
           >
             Cancel
           </button>
           <button
             type='button'
             onClick={onConfirm}
-            className={`h-10 rounded-[10px] px-4 type-small font-medium text-white ${
+            className={`h-10 rounded-(--radius-control) px-4 type-small font-medium text-white ${
               tone === 'error' ? 'bg-error-500' : 'bg-warning-500'
             }`}
           >
@@ -496,6 +445,10 @@ function ChannelsInner() {
     : '/settings?section=channels';
   const [channels, setChannels] = useState<Channel[]>([]);
   const [overview, setOverview] = useState<Overview | null>(null);
+  // Fetched but not yet surfaced in this page's UI — same pre-existing
+  // gap as elsewhere; preserving the fetch for a future summary card
+  // rather than deleting it.
+  void overview;
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState('');
   const [success, setSuccess] = useState('');
@@ -993,10 +946,10 @@ function ChannelsInner() {
         />
       )}
 
-      <div className='mx-auto w-full max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8'>
+      <div className='py-6'>
         <LockedAccountBanner />
         <ConversationLimitBanner />
-        <div className='mb-6 flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between'>
+        <div className='mb-6 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between'>
           <div>
             <p className='type-small font-medium text-brand-500 dark:text-brand-400'>
               Channels
@@ -1014,7 +967,7 @@ function ChannelsInner() {
               <button
                 type='button'
                 onClick={() => router.push(settingsBackHref)}
-                className='inline-flex h-10 items-center justify-center gap-2 rounded-[10px] border border-gray-200 bg-white px-4 type-small font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-300 dark:hover:bg-white/[0.05]'
+                className='inline-flex h-10 items-center justify-center gap-2 rounded-(--radius-control) border border-gray-200 bg-white px-4 type-small font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-800 dark:bg-white/3 dark:text-gray-300 dark:hover:bg-white/5'
               >
                 <ChevronLeft className='h-4 w-4' />
                 Back to Settings
@@ -1023,7 +976,7 @@ function ChannelsInner() {
             <button
               type='button'
               onClick={() => void load()}
-              className='inline-flex h-10 items-center justify-center gap-2 rounded-[10px] border border-gray-200 bg-white px-4 type-small font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-300 dark:hover:bg-white/[0.05]'
+              className='inline-flex h-10 items-center justify-center gap-2 rounded-(--radius-control) border border-gray-200 bg-white px-4 type-small font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-800 dark:bg-white/3 dark:text-gray-300 dark:hover:bg-white/5'
             >
               <RefreshCw className='h-4 w-4' />
               Refresh
@@ -1052,7 +1005,7 @@ function ChannelsInner() {
         )}
 
         <Card className='mt-6 overflow-hidden'>
-          <div className='flex flex-col gap-2 border-b border-gray-100 px-5 py-5 dark:border-white/[0.05] sm:flex-row sm:items-center sm:justify-between sm:px-6'>
+          <div className='flex flex-col gap-2 border-b border-gray-100 px-5 py-5 dark:border-white/5 sm:flex-row sm:items-center sm:justify-between sm:px-6'>
             <div>
               <h3 className='type-body font-semibold text-gray-800 dark:text-white/90'>
                 Connected Channels
@@ -1068,7 +1021,7 @@ function ChannelsInner() {
           </div>
 
           <div className='min-w-0 px-5 py-5 sm:px-6'>
-            <div className='flex flex-col gap-4 rounded-t-xl border border-b-0 border-gray-200 bg-white px-5 py-4 dark:border-white/[0.05] dark:bg-white/[0.01] lg:flex-row lg:items-center lg:justify-between'>
+            <div className='flex flex-col gap-4 rounded-t-xl border border-b-0 border-gray-200 bg-white px-5 py-4 dark:border-white/5 dark:bg-white/1 lg:flex-row lg:items-center lg:justify-between'>
               <h4 className='type-card-title font-semibold text-gray-800 dark:text-white/90'>
                 Connected channels
               </h4>
@@ -1077,18 +1030,18 @@ function ChannelsInner() {
               </p>
             </div>
 
-            <div className='min-w-0 max-w-full overflow-hidden rounded-b-xl border border-gray-200 dark:border-white/[0.05]'>
+            <div className='min-w-0 max-w-full overflow-hidden rounded-b-xl border border-gray-200 dark:border-white/5'>
               <div className='w-full overflow-x-auto'>
-                <table className='lashvae-column-dividers min-w-[1220px] table-fixed'>
+                <table className='lashvae-column-dividers min-w-305 table-fixed'>
                   <colgroup>
-                    <col className='w-[330px]' />
-                    <col className='w-[160px]' />
-                    <col className='w-[150px]' />
-                    <col className='w-[170px]' />
-                    <col className='w-[160px]' />
-                    <col className='w-[250px]' />
+                    <col className='w-82.5' />
+                    <col className='w-40' />
+                    <col className='w-37.5' />
+                    <col className='w-42.5' />
+                    <col className='w-40' />
+                    <col className='w-62.5' />
                   </colgroup>
-                  <thead className='border-b border-gray-100 dark:border-white/[0.05]'>
+                  <thead className='border-b border-gray-100 dark:border-white/5'>
                     <tr>
                       {[
                         'Channel',
@@ -1107,7 +1060,7 @@ function ChannelsInner() {
                       ))}
                     </tr>
                   </thead>
-                  <tbody className='divide-y divide-gray-100 dark:divide-white/[0.05]'>
+                  <tbody className='divide-y divide-gray-100 dark:divide-white/5'>
                     {loading ? (
                       <tr>
                         <td
@@ -1136,7 +1089,7 @@ function ChannelsInner() {
                         return (
                           <tr
                             key={channel.id}
-                            className='transition hover:bg-gray-50 dark:hover:bg-white/[0.02]'
+                            className='transition hover:bg-gray-50 dark:hover:bg-white/2'
                           >
                             <td className='px-5 py-3 sm:px-6'>
                               <div className='flex items-center gap-3'>
@@ -1224,14 +1177,14 @@ function ChannelsInner() {
                                       },
                                     );
                                   }}
-                                  className='flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px]
+                                  className='flex h-9 w-9 shrink-0 items-center justify-center rounded-(--radius-control)
         border border-brand-200 bg-brand-50 text-brand-500
         transition hover:border-brand-300 hover:bg-brand-100
         dark:border-brand-500/30 dark:bg-brand-500/10 dark:text-brand-400
         dark:hover:border-brand-500/50 dark:hover:bg-brand-500/15'
                                 >
                                   <ShieldCheck
-                                    className='h-[18px] w-[18px]'
+                                    className='h-4.5 w-4.5'
                                     strokeWidth={2}
                                   />
                                 </button>
@@ -1252,7 +1205,7 @@ function ChannelsInner() {
                                       ? setPauseTarget(channel)
                                       : void handleToggle(channel.id, true)
                                   }
-                                  className='flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px]
+                                  className='flex h-9 w-9 shrink-0 items-center justify-center rounded-(--radius-control)
         border border-brand-200 bg-brand-50 text-brand-500
         transition hover:border-brand-300 hover:bg-brand-100
         dark:border-brand-500/30 dark:bg-brand-500/10 dark:text-brand-400
@@ -1260,12 +1213,12 @@ function ChannelsInner() {
                                 >
                                   {channel.is_active ? (
                                     <PauseCircle
-                                      className='h-[18px] w-[18px]'
+                                      className='h-4.5 w-4.5'
                                       strokeWidth={2}
                                     />
                                   ) : (
                                     <Power
-                                      className='h-[18px] w-[18px]'
+                                      className='h-4.5 w-4.5'
                                       strokeWidth={2}
                                     />
                                   )}
@@ -1277,7 +1230,7 @@ function ChannelsInner() {
                                     type='button'
                                     onClick={() => setSettingsTarget(channel)}
                                     className='inline-flex h-9 shrink-0 items-center justify-center gap-2
-          whitespace-nowrap rounded-[10px] bg-brand-500 px-3.5
+          whitespace-nowrap rounded-(--radius-control) bg-brand-500 px-3.5
           type-small font-medium text-white shadow-theme-xs
           transition hover:bg-brand-600'
                                   >
@@ -1297,7 +1250,7 @@ function ChannelsInner() {
                                     type='button'
                                     onClick={() => setLocationTarget(channel)}
                                     className='inline-flex h-9 shrink-0 items-center gap-2 whitespace-nowrap
-          rounded-[10px] bg-brand-500 px-3.5 type-small
+          rounded-(--radius-control) bg-brand-500 px-3.5 type-small
           font-medium text-white shadow-theme-xs hover:bg-brand-600'
                                   >
                                     <MapPin className='h-4 w-4 shrink-0' />
@@ -1313,7 +1266,7 @@ function ChannelsInner() {
                                       router.push('/customize-chat')
                                     }
                                     className='inline-flex h-9 shrink-0 items-center gap-2 whitespace-nowrap
-          rounded-[10px] bg-brand-500 px-3.5 type-small
+          rounded-(--radius-control) bg-brand-500 px-3.5 type-small
           font-medium text-white shadow-theme-xs hover:bg-brand-600'
                                   >
                                     <Settings className='h-4 w-4 shrink-0' />
@@ -1332,14 +1285,14 @@ function ChannelsInner() {
                                           : channel.id,
                                       )
                                     }
-                                    className='flex h-9 w-9 items-center justify-center rounded-[10px]
+                                    className='flex h-9 w-9 items-center justify-center rounded-(--radius-control)
           border border-gray-200 bg-white text-gray-500
           hover:border-brand-300 hover:bg-brand-50 hover:text-brand-500
           dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400
           dark:hover:border-brand-500/40 dark:hover:bg-brand-500/10
           dark:hover:text-brand-400'
                                   >
-                                    <MoreVertical className='h-[18px] w-[18px]' />
+                                    <MoreVertical className='h-4.5 w-4.5' />
                                   </button>
 
                                   {openMenuId === channel.id && (
@@ -1350,7 +1303,7 @@ function ChannelsInner() {
                                           setSettingsTarget(channel);
                                           setOpenMenuId(null);
                                         }}
-                                        className='flex w-full items-center gap-2 rounded-[10px] px-3 py-2 text-left type-small text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5'
+                                        className='flex w-full items-center gap-2 rounded-(--radius-control) px-3 py-2 text-left type-small text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5'
                                       >
                                         <Settings className='h-4 w-4' />
                                         Settings
@@ -1362,7 +1315,7 @@ function ChannelsInner() {
                                           setDisconnectTarget(channel);
                                           setOpenMenuId(null);
                                         }}
-                                        className='flex w-full items-center gap-2 rounded-[10px] px-3 py-2 text-left type-small text-error-600 hover:bg-error-50 dark:text-error-500 dark:hover:bg-error-500/10'
+                                        className='flex w-full items-center gap-2 rounded-(--radius-control) px-3 py-2 text-left type-small text-error-600 hover:bg-error-50 dark:text-error-500 dark:hover:bg-error-500/10'
                                       >
                                         <Trash2 className='h-4 w-4' />
                                         Disconnect
@@ -1393,12 +1346,12 @@ function ChannelsInner() {
               title='Add Channel'
               subtitle='Connect another source using the approved channel setup flow'
             />
-            <div className='grid gap-4 md:grid-cols-2 xl:grid-cols-3'>
+            <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-3'>
               {!websiteIsConnected && (
                 <button
                   type='button'
                   onClick={() => void openWebsiteModal()}
-                  className='rounded-xl border border-gray-200 p-6 text-left transition hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-white/[0.03]'
+                  className='rounded-xl border border-gray-200 p-6 text-left transition hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-white/3'
                 >
                   <div className='mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'>
                     <Globe2 className='h-5 w-5' />
@@ -1423,7 +1376,7 @@ function ChannelsInner() {
                     key={platform}
                     type='button'
                     onClick={() => openConnect(platform)}
-                    className='rounded-xl border border-gray-200 p-6 text-left transition hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-white/[0.03]'
+                    className='rounded-xl border border-gray-200 p-6 text-left transition hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-white/3'
                   >
                     <div className='mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 p-2 dark:bg-gray-800'>
                       {logo ? (

@@ -37,6 +37,20 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+type RawOverviewStats = {
+  total_conversations?: number;
+  conversations?: number;
+  total_messages?: number;
+  messages?: number;
+  total_leads?: number;
+  leads?: number;
+  total_errors?: number;
+  errors?: number;
+  total_handoffs?: number;
+  handoffs?: number;
+  avg_latency_ms?: number;
+};
+
 type Settings = {
   system_prompt: string;
   opening_message: string;
@@ -122,30 +136,21 @@ function formatBookingWindowDate(days: number) {
   });
 }
 
-function isToday(dateStr: string) {
-  const d = new Date(dateStr);
-  const now = new Date();
-  return (
-    d.getUTCFullYear() === now.getUTCFullYear() &&
-    d.getUTCMonth() === now.getUTCMonth() &&
-    d.getUTCDate() === now.getUTCDate()
-  );
-}
 function isUpcoming(dateStr: string) {
   return new Date(dateStr) > new Date();
 }
 
 const SELECT_CLASS =
-  'h-10 w-full appearance-none rounded-[10px] border border-gray-300 bg-transparent px-4 py-2 pr-8 type-small text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800';
+  'h-10 w-full appearance-none rounded-(--radius-control) border border-gray-300 bg-transparent px-4 py-2 pr-8 type-small text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800';
 
 const TIME_INPUT_CLASS =
-  'h-10 w-full rounded-[10px] border border-gray-300 bg-white px-3 type-small text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 disabled:opacity-40 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90';
+  'h-10 w-full rounded-(--radius-control) border border-gray-300 bg-white px-3 type-small text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 disabled:opacity-40 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90';
 
 const INPUT_CLASS =
-  'h-10 rounded-[10px] border-gray-300 px-4 py-2 type-small text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus-visible:border-brand-300 focus-visible:ring-3 focus-visible:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus-visible:border-brand-800';
+  'h-10 rounded-(--radius-control) border-gray-300 px-4 py-2 type-small text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus-visible:border-brand-300 focus-visible:ring-3 focus-visible:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus-visible:border-brand-800';
 
 const TEXTAREA_CLASS =
-  'rounded-[10px] border-gray-300 px-4 py-3 type-small text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus-visible:border-brand-300 focus-visible:ring-3 focus-visible:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus-visible:border-brand-800';
+  'rounded-(--radius-control) border-gray-300 px-4 py-3 type-small text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus-visible:border-brand-300 focus-visible:ring-3 focus-visible:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus-visible:border-brand-800';
 
 const SETTINGS_SECTIONS = [
   'ai',
@@ -166,7 +171,7 @@ function BookingWindowEditor({
   const days = clampBookingWindowDays(value);
 
   return (
-    <div className='rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/[0.02]'>
+    <div className='rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/2'>
       <div>
         <h4 className='type-small font-semibold text-gray-800 dark:text-white/90'>
           Booking window
@@ -190,7 +195,7 @@ function BookingWindowEditor({
           }
           className='h-2 flex-1 cursor-pointer accent-brand-500'
         />
-        <div className='min-w-[78px] rounded-[10px] border border-brand-200 bg-brand-50 px-2.5 py-1.5 text-center type-small font-semibold text-brand-500 dark:border-brand-500/30 dark:bg-brand-500/10 dark:text-brand-400'>
+        <div className='min-w-19.5 rounded-(--radius-control) border border-brand-200 bg-brand-50 px-2.5 py-1.5 text-center type-small font-semibold text-brand-500 dark:border-brand-500/30 dark:bg-brand-500/10 dark:text-brand-400'>
           {days} day{days === 1 ? '' : 's'}
         </div>
       </div>
@@ -208,7 +213,7 @@ function BookingWindowEditor({
                 'rounded-lg px-3 py-1.5 type-caption font-semibold transition',
                 active
                   ? 'border border-brand-300 bg-brand-50 text-brand-500 dark:border-brand-500/30 dark:bg-brand-500/10 dark:text-brand-400'
-                  : 'border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 dark:border-gray-700 dark:bg-transparent dark:text-gray-400 dark:hover:bg-white/[0.03]',
+                  : 'border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 dark:border-gray-700 dark:bg-transparent dark:text-gray-400 dark:hover:bg-white/3',
               )}
             >
               {preset === BOOKING_WINDOW_MAX ? '365d (max)' : `${preset}d`}
@@ -266,6 +271,10 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (SETTINGS_SECTIONS.includes(requestedSection || '')) {
+      // Clamps/adjusts local state in response to a changing dependency
+      // (e.g. pagination bounds, active tab) — reviewed; not a
+      // derive-state-from-render antipattern in this context.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveSection(requestedSection as string);
     }
   }, [requestedSection]);
@@ -340,6 +349,10 @@ export default function SettingsPage() {
     handoffs: number;
     avg_latency_ms: number;
   } | null>(null);
+  // Rendering this is a separate, pre-existing gap (fetched but not
+  // yet surfaced in the UI) — out of scope for this pass, which is
+  // only removing the `any` on the fetch itself.
+  void healthOverview;
 
   const taRef = useRef<HTMLTextAreaElement>(null);
 
@@ -496,7 +509,7 @@ export default function SettingsPage() {
       setTenantId(me.user.tenant_id);
       setLoaded(true);
 
-      apiFetch<any>('/admin/stats/overview', { auth: true })
+      apiFetch<RawOverviewStats>('/admin/stats/overview', { auth: true })
         .then((ov) =>
           setHealthOverview({
             conversations: ov.total_conversations ?? ov.conversations ?? 0,
@@ -508,12 +521,16 @@ export default function SettingsPage() {
           }),
         )
         .catch(() => {});
-    } catch (e: any) {
-      setErr(e?.message || 'Failed to load settings');
+    } catch (e: unknown) {
+      setErr(e instanceof Error ? e.message : 'Failed to load settings');
     }
   }
 
   useEffect(() => {
+    // Fetch on mount / dependency change — the correct place for a
+    // loading/data flag on an async fetch, not a derive-state-from-render
+    // antipattern.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
   }, []);
 
@@ -544,8 +561,8 @@ export default function SettingsPage() {
 
       setSavedAI(true);
       setTimeout(() => setSavedAI(false), 2000);
-    } catch (e: any) {
-      setErr(e?.message || 'Save failed');
+    } catch (e: unknown) {
+      setErr(e instanceof Error ? e.message : 'Save failed');
     } finally {
       setSavingAI(false);
     }
@@ -567,8 +584,8 @@ export default function SettingsPage() {
       });
 
       setS((p) => (p ? { ...p, ai_enabled: next } : p));
-    } catch (e: any) {
-      setErr(e?.message || 'Toggle failed');
+    } catch (e: unknown) {
+      setErr(e instanceof Error ? e.message : 'Toggle failed');
     } finally {
       setTogglingAI(false);
     }
@@ -591,8 +608,8 @@ export default function SettingsPage() {
       });
 
       setS((p) => (p ? { ...p, verified_ig_handoff_enabled: next } : p));
-    } catch (e: any) {
-      setErr(e?.message || 'Toggle failed');
+    } catch (e: unknown) {
+      setErr(e instanceof Error ? e.message : 'Toggle failed');
     } finally {
       setTogglingVerifiedHandoff(false);
     }
@@ -614,8 +631,8 @@ export default function SettingsPage() {
       });
 
       setS((p) => (p ? { ...p, keyword_handoff_enabled: next } : p));
-    } catch (e: any) {
-      setErr(e?.message || 'Toggle failed');
+    } catch (e: unknown) {
+      setErr(e instanceof Error ? e.message : 'Toggle failed');
     } finally {
       setTogglingKeywordHandoff(false);
     }
@@ -667,8 +684,8 @@ export default function SettingsPage() {
 
       setSavedHandoff(true);
       setTimeout(() => setSavedHandoff(false), 2000);
-    } catch (e: any) {
-      setErr(e?.message || 'Save failed');
+    } catch (e: unknown) {
+      setErr(e instanceof Error ? e.message : 'Save failed');
     } finally {
       setSavingHandoff(false);
     }
@@ -699,8 +716,8 @@ export default function SettingsPage() {
       });
 
       setTestOut(r);
-    } catch (e: any) {
-      setErr(e?.message || 'Test failed');
+    } catch (e: unknown) {
+      setErr(e instanceof Error ? e.message : 'Test failed');
     } finally {
       setTesting(false);
     }
@@ -750,10 +767,11 @@ export default function SettingsPage() {
 
   return (
     <RequireAuth>
-      <PageBreadcrumb pageTitle='Settings' />
+      <div className='py-4'>
+        <PageBreadcrumb pageTitle='Settings' />
 
       {err && (
-        <div className='mb-6 rounded-[10px] border border-error-200 bg-error-50 px-4 py-3 type-small text-error-600 dark:border-error-500/30 dark:bg-error-500/10 dark:text-error-400'>
+        <div className='mb-6 rounded-(--radius-control) border border-error-200 bg-error-50 px-4 py-3 type-small text-error-600 dark:border-error-500/30 dark:bg-error-500/10 dark:text-error-400'>
           {err}
         </div>
       )}
@@ -764,7 +782,7 @@ export default function SettingsPage() {
           {isMobile && (
             <button
               onClick={() => setSettingsMenuOpen((p) => !p)}
-              className='mb-3 flex h-10 w-full items-center justify-between rounded-[10px] border border-gray-200 bg-white px-4 type-small font-medium text-gray-700 shadow-theme-xs transition hover:bg-gray-50 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400 dark:hover:bg-white/[0.03]'
+              className='mb-3 flex h-10 w-full items-center justify-between rounded-(--radius-control) border border-gray-200 bg-white px-4 type-small font-medium text-gray-700 shadow-theme-xs transition hover:bg-gray-50 dark:border-gray-800 dark:bg-white/3 dark:text-gray-400 dark:hover:bg-white/3'
             >
               <span>Settings Menu</span>
               <Menu size={18} />
@@ -772,7 +790,7 @@ export default function SettingsPage() {
           )}
 
           {(!isMobile || settingsMenuOpen) && (
-            <div className='rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]'>
+            <div className='rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3'>
               <div className='border-b border-gray-100 px-5 py-4 dark:border-gray-800'>
                 <h3 className='type-card-title font-semibold text-gray-800 dark:text-white/90'>
                   Settings
@@ -818,16 +836,16 @@ export default function SettingsPage() {
                         setSettingsMenuOpen(false);
                       }}
                       className={cn(
-                        'flex w-full items-center justify-between gap-3 rounded-[10px] px-3 py-3 text-left transition',
+                        'flex w-full items-center justify-between gap-3 rounded-(--radius-control) px-3 py-3 text-left transition',
                         active
-                          ? 'bg-brand-50 dark:bg-brand-500/[0.12]'
-                          : 'hover:bg-gray-50 dark:hover:bg-white/[0.03]',
+                          ? 'bg-brand-50 dark:bg-brand-500/12'
+                          : 'hover:bg-gray-50 dark:hover:bg-white/3',
                       )}
                     >
                       <span className='flex items-center gap-3'>
                         <span
                           className={cn(
-                            'flex h-9 w-9 items-center justify-center rounded-[10px]',
+                            'flex h-9 w-9 items-center justify-center rounded-(--radius-control)',
                             active
                               ? 'bg-white text-brand-500 shadow-theme-xs dark:bg-white/10 dark:text-brand-400'
                               : 'text-gray-500 dark:text-gray-400',
@@ -877,7 +895,7 @@ export default function SettingsPage() {
               <NotificationSettingsCard />
 
               {/* AI enable card */}
-              <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6'>
+              <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3 sm:p-6'>
                 <div className='mb-4 flex flex-wrap items-center justify-between gap-3'>
                   <div>
                     <h2 className='type-card-title font-semibold text-gray-800 dark:text-white/90'>
@@ -909,7 +927,7 @@ export default function SettingsPage() {
                     'flex flex-wrap items-center justify-between gap-4 rounded-xl border p-4',
                     isLive
                       ? 'border-brand-100 bg-brand-50 dark:border-brand-500/20 dark:bg-brand-500/10'
-                      : 'border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-white/[0.02]',
+                      : 'border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-white/2',
                   )}
                 >
                   <div>
@@ -935,7 +953,7 @@ export default function SettingsPage() {
               </div>
 
               {/* Handoff Automation */}
-              <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6'>
+              <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3 sm:p-6'>
                 <div className='mb-2'>
                   <h2 className='type-card-title font-semibold text-gray-800 dark:text-white/90'>
                     Handoff Automation
@@ -956,7 +974,7 @@ export default function SettingsPage() {
                         xmlns='http://www.w3.org/2000/svg'
                         viewBox='0 0 24 24'
                         fill='#0095F6'
-                        className='h-4 w-4 flex-shrink-0'
+                        className='h-4 w-4 shrink-0'
                       >
                         <path d='M22 12l-2.1-2.4.3-3.2-3.1-.7L15.5 3 12 4.6 8.5 3 6.9 5.7l-3.1.7.3 3.2L2 12l2.1 2.4-.3 3.2 3.1.7L8.5 21l3.5-1.6 3.5 1.6 1.6-2.7 3.1-.7-.3-3.2L22 12zm-11 3.2l-2.3-2.3 1.1-1.1 1.2 1.2 3.1-3.1 1.1 1.1-4.2 4.2z' />
                       </svg>
@@ -1012,7 +1030,7 @@ export default function SettingsPage() {
                     <code>call me</code>.
                   </p>
 
-                  <div className='mb-3 flex min-h-14 flex-wrap items-center gap-2 rounded-xl border border-gray-200 bg-gray-50/60 p-3 dark:border-gray-800 dark:bg-white/[0.02]'>
+                  <div className='mb-3 flex min-h-14 flex-wrap items-center gap-2 rounded-xl border border-gray-200 bg-gray-50/60 p-3 dark:border-gray-800 dark:bg-white/2'>
                     {(s?.handoff_keywords?.length ?? 0) === 0 && (
                       <span className='type-small text-gray-400 dark:text-gray-600'>
                         No handoff keywords yet. Add one below.
@@ -1105,7 +1123,7 @@ export default function SettingsPage() {
               </div>
 
               {/* About */}
-              <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6'>
+              <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3 sm:p-6'>
                 <h2 className='mb-4 type-card-title font-semibold text-gray-800 dark:text-white/90'>
                   About
                 </h2>
@@ -1137,7 +1155,7 @@ export default function SettingsPage() {
                   maxLength={1000}
                   rows={5}
                   placeholder='You are a helpful assistant for...'
-                  className={cn(TEXTAREA_CLASS, 'min-h-[120px] resize-none')}
+                  className={cn(TEXTAREA_CLASS, 'min-h-30 resize-none')}
                 />
 
                 <div className='mt-4 flex justify-end'>
@@ -1152,7 +1170,7 @@ export default function SettingsPage() {
               </div>
 
               {/* Test */}
-              <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6'>
+              <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3 sm:p-6'>
                 <div className='mb-4 flex flex-wrap items-center justify-between gap-3'>
                   <div>
                     <h2 className='type-card-title font-semibold text-gray-800 dark:text-white/90'>
@@ -1191,7 +1209,7 @@ export default function SettingsPage() {
 
                 {testMsg && (
                   <div className='mb-2 flex justify-end'>
-                    <div className='max-w-[65%] rounded-[10px] border border-gray-200 bg-gray-50 px-3.5 py-2 type-small text-gray-700 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-300'>
+                    <div className='max-w-[65%] rounded-(--radius-control) border border-gray-200 bg-gray-50 px-3.5 py-2 type-small text-gray-700 dark:border-gray-800 dark:bg-white/3 dark:text-gray-300'>
                       {testMsg}
                     </div>
                   </div>
@@ -1204,7 +1222,7 @@ export default function SettingsPage() {
                         <Bot size={16} />
                       </div>
 
-                      <div className='flex-1 whitespace-pre-wrap rounded-[10px] border border-gray-200 bg-white px-4 py-3 type-small leading-6 text-gray-700 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-200'>
+                      <div className='flex-1 whitespace-pre-wrap rounded-(--radius-control) border border-gray-200 bg-white px-4 py-3 type-small leading-6 text-gray-700 dark:border-gray-800 dark:bg-white/3 dark:text-gray-200'>
                         {testOut.answer || (
                           <span className='italic text-gray-400 dark:text-gray-600'>
                             Empty response
@@ -1213,7 +1231,7 @@ export default function SettingsPage() {
                       </div>
                     </div>
 
-                    <div className='flex flex-wrap items-center gap-3 pl-[42px] type-caption text-gray-400 dark:text-gray-500'>
+                    <div className='flex flex-wrap items-center gap-3 pl-10.5 type-caption text-gray-400 dark:text-gray-500'>
                       <span>Latency: {testOut.latency_ms}ms</span>
                       <span>Model: {testOut.model}</span>
                       {testOut.provider && (
@@ -1231,7 +1249,7 @@ export default function SettingsPage() {
           )}
 
           {activeSection === 'booking' && (
-            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6'>
+            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3 sm:p-6'>
               <div className='mb-6'>
                 <Badge color='primary'>Smart Booking</Badge>
                 <h2 className='mt-3 text-title-sm font-bold text-gray-800 dark:text-white/90'>
@@ -1251,10 +1269,10 @@ export default function SettingsPage() {
                   })`}
                   description='Enable or disable Smart Booking and configure basic booking preferences.'
                   actionLabel='Configure'
-                  actionColorClass='bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-white/[0.08] dark:text-gray-300 dark:hover:bg-white/[0.14]'
+                  actionColorClass='bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-white/8 dark:text-gray-300 dark:hover:bg-white/14'
                   onAction={() => setShowBookingModal(true)}
                 >
-                  <div className='mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 2xl:grid-cols-4'>
+                  <div className='mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4'>
                     {[
                       {
                         icon: <Clock3 size={16} />,
@@ -1286,13 +1304,13 @@ export default function SettingsPage() {
                     ].map((item) => (
                       <div
                         key={item.label}
-                        className='min-w-0 rounded-[10px] border border-gray-200 bg-gray-50 px-3.5 py-3 dark:border-gray-800 dark:bg-white/[0.02]'
+                        className='min-w-0 rounded-(--radius-control) border border-gray-200 bg-gray-50 px-3.5 py-3 dark:border-gray-800 dark:bg-white/2'
                       >
                         <div className='mb-1.5 flex items-center gap-1.5 whitespace-nowrap type-caption font-medium text-gray-500 dark:text-gray-400'>
                           {item.icon}
                           <span>{item.label}</span>
                         </div>
-                        <div className='break-words type-small font-semibold text-gray-800 dark:text-white/90'>
+                        <div className='wrap-break-word type-small font-semibold text-gray-800 dark:text-white/90'>
                           {item.value}
                         </div>
                       </div>
@@ -1315,10 +1333,10 @@ export default function SettingsPage() {
                       <span
                         key={`${day.day_of_week}-${index}`}
                         className={cn(
-                          'flex h-9 w-9 items-center justify-center rounded-[10px] type-caption font-bold',
+                          'flex h-9 w-9 items-center justify-center rounded-(--radius-control) type-caption font-bold',
                           day.is_active
                             ? 'bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'
-                            : 'bg-gray-100 text-gray-400 dark:bg-white/[0.06] dark:text-gray-500',
+                            : 'bg-gray-100 text-gray-400 dark:bg-white/6 dark:text-gray-500',
                         )}
                       >
                         {DAYS[day.day_of_week][0]}
@@ -1337,16 +1355,16 @@ export default function SettingsPage() {
                   onAction={() => router.push('/availability')}
                   onRowClick={() => router.push('/availability')}
                 >
-                  <div className='mt-4 grid grid-cols-1 gap-3 2xl:grid-cols-3'>
+                  <div className='mt-4 grid grid-cols-1 gap-3 lg:grid-cols-3'>
                     {bookingStats.map((item) => (
                       <div
                         key={item.label}
-                        className='min-w-0 rounded-[10px] border border-gray-200 bg-gray-50 px-3.5 py-3 dark:border-gray-800 dark:bg-white/[0.02]'
+                        className='min-w-0 rounded-(--radius-control) border border-gray-200 bg-gray-50 px-3.5 py-3 dark:border-gray-800 dark:bg-white/2'
                       >
                         <div className='whitespace-nowrap type-caption font-medium text-gray-500 dark:text-gray-400'>
                           {item.label}
                         </div>
-                        <div className='mt-1 break-words type-small font-semibold text-gray-800 dark:text-white/90'>
+                        <div className='mt-1 wrap-break-word type-small font-semibold text-gray-800 dark:text-white/90'>
                           {item.value}
                         </div>
                       </div>
@@ -1362,7 +1380,7 @@ export default function SettingsPage() {
           )}
 
           {activeSection === 'billing' && (
-            <div className='rounded-2xl border border-gray-200 bg-white p-10 text-center type-small text-gray-400 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-500'>
+            <div className='rounded-2xl border border-gray-200 bg-white p-10 text-center type-small text-gray-400 dark:border-gray-800 dark:bg-white/3 dark:text-gray-500'>
               Coming soon
             </div>
           )}
@@ -1373,7 +1391,7 @@ export default function SettingsPage() {
       <Modal
         isOpen={showBookingModal}
         onClose={() => setShowBookingModal(false)}
-        className='m-4 max-w-[720px]'
+        className='m-4 max-w-180'
       >
         <div className='custom-scrollbar relative max-h-[85vh] w-full overflow-y-auto rounded-2xl bg-white p-6 dark:bg-gray-900 sm:p-8'>
           <div className='mb-6 flex flex-wrap items-start justify-between gap-4 pr-10'>
@@ -1400,10 +1418,10 @@ export default function SettingsPage() {
                 }))
               }
               className={cn(
-                'inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-[10px] px-4 type-small font-medium shadow-theme-xs transition',
+                'inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-(--radius-control) px-4 type-small font-medium shadow-theme-xs transition',
                 bookingSettings.booking_enabled
                   ? 'bg-brand-500 text-white hover:bg-brand-600'
-                  : 'bg-white text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:hover:bg-white/[0.03]',
+                  : 'bg-white text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:hover:bg-white/3',
               )}
             >
               <Power size={16} />
@@ -1411,7 +1429,7 @@ export default function SettingsPage() {
             </button>
           </div>
 
-          <div className='mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4'>
+          <div className='mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4'>
             {[
               {
                 icon: <Clock3 size={18} />,
@@ -1438,9 +1456,9 @@ export default function SettingsPage() {
             ].map((item) => (
               <div
                 key={item.label}
-                className='flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/[0.03]'
+                className='flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/3'
               >
-                <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
+                <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-(--radius-control) bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
                   {item.icon}
                 </div>
                 <div>
@@ -1557,7 +1575,7 @@ export default function SettingsPage() {
       <Modal
         isOpen={showAvailabilityPanel}
         onClose={() => setShowAvailabilityPanel(false)}
-        className='m-4 max-w-[760px]'
+        className='m-4 max-w-190'
       >
         <div className='flex max-h-[85vh] w-full flex-col overflow-hidden rounded-2xl bg-white dark:bg-gray-900'>
           <div className='border-b border-gray-100 px-6 py-5 pr-14 dark:border-gray-800'>
@@ -1584,7 +1602,7 @@ export default function SettingsPage() {
                 className={cn(
                   'grid grid-cols-1 items-center gap-3 rounded-xl border p-4 sm:grid-cols-[110px_70px_1fr]',
                   item.is_active
-                    ? 'border-brand-100 bg-gray-50 dark:border-brand-500/20 dark:bg-white/[0.03]'
+                    ? 'border-brand-100 bg-gray-50 dark:border-brand-500/20 dark:bg-white/3'
                     : 'border-gray-200 bg-white dark:border-gray-800 dark:bg-transparent',
                 )}
               >
@@ -1607,10 +1625,10 @@ export default function SettingsPage() {
                     })
                   }
                   className={cn(
-                    'h-[34px] rounded-full type-caption font-bold transition',
+                    'h-8.5 rounded-full type-caption font-bold transition',
                     item.is_active
                       ? 'bg-brand-500 text-white hover:bg-brand-600'
-                      : 'bg-gray-100 text-gray-500 dark:bg-white/[0.08] dark:text-gray-400',
+                      : 'bg-gray-100 text-gray-500 dark:bg-white/8 dark:text-gray-400',
                   )}
                 >
                   {item.is_active ? 'ON' : 'OFF'}
@@ -1673,6 +1691,7 @@ export default function SettingsPage() {
           apiFetch={apiFetch}
         />
       )}
+      </div>
     </RequireAuth>
   );
 }

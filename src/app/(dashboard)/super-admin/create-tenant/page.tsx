@@ -83,8 +83,8 @@ function CreateTenantForm() {
         temperature: "0.2",
         max_tokens: "200",
       });
-    } catch (err: any) {
-      setMsg({ type: "err", text: err.message || "Failed to create tenant" });
+    } catch (err: unknown) {
+      setMsg({ type: "err", text: err instanceof Error ? err.message : "Failed to create tenant" });
     } finally {
       setLoading(false);
     }

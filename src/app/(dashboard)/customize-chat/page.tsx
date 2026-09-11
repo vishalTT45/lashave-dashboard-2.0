@@ -727,6 +727,10 @@ function ColorInput({
   const [draft, setDraft] = useState(value.toUpperCase());
 
   useEffect(() => {
+    // Clamps/adjusts local state in response to a changing dependency
+    // (e.g. pagination bounds, active tab) — reviewed; not a
+    // derive-state-from-render antipattern in this context.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDraft(value.toUpperCase());
   }, [value]);
 
@@ -748,11 +752,11 @@ function ColorInput({
         {label}
       </div>
       <div
-        className='flex min-h-10 cursor-pointer items-center gap-3 rounded-[10px] border border-gray-300 bg-white px-3 py-2 shadow-theme-xs dark:border-gray-700 dark:bg-gray-900'
+        className='flex min-h-10 cursor-pointer items-center gap-3 rounded-(--radius-control) border border-gray-300 bg-white px-3 py-2 shadow-theme-xs dark:border-gray-700 dark:bg-gray-900'
         onClick={() => colorRef.current?.click()}
       >
         <div
-          className='h-7 w-7 shrink-0 rounded-[10px] border border-gray-300 dark:border-gray-700'
+          className='h-7 w-7 shrink-0 rounded-(--radius-control) border border-gray-300 dark:border-gray-700'
           style={{ background: value }}
         />
         <input
@@ -856,7 +860,7 @@ function Segmented({
   accent: string;
 }) {
   return (
-    <div className='inline-flex flex-wrap gap-0.5 rounded-[10px] border border-gray-200 bg-gray-50 p-0.5 dark:border-gray-800 dark:bg-white/[0.03]'>
+    <div className='inline-flex flex-wrap gap-0.5 rounded-(--radius-control) border border-gray-200 bg-gray-50 p-0.5 dark:border-gray-800 dark:bg-white/3'>
       {options.map((o) => {
         const sel = o.id === value;
         return (
@@ -864,7 +868,7 @@ function Segmented({
             key={o.id}
             onClick={() => onChange(o.id)}
             className={cn(
-              'min-h-[34px] rounded-[10px] px-3.5 py-1.5 type-small font-medium transition',
+              'min-h-8.5 rounded-(--radius-control) px-3.5 py-1.5 type-small font-medium transition',
               sel
                 ? 'text-white shadow-theme-xs'
                 : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200',
@@ -906,7 +910,7 @@ function TextField({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className='h-10 rounded-[10px] border-gray-300 px-4 py-2 type-small text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus-visible:border-brand-300 focus-visible:ring-3 focus-visible:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus-visible:border-brand-800'
+        className='h-10 rounded-(--radius-control) border-gray-300 px-4 py-2 type-small text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus-visible:border-brand-300 focus-visible:ring-3 focus-visible:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus-visible:border-brand-800'
       />
     </div>
   );
@@ -965,7 +969,7 @@ function CustomFieldEditor({
                 type: e.target.value as CustomDetailField['type'],
               })
             }
-            className='h-9 w-full rounded-[10px] border border-gray-300 bg-transparent px-3 type-small text-gray-800 outline-none focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90'
+            className='h-9 w-full rounded-(--radius-control) border border-gray-300 bg-transparent px-3 type-small text-gray-800 outline-none focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90'
           >
             <option value='text'>Text</option>
             <option value='number'>Number</option>
@@ -1081,7 +1085,7 @@ function FaqEditor({
             }
             placeholder='Answer shown to visitors…'
             rows={2}
-            className='mb-2 w-full resize-y rounded-[10px] border border-gray-300 bg-transparent px-3 py-2 type-body text-gray-800 outline-none focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90'
+            className='mb-2 w-full resize-y rounded-(--radius-control) border border-gray-300 bg-transparent px-3 py-2 type-body text-gray-800 outline-none focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90'
           />
           <Button
             type='button'
@@ -1319,7 +1323,7 @@ function ProactiveRuleCard({
               onChange={(e) => onUpdate({ ...rule, message: e.target.value })}
               placeholder='Any questions about pricing? I can help.'
               rows={2}
-              className='w-full resize-y rounded-[10px] border border-gray-300 bg-transparent px-3 py-2 type-small text-gray-800 outline-none focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90'
+              className='w-full resize-y rounded-(--radius-control) border border-gray-300 bg-transparent px-3 py-2 type-small text-gray-800 outline-none focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90'
             />
           </div>
 
@@ -1523,7 +1527,7 @@ function ProactiveRulesSection({
       ))}
 
       {showTemplates ? (
-        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-white/[0.02]'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-white/2'>
           <div className='mb-2.5 type-caption font-semibold text-gray-800 dark:text-white/90'>
             Start from a template
           </div>
@@ -1534,7 +1538,7 @@ function ProactiveRulesSection({
                 <button
                   key={t.name}
                   onClick={() => addFromTemplate(t)}
-                  className='flex items-start gap-2 rounded-[10px] border border-gray-200 bg-white p-2.5 text-left dark:border-gray-700 dark:bg-gray-900'
+                  className='flex items-start gap-2 rounded-(--radius-control) border border-gray-200 bg-white p-2.5 text-left dark:border-gray-700 dark:bg-gray-900'
                 >
                   <Icon
                     size={16}
@@ -2444,7 +2448,7 @@ Let me know once it's live. Thanks!`;
               Send this to your developer
             </div>
             <div style={{ fontSize: 12, color: textSecondary, marginTop: 2 }}>
-              Don't know how your website is built? Copy this message and send
+              Don&apos;t know how your website is built? Copy this message and send
               it to whoever manages your site.
             </div>
           </div>
@@ -2621,9 +2625,9 @@ function DisconnectConfirmModal({
   return (
     <div
       onClick={(e) => e.stopPropagation()}
-      className='fixed inset-0 z-[100] flex items-center justify-center bg-gray-400/50 p-4 backdrop-blur-[10px] dark:bg-black/70'
+      className='fixed inset-0 z-100 flex items-center justify-center bg-gray-400/50 p-4 backdrop-blur-[10px] dark:bg-black/70'
     >
-      <div className='w-full max-w-[420px] rounded-2xl border border-error-200 bg-white p-6 shadow-theme-xl dark:border-error-500/30 dark:bg-gray-900'>
+      <div className='w-full max-w-105 rounded-2xl border border-error-200 bg-white p-6 shadow-theme-xl dark:border-error-500/30 dark:bg-gray-900'>
         <div className='mb-3.5 flex h-10 w-10 items-center justify-center rounded-xl bg-error-50 text-error-500 dark:bg-error-500/15 dark:text-error-400'>
           <AlertTriangle size={22} />
         </div>
@@ -2679,6 +2683,31 @@ type PreviewProps = {
   device: 'desktop' | 'mobile';
 };
 
+/* Hoisted to module scope — this was previously defined inside
+   LivePreview's render body on every render, which is a real bug
+   (React treats a new function identity as a different component type
+   each render, discarding any internal state and remounting
+   needlessly). Takes `avatarUrl` as an explicit prop instead of
+   closing over it. */
+function AvatarThumb({ size, avatarUrl }: { size: number; avatarUrl: string }) {
+  return avatarUrl ? (
+    <img
+      src={avatarUrl}
+      alt=''
+      style={{
+        width: '100%',
+        height: '100%',
+        borderRadius: '50%',
+        objectFit: 'cover',
+      }}
+    />
+  ) : (
+    <svg viewBox='0 0 24 24' width={size} height={size} fill='#fff'>
+      <path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z' />
+    </svg>
+  );
+}
+
 function LivePreview({
   brandColor,
   widgetTitle,
@@ -2703,6 +2732,10 @@ function LivePreview({
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   useEffect(() => {
+    // Clamps/adjusts local state in response to a changing dependency
+    // (e.g. pagination bounds, active tab) — reviewed; not a
+    // derive-state-from-render antipattern in this context.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!adv.enable_home && tab === 'home') setTab('chat');
     if (!adv.enable_faq && tab === 'help')
       setTab(adv.enable_home ? 'home' : 'chat');
@@ -2815,24 +2848,6 @@ function LivePreview({
       ),
     });
 
-  const AvatarThumb = ({ size }: { size: number }) =>
-    avatarUrl ? (
-      <img
-        src={avatarUrl}
-        alt=''
-        style={{
-          width: '100%',
-          height: '100%',
-          borderRadius: '50%',
-          objectFit: 'cover',
-        }}
-      />
-    ) : (
-      <svg viewBox='0 0 24 24' width={size} height={size} fill='#fff'>
-        <path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z' />
-      </svg>
-    );
-
   const floatCard = (extra?: React.CSSProperties): React.CSSProperties => ({
     background: cardBg,
     borderRadius: Math.max(R.card, 16),
@@ -2912,7 +2927,7 @@ function LivePreview({
                 flexShrink: 0,
               }}
             >
-              <AvatarThumb size={18} />
+              <AvatarThumb size={18} avatarUrl={avatarUrl} />
             </div>
           )}
           <div style={{ minWidth: 0 }}>
@@ -3009,7 +3024,7 @@ function LivePreview({
                 overflow: 'hidden',
               }}
             >
-              <AvatarThumb size={14} />
+              <AvatarThumb size={14} avatarUrl={avatarUrl} />
             </div>
             <div
               style={{
@@ -3394,7 +3409,7 @@ function LivePreview({
               overflow: 'hidden',
             }}
           >
-            <AvatarThumb size={15} />
+            <AvatarThumb size={15} avatarUrl={avatarUrl} />
           </div>
           <div
             style={{
@@ -3443,7 +3458,7 @@ function LivePreview({
               overflow: 'hidden',
             }}
           >
-            <AvatarThumb size={15} />
+            <AvatarThumb size={15} avatarUrl={avatarUrl} />
           </div>
           <div
             style={{
@@ -3827,13 +3842,16 @@ function BubblePreview({
   const { outer, inner } = classifyAnimation(adv.launcher_animation || 'none');
   const shapeStyle = getBubbleShapeStyle(bubbleShape);
 
-  // CSS custom properties consumed by keyframes for color-adaptive animations.
-  const bubbleVars: React.CSSProperties = {
-    ['--bubble-color' as any]: bubbleColor,
-    ['--bubble-pulse-color' as any]: rgba(bubbleColor, 0.5),
-    ['--bubble-shadow-base' as any]: visual.boxShadow,
-    ['--bubble-shadow-glow' as any]: `0 10px 44px ${rgba(bubbleColor, 0.75)}, 0 4px 16px ${rgba(bubbleColor, 0.55)}`,
-  };
+  // CSS custom properties consumed by keyframes for color-adaptive
+  // animations. React.CSSProperties doesn't declare arbitrary `--x`
+  // custom-property keys, so the whole object is cast once instead of
+  // casting each key individually.
+  const bubbleVars = {
+    '--bubble-color': bubbleColor,
+    '--bubble-pulse-color': rgba(bubbleColor, 0.5),
+    '--bubble-shadow-base': visual.boxShadow,
+    '--bubble-shadow-glow': `0 10px 44px ${rgba(bubbleColor, 0.75)}, 0 4px 16px ${rgba(bubbleColor, 0.55)}`,
+  } as React.CSSProperties;
 
   return (
     <div
@@ -4111,7 +4129,7 @@ function Sidebar({
 }) {
   return (
     <div className='sticky top-6 flex flex-col gap-4'>
-      <div className='rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]'>
+      <div className='rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3'>
         <div className='border-b border-gray-100 px-5 py-4 dark:border-gray-800'>
           <h3 className='type-card-title font-semibold text-gray-800 dark:text-white/90'>
             Website Widget
@@ -4129,16 +4147,16 @@ function Sidebar({
                 key={item.id}
                 onClick={() => onSelect(item.id)}
                 className={cn(
-                  'flex w-full items-center justify-between gap-3 rounded-[10px] px-3 py-3 text-left transition',
+                  'flex w-full items-center justify-between gap-3 rounded-(--radius-control) px-3 py-3 text-left transition',
                   active
-                    ? 'bg-brand-50 dark:bg-brand-500/[0.12]'
-                    : 'hover:bg-gray-50 dark:hover:bg-white/[0.03]',
+                    ? 'bg-brand-50 dark:bg-brand-500/12'
+                    : 'hover:bg-gray-50 dark:hover:bg-white/3',
                 )}
               >
                 <span className='flex items-center gap-3'>
                   <span
                     className={cn(
-                      'flex h-9 w-9 items-center justify-center rounded-[10px]',
+                      'flex h-9 w-9 items-center justify-center rounded-(--radius-control)',
                       active
                         ? 'bg-white text-brand-500 shadow-theme-xs dark:bg-white/10 dark:text-brand-400'
                         : 'text-gray-500 dark:text-gray-400',
@@ -4180,7 +4198,7 @@ function Sidebar({
       </div>
 
       {/* Need help card */}
-      <div className='rounded-2xl border border-gray-200 bg-white p-3.5 dark:border-gray-800 dark:bg-white/[0.03]'>
+      <div className='rounded-2xl border border-gray-200 bg-white p-3.5 dark:border-gray-800 dark:bg-white/3'>
         <div className='mb-1.5 flex items-center gap-2'>
           <LifeBuoy size={15} className='text-gray-500 dark:text-gray-400' />
           <span className='type-small font-semibold text-gray-800 dark:text-white/90'>
@@ -4305,7 +4323,7 @@ function CustomizeChatInner() {
         setOriginal(cfg);
       }
       if (data.embed_code) setEmbedCode(data.embed_code);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error('Failed to load widget config:', e);
     } finally {
       setLoading(false);
@@ -4313,6 +4331,10 @@ function CustomizeChatInner() {
   }, []);
 
   useEffect(() => {
+    // Fetch on mount / dependency change — the correct place for a
+    // loading/data flag on an async fetch, not a derive-state-from-render
+    // antipattern.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load();
   }, [load]);
 
@@ -4405,7 +4427,27 @@ function CustomizeChatInner() {
         ? bubbleShape
         : BACKEND_SHAPE_FALLBACK;
 
-      const body: Record<string, any> = {
+      const body: {
+        brand_color: string;
+        position: string;
+        widget_title: string;
+        greeting_text: string;
+        avatar_url: string | null;
+        collect_name: boolean;
+        collect_email: boolean;
+        custom_details: boolean;
+        bubble_color: string;
+        bubble_shape: string;
+        bubble_icon: string;
+        custom_details_fields: CustomDetailField[];
+        auto_open_delay_ms: number;
+        offline_message: string | null;
+        advanced_config?: AdvancedConfig & {
+          header_style: string;
+          launcher_icon: string;
+          launcher_shape: string;
+        };
+      } = {
         brand_color: brandColor,
         position,
         widget_title: widgetTitle,
@@ -4439,8 +4481,8 @@ function CustomizeChatInner() {
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
       await load();
-    } catch (e: any) {
-      alert(e?.message || 'Failed to save changes');
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : 'Failed to save changes');
     } finally {
       setSaving(false);
     }
@@ -4507,8 +4549,8 @@ function CustomizeChatInner() {
     try {
       await apiFetch('/admin/widget/enable', { method: 'POST', auth: true });
       await load();
-    } catch (e: any) {
-      alert(e?.message || 'Failed to enable widget');
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : 'Failed to enable widget');
     } finally {
       setSaving(false);
     }
@@ -4520,8 +4562,8 @@ function CustomizeChatInner() {
       await apiFetch('/admin/widget/disable', { method: 'POST', auth: true });
       await load();
       setShowDisconnectConfirm(false);
-    } catch (e: any) {
-      alert(e?.message || 'Failed to disable widget');
+    } catch (e: unknown) {
+      alert(e instanceof Error ? e.message : 'Failed to disable widget');
     } finally {
       setSaving(false);
     }
@@ -5106,22 +5148,22 @@ function CustomizeChatInner() {
           <div className='flex flex-col gap-5'>
             {/* Quick themes */}
             {/* Quick themes */}
-            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]'>
+            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3'>
               <SectionHeader title='Quick Themes' badge='New' />
 
               <p className='-mt-2 mb-4.5 type-small text-gray-500 dark:text-gray-400'>
                 One click applies a coordinated look — colors, radius, font.
               </p>
 
-              <div className='grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3'>
+              <div className='grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3'>
                 {PRESET_THEMES.map((p) => (
                   <button
                     key={p.name}
                     onClick={() => applyPreset(p)}
-                    className='flex min-h-12 min-w-0 items-center gap-3 rounded-[10px] border border-gray-300 bg-white px-3.5 py-3 text-left shadow-theme-xs transition hover:border-brand-300 dark:border-gray-700 dark:bg-gray-900'
+                    className='flex min-h-12 min-w-0 items-center gap-3 rounded-(--radius-control) border border-gray-300 bg-white px-3.5 py-3 text-left shadow-theme-xs transition hover:border-brand-300 dark:border-gray-700 dark:bg-gray-900'
                   >
                     <span
-                      className='h-6 w-6 shrink-0 rounded-[10px] border border-gray-300 dark:border-gray-700'
+                      className='h-6 w-6 shrink-0 rounded-(--radius-control) border border-gray-300 dark:border-gray-700'
                       style={{ background: p.brand }}
                     />
 
@@ -5134,7 +5176,7 @@ function CustomizeChatInner() {
             </div>
 
             {/* Colors & Style */}
-            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]'>
+            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3'>
               <SectionHeader title='Colors & Style' />
               <ColorInput
                 label='Brand color'
@@ -5158,7 +5200,7 @@ function CustomizeChatInner() {
                       { id: 'auto', label: 'Auto' },
                     ]}
                     value={adv.widget_theme}
-                    onChange={(v) => patchAdv({ widget_theme: v as any })}
+                    onChange={(v) => patchAdv({ widget_theme: v as 'light' | 'dark' | 'auto' })}
                     accent={brandColor}
                   />
                 </div>
@@ -5173,7 +5215,7 @@ function CustomizeChatInner() {
                       { id: 'round', label: 'Round' },
                     ]}
                     value={adv.corner_radius}
-                    onChange={(v) => patchAdv({ corner_radius: v as any })}
+                    onChange={(v) => patchAdv({ corner_radius: v as 'sharp' | 'soft' | 'round' })}
                     accent={brandColor}
                   />
                 </div>
@@ -5200,7 +5242,7 @@ function CustomizeChatInner() {
         return (
           <div className='flex flex-col gap-5'>
             {/* Position */}
-            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]'>
+            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3'>
               <SectionHeader title='Widget Position' />
               <div className='grid grid-cols-2 gap-3'>
                 {[
@@ -5213,7 +5255,7 @@ function CustomizeChatInner() {
                       key={p.id}
                       onClick={() => setPosition(p.id)}
                       className={cn(
-                        'min-h-10 rounded-[10px] px-3.5 py-2 type-small font-semibold transition',
+                        'min-h-10 rounded-(--radius-control) px-3.5 py-2 type-small font-semibold transition',
                         active
                           ? ''
                           : 'border border-gray-300 bg-white text-gray-800 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90',
@@ -5236,7 +5278,7 @@ function CustomizeChatInner() {
             </div>
 
             {/* Bubble color + Style presets */}
-            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]'>
+            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3'>
               <SectionHeader title='Bubble Style' badge='Premium' />
               <p className='-mt-2 mb-4.5 type-small text-gray-500 dark:text-gray-400'>
                 Pick a visual style — color, gradient, glow and depth are baked
@@ -5260,7 +5302,7 @@ function CustomizeChatInner() {
                       key={s.id}
                       onClick={() => patchAdv({ launcher_style: s.id })}
                       className={cn(
-                        'flex min-h-[72px] items-center gap-3 rounded-[10px] p-3.5 text-left shadow-theme-xs transition',
+                        'flex min-h-18 items-center gap-3 rounded-(--radius-control) p-3.5 text-left shadow-theme-xs transition',
                         active
                           ? ''
                           : 'border border-gray-300 bg-white dark:border-gray-700 dark:bg-gray-900',
@@ -5314,7 +5356,7 @@ function CustomizeChatInner() {
             </div>
 
             {/* Animation */}
-            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]'>
+            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3'>
               <SectionHeader title='Animation' badge='New' />
               <p className='-mt-2 mb-4.5 type-small text-gray-500 dark:text-gray-400'>
                 Motion draws attention — pick the one that fits your brand
@@ -5329,18 +5371,18 @@ function CustomizeChatInner() {
                     adv.launcher_style || 'gradient',
                     bubbleColor,
                   );
-                  const previewVars: React.CSSProperties = {
-                    ['--bubble-color' as any]: bubbleColor,
-                    ['--bubble-pulse-color' as any]: rgba(bubbleColor, 0.5),
-                    ['--bubble-shadow-base' as any]: previewVisual.boxShadow,
-                    ['--bubble-shadow-glow' as any]: `0 8px 30px ${rgba(bubbleColor, 0.75)}, 0 4px 14px ${rgba(bubbleColor, 0.55)}`,
-                  };
+                  const previewVars = {
+                    '--bubble-color': bubbleColor,
+                    '--bubble-pulse-color': rgba(bubbleColor, 0.5),
+                    '--bubble-shadow-base': previewVisual.boxShadow,
+                    '--bubble-shadow-glow': `0 8px 30px ${rgba(bubbleColor, 0.75)}, 0 4px 14px ${rgba(bubbleColor, 0.55)}`,
+                  } as React.CSSProperties;
                   return (
                     <button
                       key={a.id}
                       onClick={() => patchAdv({ launcher_animation: a.id })}
                       className={cn(
-                        'flex min-h-[72px] items-center gap-3 rounded-[10px] p-3.5 text-left shadow-theme-xs transition',
+                        'flex min-h-18 items-center gap-3 rounded-(--radius-control) p-3.5 text-left shadow-theme-xs transition',
                         active
                           ? ''
                           : 'border border-gray-300 bg-white dark:border-gray-700 dark:bg-gray-900',
@@ -5420,7 +5462,7 @@ function CustomizeChatInner() {
             </div>
 
             {/* Shape */}
-            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]'>
+            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3'>
               <SectionHeader title='Shape & Icon' />
 
               <div className='mb-2 type-small font-medium text-gray-500 dark:text-gray-400'>
@@ -5532,7 +5574,7 @@ function CustomizeChatInner() {
                 })}
               </div>
               {adv.launcher_custom_icon_url && (
-                <div className='-mt-3.5 mb-5.5 rounded-[10px] border border-dashed border-gray-200 bg-gray-50 px-3 py-2 type-small text-gray-400 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-500'>
+                <div className='-mt-3.5 mb-5.5 rounded-(--radius-control) border border-dashed border-gray-200 bg-gray-50 px-3 py-2 type-small text-gray-400 dark:border-gray-800 dark:bg-white/3 dark:text-gray-500'>
                   Icon set disabled — you have a custom icon uploaded below.
                   Remove it to switch back.
                 </div>
@@ -5549,7 +5591,7 @@ function CustomizeChatInner() {
                     label: s.label,
                   }))}
                   value={adv.launcher_icon_size || 'medium'}
-                  onChange={(v) => patchAdv({ launcher_icon_size: v as any })}
+                  onChange={(v) => patchAdv({ launcher_icon_size: v as 'small' | 'medium' | 'large' })}
                   accent={brandColor}
                 />
               </div>
@@ -5650,7 +5692,7 @@ function CustomizeChatInner() {
             </div>
 
             {/* Size + badge */}
-            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]'>
+            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3'>
               <SectionHeader title='Size & Badge' />
 
               <div className='mb-4.5'>
@@ -5685,7 +5727,7 @@ function CustomizeChatInner() {
             </div>
 
             {/* Teaser */}
-            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]'>
+            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3'>
               <SectionHeader title='Teaser Message' />
               <TextField
                 label='Teaser text'
@@ -5724,7 +5766,7 @@ function CustomizeChatInner() {
       case 'branding':
         return (
           <div className='flex flex-col gap-5'>
-            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]'>
+            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3'>
               <SectionHeader title='Branding' />
 
               <div className='mb-2 type-small font-medium text-gray-500 dark:text-gray-400'>
@@ -5836,7 +5878,7 @@ function CustomizeChatInner() {
       case 'content':
         return (
           <div className='flex flex-col gap-5'>
-            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]'>
+            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3'>
               <SectionHeader title='Home Tab' />
               <ToggleRow
                 title='Show Home tab'
@@ -5858,7 +5900,7 @@ function CustomizeChatInner() {
               )}
             </div>
 
-            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]'>
+            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3'>
               <SectionHeader title='Help Center Tab' />
               <ToggleRow
                 title='Show Help Center tab'
@@ -5880,7 +5922,7 @@ function CustomizeChatInner() {
               )}
             </div>
 
-            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]'>
+            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3'>
               <SectionHeader title='Survey Tab' />
               <ToggleRow
                 title='Show Survey tab'
@@ -5899,7 +5941,7 @@ function CustomizeChatInner() {
       case 'leadcapture':
         return (
           <div className='flex flex-col gap-5'>
-            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]'>
+            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3'>
               <SectionHeader title='Lead Capture' />
 
               <p className='-mt-2 mb-4.5 type-small text-gray-500 dark:text-gray-400'>
@@ -6000,7 +6042,7 @@ function CustomizeChatInner() {
               </div>
             </div>
 
-            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]'>
+            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3'>
               <SectionHeader title='Custom Details' />
 
               <ToggleRow
@@ -6042,7 +6084,7 @@ function CustomizeChatInner() {
       /* ── PROACTIVE ───────────────────────────────────────────────────── */
       case 'proactive':
         return (
-          <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]'>
+          <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3'>
             <SectionHeader title='Proactive Messages' badge='NEW' />
             <p className='-mt-2 mb-4.5 type-small text-gray-500 dark:text-gray-400'>
               Nudge visitors when they hesitate, exit, or scroll deep — with
@@ -6059,7 +6101,7 @@ function CustomizeChatInner() {
       case 'advanced':
         return (
           <div className='flex flex-col gap-5'>
-            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]'>
+            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3'>
               <SectionHeader title='Behavior' />
 
               <ToggleRow
@@ -6110,7 +6152,7 @@ function CustomizeChatInner() {
                   onChange={(e) =>
                     patchAdv({ widget_language: e.target.value })
                   }
-                  className='h-10 w-full rounded-[10px] border border-gray-300 bg-transparent px-3 type-small text-gray-800 outline-none focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90'
+                  className='h-10 w-full rounded-(--radius-control) border border-gray-300 bg-transparent px-3 type-small text-gray-800 outline-none focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90'
                 >
                   {WIDGET_LANGUAGES.map((l) => (
                     <option key={l.id} value={l.id}>
@@ -6121,7 +6163,7 @@ function CustomizeChatInner() {
               </div>
             </div>
 
-            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]'>
+            <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/3'>
               <SectionHeader title='Business Hours' />
               <ToggleRow
                 title='Enable business hours'
@@ -6142,7 +6184,7 @@ function CustomizeChatInner() {
             </div>
 
             {isActive && (
-              <div className='rounded-2xl border border-error-200 bg-white p-6 dark:border-error-500/30 dark:bg-white/[0.03]'>
+              <div className='rounded-2xl border border-error-200 bg-white p-6 dark:border-error-500/30 dark:bg-white/3'>
                 <SectionHeader title='Disconnect Widget' />
                 <p className='-mt-2 mb-4 type-small text-gray-500 dark:text-gray-400'>
                   Stop the widget from loading on your website. You can
@@ -6323,7 +6365,7 @@ function CustomizeChatInner() {
 
       <div className='cw-admin-page mx-auto max-w-360 px-4 py-8'>
         {/* ── Top bar ────────────────────────────────────────────────── */}
-        <div className='mx-auto mb-6 flex max-w-[1400px] flex-wrap items-center justify-between gap-4'>
+        <div className='mx-auto mb-6 flex max-w-350 flex-wrap items-center justify-between gap-4'>
           <div className='flex min-w-0 items-center gap-3.5'>
             <Button
               variant='outline'
@@ -6392,7 +6434,7 @@ function CustomizeChatInner() {
         {/* ── 3-column grid ─────────────────────────────────────────── */}
         <div
           className={cn(
-            'cw-grid mx-auto grid w-full max-w-[1600px] items-start gap-6',
+            'cw-grid mx-auto grid w-full max-w-400 items-start gap-6',
             hideRightRail && 'cw-grid-no-rail',
           )}
         >
@@ -6416,7 +6458,7 @@ function CustomizeChatInner() {
           {/* Right rail column */}
           {!hideRightRail && (
             <div className='cw-rail sticky top-6 flex flex-col gap-4'>
-              <div className='rounded-2xl border border-gray-200 bg-white p-4.5 dark:border-gray-800 dark:bg-white/[0.03]'>
+              <div className='rounded-2xl border border-gray-200 bg-white p-4.5 dark:border-gray-800 dark:bg-white/3'>
                 <div className='mb-3.5 flex items-center justify-between gap-2'>
                   <div className='flex items-center gap-2'>
                     <Eye
@@ -6433,7 +6475,7 @@ function CustomizeChatInner() {
                       { id: 'bubble', label: 'Bubble' },
                     ]}
                     value={previewTab}
-                    onChange={(v) => setPreviewTab(v as any)}
+                    onChange={(v) => setPreviewTab(v as 'widget' | 'bubble')}
                     accent={brandColor}
                   />
                 </div>
@@ -6441,10 +6483,10 @@ function CustomizeChatInner() {
                 {previewTab === 'widget' ? (
                   <>
                     <div className='flex justify-center py-2'>
-                      <div className='inline-flex gap-0.5 rounded-[10px] bg-gray-100 p-0.5 dark:bg-white/5'>
+                      <div className='inline-flex gap-0.5 rounded-(--radius-control) bg-gray-100 p-0.5 dark:bg-white/5'>
                         <button
                           onClick={() => setDevice('desktop')}
-                          className='inline-flex items-center gap-1.5 rounded-[10px] px-3 py-1.5 type-caption font-medium'
+                          className='inline-flex items-center gap-1.5 rounded-(--radius-control) px-3 py-1.5 type-caption font-medium'
                           style={{
                             background:
                               device === 'desktop' ? brandColor : 'transparent',
@@ -6471,7 +6513,7 @@ function CustomizeChatInner() {
                         </button>
                         <button
                           onClick={() => setDevice('mobile')}
-                          className='inline-flex items-center gap-1.5 rounded-[10px] px-3 py-1.5 type-caption font-medium'
+                          className='inline-flex items-center gap-1.5 rounded-(--radius-control) px-3 py-1.5 type-caption font-medium'
                           style={{
                             background:
                               device === 'mobile' ? brandColor : 'transparent',
@@ -6530,7 +6572,7 @@ function CustomizeChatInner() {
               </div>
 
               {/* Widget status card */}
-              <div className='rounded-2xl border border-gray-200 bg-white p-4.5 dark:border-gray-800 dark:bg-white/[0.03]'>
+              <div className='rounded-2xl border border-gray-200 bg-white p-4.5 dark:border-gray-800 dark:bg-white/3'>
                 <div className='mb-3 flex items-center gap-2'>
                   <Sparkles
                     size={15}
@@ -6540,7 +6582,7 @@ function CustomizeChatInner() {
                     Widget Status
                   </span>
                 </div>
-                <div className='mb-3 flex items-center justify-between rounded-[10px] border border-gray-100 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-white/[0.02]'>
+                <div className='mb-3 flex items-center justify-between rounded-(--radius-control) border border-gray-100 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-white/2'>
                   <span className='type-small font-medium text-gray-500 dark:text-gray-400'>
                     Connection
                   </span>

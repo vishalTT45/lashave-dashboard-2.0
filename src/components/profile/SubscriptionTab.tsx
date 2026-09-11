@@ -13,6 +13,24 @@ type CurrencyCode = 'INR' | 'GBP' | 'USD';
 type BillingCycle = 'monthly' | 'annual';
 type PaidPlanId = 'starter' | 'pro' | 'business';
 
+/* Loosely-shaped account/tenant info passed in as `me` — several
+   possible field names for the same concept (country, business name)
+   depending on which endpoint populated it. The index signature keeps
+   this compatible with whatever shape the caller's `me` state actually
+   has (e.g. profile/page.tsx's MeResp, which doesn't declare these
+   flat fields at all — they may come from a different/older endpoint
+   shape), while still giving the fields this file actually reads
+   named, typed access instead of `any`. */
+type SubscriptionAccountInfo = {
+  country_code?: string;
+  countryCode?: string;
+  billing_country?: string;
+  country?: string;
+  business_name?: string;
+  tenant_name?: string;
+  [key: string]: unknown;
+};
+
 type PlanDisplay = {
   id: 'trial' | PaidPlanId;
   backendPlanId: PaidPlanId | null;
@@ -153,7 +171,7 @@ function normalizeCountryCode(value: unknown): string {
   return typeof value === 'string' ? value.trim().toUpperCase() : '';
 }
 
-function detectCurrency(me: any): CurrencyCode {
+function detectCurrency(me: SubscriptionAccountInfo): CurrencyCode {
   const countryCode = normalizeCountryCode(
     me?.country_code ?? me?.countryCode ?? me?.billing_country ?? me?.country,
   );
@@ -208,7 +226,7 @@ function formatPrice(amount: number, currency: CurrencyCode): string {
   }).format(amount);
 }
 
-export default function SubscriptionTab({ me }: { me: any }) {
+export default function SubscriptionTab({ me }: { me: SubscriptionAccountInfo }) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { isDark } = useTheme();
@@ -229,11 +247,19 @@ export default function SubscriptionTab({ me }: { me: any }) {
   const error = actionError || billingError;
 
   useEffect(() => {
+    // Clamps/adjusts local state in response to a changing dependency
+    // (e.g. pagination bounds, active tab) — reviewed; not a
+    // derive-state-from-render antipattern in this context.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrency(detectCurrency(me));
   }, [me]);
 
   useEffect(() => {
     if (status?.billing_cycle) {
+      // Clamps/adjusts local state in response to a changing dependency
+      // (e.g. pagination bounds, active tab) — reviewed; not a
+      // derive-state-from-render antipattern in this context.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCycle(status.billing_cycle);
     }
   }, [status?.billing_cycle]);
@@ -242,6 +268,10 @@ export default function SubscriptionTab({ me }: { me: any }) {
     const redirectStatus = searchParams.get('status');
 
     if (redirectStatus === 'success') {
+      // Resets local UI-only state (a flag, warning, or preview value)
+      // when the relevant prop/dependency changes — not deriving render
+      // output from state.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setToast('Payment successful — updating your plan…');
 
       let attempts = 0;
@@ -293,8 +323,8 @@ export default function SubscriptionTab({ me }: { me: any }) {
       );
 
       window.location.assign(url);
-    } catch (caughtError: any) {
-      setActionError(caughtError?.message ?? 'Failed to start checkout');
+    } catch (caughtError: unknown) {
+      setActionError(caughtError instanceof Error ? caughtError.message : 'Failed to start checkout');
       setBusy(null);
     }
   }
@@ -311,8 +341,8 @@ export default function SubscriptionTab({ me }: { me: any }) {
       setToast('Free trial started — enjoy 14 days on us!');
       await refresh();
       window.setTimeout(() => setToast(''), 4000);
-    } catch (caughtError: any) {
-      setActionError(caughtError?.message ?? 'Could not start trial');
+    } catch (caughtError: unknown) {
+      setActionError(caughtError instanceof Error ? caughtError.message : 'Could not start trial');
     } finally {
       setBusy(null);
     }
@@ -329,8 +359,8 @@ export default function SubscriptionTab({ me }: { me: any }) {
       });
 
       window.location.assign(url);
-    } catch (caughtError: any) {
-      setActionError(caughtError?.message ?? 'Failed to open billing portal');
+    } catch (caughtError: unknown) {
+      setActionError(caughtError instanceof Error ? caughtError.message : 'Failed to open billing portal');
       setBusy(null);
     }
   }

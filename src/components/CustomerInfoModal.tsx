@@ -94,10 +94,10 @@ const FIELD_TYPE_OPTIONS: { value: FieldType; label: string; help: string }[] = 
 ];
 
 const INPUT_CLASS =
-  'h-10 rounded-[10px] border-gray-300 px-4 py-2 type-small text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus-visible:border-brand-300 focus-visible:ring-3 focus-visible:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus-visible:border-brand-800';
+  'h-10 rounded-(--radius-control) border-gray-300 px-4 py-2 type-small text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus-visible:border-brand-300 focus-visible:ring-3 focus-visible:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus-visible:border-brand-800';
 
 const SELECT_CLASS =
-  'h-10 w-full appearance-none rounded-[10px] border border-gray-300 bg-transparent px-4 py-2 pr-10 type-small text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800';
+  'h-10 w-full appearance-none rounded-(--radius-control) border border-gray-300 bg-transparent px-4 py-2 pr-10 type-small text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800';
 
 function slugifyKey(value: string) {
   return value
@@ -152,7 +152,7 @@ function ToggleRow({
   onChange: (checked: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-[10px] border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-white/[0.02]">
+    <div className="flex items-center justify-between gap-3 rounded-(--radius-control) border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-white/2">
       <span className="type-small font-medium text-gray-700 dark:text-gray-300">
         {label}
       </span>
@@ -341,10 +341,10 @@ export default function CustomerInfoModal({
     <Modal
       isOpen
       onClose={onClose}
-      className="m-4 max-w-[860px]"
+      className="m-4 max-w-215"
       showCloseButton={false}
     >
-      <div className="flex max-h-[85vh] w-full flex-col overflow-hidden rounded-[20px] bg-white dark:bg-gray-900">
+      <div className="flex max-h-[85vh] w-full flex-col overflow-hidden rounded-(--radius-panel) bg-white dark:bg-gray-900">
         <div className="flex items-start justify-between gap-5 border-b border-gray-100 px-6 py-5 pr-5 dark:border-gray-800">
           <div className="min-w-0">
             <Badge color="primary" startIcon={<UserCheck size={13} />}>
@@ -386,7 +386,7 @@ export default function CustomerInfoModal({
                   {defaultFields.map((field) => (
                     <div
                       key={field.id}
-                      className="grid grid-cols-1 items-center gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/[0.02] md:grid-cols-[1fr_1fr_auto]"
+                      className="grid grid-cols-1 items-center gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/2 md:grid-cols-[1fr_1fr_auto]"
                     >
                       <div>
                         <p className="type-caption font-medium text-gray-500 dark:text-gray-400">
@@ -432,7 +432,7 @@ export default function CustomerInfoModal({
                 </div>
 
                 {customFields.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-5 py-10 text-center dark:border-gray-800 dark:bg-white/[0.02]">
+                  <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-5 py-10 text-center dark:border-gray-800 dark:bg-white/2">
                     <h4 className="type-small font-semibold text-gray-800 dark:text-white/90">
                       No additional questions yet
                     </h4>
@@ -461,7 +461,7 @@ export default function CustomerInfoModal({
                           }
                           onDragEnd={() => setDragIndex(null)}
                           className={cn(
-                            'rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]',
+                            'rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3',
                             dragIndex === fieldIndex &&
                               'border-brand-300 dark:border-brand-700',
                           )}
@@ -470,7 +470,7 @@ export default function CustomerInfoModal({
                             <div className="flex min-w-0 items-center gap-3">
                               <button
                                 type="button"
-                                className="flex h-9 w-9 cursor-grab items-center justify-center rounded-[10px] border border-gray-200 bg-white text-gray-400 dark:border-gray-800 dark:bg-gray-900"
+                                className="flex h-9 w-9 cursor-grab items-center justify-center rounded-(--radius-control) border border-gray-200 bg-white text-gray-400 dark:border-gray-800 dark:bg-gray-900"
                                 aria-label="Drag field"
                               >
                                 <GripVertical size={16} />
@@ -488,7 +488,7 @@ export default function CustomerInfoModal({
                             <button
                               type="button"
                               onClick={() => removeField(field.id)}
-                              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] border border-gray-200 bg-white text-gray-500 transition hover:bg-gray-50 hover:text-error-500 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-white/[0.03] dark:hover:text-error-400"
+                              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-(--radius-control) border border-gray-200 bg-white text-gray-500 transition hover:bg-gray-50 hover:text-error-500 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-white/3 dark:hover:text-error-400"
                               aria-label="Remove field"
                             >
                               <Trash2 size={16} />
@@ -575,7 +575,7 @@ export default function CustomerInfoModal({
                             </div>
 
                             {field.field_type === 'dropdown' && (
-                              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/[0.02]">
+                              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/2">
                                 <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                                   <div>
                                     <h4 className="type-small font-semibold text-gray-800 dark:text-white/90">
@@ -621,7 +621,7 @@ export default function CustomerInfoModal({
                                         onClick={() =>
                                           removeOption(field.id, optionIndex)
                                         }
-                                        className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-gray-200 bg-white text-gray-500 transition hover:bg-gray-50 hover:text-error-500 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-white/[0.03]"
+                                        className="flex h-10 w-10 items-center justify-center rounded-(--radius-control) border border-gray-200 bg-white text-gray-500 transition hover:bg-gray-50 hover:text-error-500 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-white/3"
                                         aria-label="Remove choice"
                                       >
                                         <X size={15} />
@@ -632,7 +632,7 @@ export default function CustomerInfoModal({
                               </div>
                             )}
 
-                            <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/[0.02]">
+                            <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/2">
                               <p className="type-caption font-medium text-gray-500 dark:text-gray-400">
                                 Customer preview
                               </p>
@@ -646,7 +646,7 @@ export default function CustomerInfoModal({
                                     {cleanOptions.map((option, optionIndex) => (
                                       <div
                                         key={`${option}-${optionIndex}`}
-                                        className="rounded-[10px] border border-gray-200 bg-white px-3 py-2 type-small text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
+                                        className="rounded-(--radius-control) border border-gray-200 bg-white px-3 py-2 type-small text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
                                       >
                                         {optionIndex + 1}. {option}
                                       </div>
@@ -658,7 +658,7 @@ export default function CustomerInfoModal({
                                   </p>
                                 )
                               ) : (
-                                <div className="mt-3 rounded-[10px] border border-dashed border-gray-300 bg-white px-3 py-2 type-small text-gray-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400">
+                                <div className="mt-3 rounded-(--radius-control) border border-dashed border-gray-300 bg-white px-3 py-2 type-small text-gray-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400">
                                   {field.field_type === 'number'
                                     ? 'Customer will enter a number.'
                                     : 'Customer will type an answer.'}

@@ -270,7 +270,7 @@ const URGENCY_BADGE: Record<NonNullable<RadarTrend['urgency']>, { color: BadgeCo
 };
 
 const CARD =
-  'rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]';
+  'rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3';
 
 type GrowthSectionKey =
   | 'report-history'
@@ -291,6 +291,15 @@ function fmtDate(d?: string) {
     month: 'short',
     year: 'numeric',
   });
+}
+
+// Preserves the original three-way fallback (Error message -> string
+// thrown directly -> JSON-stringified unknown shape) while giving the
+// caught value a real type instead of `any`.
+function getErrorMessage(e: unknown): string {
+  if (e instanceof Error) return e.message;
+  if (typeof e === 'string') return e;
+  return JSON.stringify(e, null, 2);
 }
 
 function itemTitle(item: GrowthItem) {
@@ -357,7 +366,7 @@ function Section({
         </div>
         <div className="flex items-center gap-2">
           {typeof count === 'number' && (
-            <span className="flex h-7 min-w-7 items-center justify-center rounded-full bg-gray-100 px-2 type-caption font-semibold text-gray-600 dark:bg-white/[0.06] dark:text-gray-300">
+            <span className="flex h-7 min-w-7 items-center justify-center rounded-full bg-gray-100 px-2 type-caption font-semibold text-gray-600 dark:bg-white/6 dark:text-gray-300">
               {count}
             </span>
           )}
@@ -371,7 +380,7 @@ function Section({
 
 function Empty({ text }: { text: string }) {
   return (
-    <div className="flex min-h-[110px] flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 px-5 py-8 text-center dark:border-gray-700">
+    <div className="flex min-h-27.5 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 px-5 py-8 text-center dark:border-gray-700">
       <Sparkles size={20} className="text-gray-300 dark:text-gray-700" />
       <p className="type-small text-gray-400 dark:text-gray-500">{text}</p>
     </div>
@@ -420,7 +429,7 @@ function ActionGrid({ items, empty }: { items?: GrowthItem[]; empty: string }) {
           className="flex flex-col rounded-xl border border-gray-200 p-4 dark:border-gray-800"
         >
           <div className="mb-2.5 flex items-center justify-between gap-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded-[10px] bg-brand-50 type-caption font-semibold text-brand-500 dark:bg-brand-500/15 dark:text-brand-400">
+            <span className="flex h-7 w-7 items-center justify-center rounded-(--radius-control) bg-brand-50 type-caption font-semibold text-brand-500 dark:bg-brand-500/15 dark:text-brand-400">
               {idx + 1}
             </span>
             {item.priority && <Badge color={priorityBadgeColor(item.priority)}>{item.priority}</Badge>}
@@ -452,7 +461,7 @@ function MagazineGrid({
   empty: string;
   onAction?: (item: GrowthItem) => void;
   onRegenerate?: (item: GrowthItem) => void;
-  scriptCache?: Record<string, any>;
+  scriptCache?: Record<string, ScriptResponse['script']>;
   canRegenerate?: boolean;
   nextRegenDate?: Date | null;
 }) {
@@ -469,7 +478,7 @@ function MagazineGrid({
             className="flex flex-col rounded-xl border border-gray-200 p-4 dark:border-gray-800"
           >
             <div className="mb-2.5 flex items-center justify-between gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-[10px] bg-brand-50 type-caption font-semibold text-brand-500 dark:bg-brand-500/15 dark:text-brand-400">
+              <span className="flex h-7 w-7 items-center justify-center rounded-(--radius-control) bg-brand-50 type-caption font-semibold text-brand-500 dark:bg-brand-500/15 dark:text-brand-400">
                 {String(idx + 1).padStart(2, '0')}
               </span>
               {item.priority && <Badge color={priorityBadgeColor(item.priority)}>{item.priority}</Badge>}
@@ -479,7 +488,7 @@ function MagazineGrid({
               {compactText(itemDescription(item))}
             </p>
             {item.cta && (
-              <div className="mt-3 inline-block w-fit rounded-[10px] bg-gray-100 px-2 py-1 type-caption text-gray-600 dark:bg-white/[0.06] dark:text-gray-300">
+              <div className="mt-3 inline-block w-fit rounded-(--radius-control) bg-gray-100 px-2 py-1 type-caption text-gray-600 dark:bg-white/6 dark:text-gray-300">
                 {item.cta}
               </div>
             )}
@@ -567,7 +576,7 @@ function CampaignTimeline({
   onRegenerate?: (item: GrowthItem) => void;
   nextRegenDate?: Date | null;
   canRegenerate?: boolean;
-  scriptCache?: Record<string, any>;
+  scriptCache?: Record<string, ScriptResponse['script']>;
 }) {
   if (!items?.length) return <Empty text={empty} />;
 
@@ -582,7 +591,7 @@ function CampaignTimeline({
             className='rounded-xl border border-gray-200 p-4 dark:border-gray-800'
           >
             <div className='mb-2 flex flex-wrap items-center gap-2'>
-              <span className='flex h-7 w-7 items-center justify-center rounded-[10px] bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
+              <span className='flex h-7 w-7 items-center justify-center rounded-(--radius-control) bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
                 {idx === 0 ? (
                   <Trophy size={13} />
                 ) : (
@@ -612,7 +621,7 @@ function CampaignTimeline({
                   {item.channels.map((ch) => (
                     <span
                       key={ch}
-                      className='inline-flex items-center gap-1 rounded-[10px] bg-gray-100 px-2 py-0.5 type-caption text-gray-500 dark:bg-white/[0.06] dark:text-gray-400'
+                      className='inline-flex items-center gap-1 rounded-(--radius-control) bg-gray-100 px-2 py-0.5 type-caption text-gray-500 dark:bg-white/6 dark:text-gray-400'
                     >
                       {CHANNEL_CFG[ch.toLowerCase()]?.logo || (
                         <GlobeIcon
@@ -695,7 +704,7 @@ function ModalSection({
 }
 
 const TEXT_BLOCK =
-  'rounded-xl border border-gray-200 bg-gray-50 p-4 type-small leading-relaxed text-gray-700 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-300';
+  'rounded-xl border border-gray-200 bg-gray-50 p-4 type-small leading-relaxed text-gray-700 dark:border-gray-800 dark:bg-white/3 dark:text-gray-300';
 
 /* ─────────────────────── Main Page ─────────────────────── */
 export default function GrowthPage() {
@@ -816,9 +825,8 @@ export default function GrowthPage() {
       if (historyRes.status === 'fulfilled') {
         setHistory(historyRes.value.reports || []);
       }
-    } catch (e: any) {
-      const msg =
-        typeof e?.message === 'string' ? e.message : typeof e === 'string' ? e : JSON.stringify(e, null, 2);
+    } catch (e: unknown) {
+      const msg = getErrorMessage(e);
       setErr(msg || 'Failed to load Growth data');
     } finally {
       setLoading(false);
@@ -883,9 +891,9 @@ export default function GrowthPage() {
       }
 
       await waitForGrowthGeneration();
-    } catch (e: any) {
+    } catch (e: unknown) {
       setErr(
-        e?.message ||
+        e instanceof Error ? e.message :
         'The new plan could not be generated. Your previous plan remains available.',
       );
     } finally {
@@ -894,7 +902,7 @@ export default function GrowthPage() {
   }
 
   async function generateScript(topic: string, context?: string, forceRegenerate = false) {
-    const safeTopic = typeof topic === 'string' ? topic.trim() : itemTitle(topic as any).trim();
+    const safeTopic = topic.trim();
 
     const safeContext =
       typeof context === 'string' ? context.trim() : context ? JSON.stringify(context) : '';
@@ -934,9 +942,8 @@ export default function GrowthPage() {
       };
       setScript(result);
       setScriptCache((prev) => ({ ...prev, [cacheKey]: result }));
-    } catch (e: any) {
-      const msg =
-        typeof e?.message === 'string' ? e.message : typeof e === 'string' ? e : JSON.stringify(e, null, 2);
+    } catch (e: unknown) {
+      const msg = getErrorMessage(e);
 
       setScript({
         title: 'Script Generation Failed',
@@ -959,10 +966,10 @@ export default function GrowthPage() {
         body: { title: ideaTitle, description: ideaDescription },
       });
       setActionPlan(res.plan || null);
-    } catch (e: any) {
+    } catch (e: unknown) {
       setActionPlan({
         idea_title: 'Action Plan Failed',
-        quick_start: e?.message || 'Failed to generate action plan.',
+        quick_start: e instanceof Error ? e.message : 'Failed to generate action plan.',
       });
     } finally {
       setActionPlanLoading(false);
@@ -979,6 +986,10 @@ export default function GrowthPage() {
   const paginatedHistory = getPageItems(history, currentHistoryPage, 8);
 
   useEffect(() => {
+    // Fetch on mount / dependency change — the correct place for a
+    // loading/data flag on an async fetch, not a derive-state-from-render
+    // antipattern.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadLatest();
   }, []);
 
@@ -993,6 +1004,10 @@ export default function GrowthPage() {
 
   useEffect(() => {
     if (historyPage <= historyTotalPages) return;
+    // Clamps/adjusts local state in response to a changing dependency
+    // (e.g. pagination bounds, active tab) — reviewed; not a
+    // derive-state-from-render antipattern in this context.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHistoryPage(historyTotalPages);
   }, [historyPage, historyTotalPages]);
 
@@ -1069,7 +1084,8 @@ export default function GrowthPage() {
 
   return (
     <RequireAuth>
-      <PageBreadcrumb pageTitle='Growth' />
+      <div className='py-4'>
+        <PageBreadcrumb pageTitle='Growth' />
 
       <div className='mb-6 flex flex-wrap items-start justify-between gap-4'>
         <div>
@@ -1131,14 +1147,14 @@ export default function GrowthPage() {
       </div>
 
       {err && (
-        <div className='mb-6 flex items-center gap-3 rounded-[10px] border border-error-200 bg-error-50 px-4 py-3 type-small text-error-600 dark:border-error-500/30 dark:bg-error-500/10 dark:text-error-400'>
+        <div className='mb-6 flex items-center gap-3 rounded-(--radius-control) border border-error-200 bg-error-50 px-4 py-3 type-small text-error-600 dark:border-error-500/30 dark:bg-error-500/10 dark:text-error-400'>
           <AlertTriangle size={16} className='shrink-0' />
           {err}
         </div>
       )}
 
       {loading ? (
-        <div className='flex min-h-[260px] flex-col items-center justify-center gap-3 text-center'>
+        <div className='flex min-h-65 flex-col items-center justify-center gap-3 text-center'>
           <div className='h-8 w-8 animate-spin rounded-full border-[3px] border-gray-200 border-t-brand-500 dark:border-gray-800 dark:border-t-brand-400' />
           <span className='type-small text-gray-400 dark:text-gray-500'>
             Loading Growth report...
@@ -1179,7 +1195,7 @@ export default function GrowthPage() {
           {/* Hero */}
           <div className={cn(CARD, 'p-6 sm:p-6')}>
             <div className='grid grid-cols-1 gap-6 md:grid-cols-[190px_1fr] md:items-center'>
-              <div className='mx-auto w-full max-w-[190px]'>
+              <div className='mx-auto w-full max-w-47.5'>
                 <GrowthGauge
                   score={report?.growth_score || 0}
                   isDark={isDark}
@@ -1194,7 +1210,7 @@ export default function GrowthPage() {
                   fixing and where growth can come from.
                 </p>
                 <div className='mt-3 flex flex-wrap gap-2'>
-                  <span className='inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 type-caption font-medium text-gray-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400'>
+                  <span className='inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 type-caption font-medium text-gray-500 dark:border-gray-800 dark:bg-white/3 dark:text-gray-400'>
                     <CalendarDays size={13} />
                     Generated {fmtDate(weeklyGeneratedAt ?? undefined)} · Next
                     on {fmtDate(overview?.next_regeneration_at ?? undefined)}
@@ -1224,7 +1240,7 @@ export default function GrowthPage() {
                 <button
                   type='button'
                   onClick={() => setGrowthMenuOpen((p) => !p)}
-                  className='mb-3 flex h-10 w-full items-center justify-between rounded-[10px] border border-gray-200 bg-white px-4 type-small font-medium text-gray-700 shadow-theme-xs transition hover:bg-gray-50 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400 dark:hover:bg-white/[0.03]'
+                  className='mb-3 flex h-10 w-full items-center justify-between rounded-(--radius-control) border border-gray-200 bg-white px-4 type-small font-medium text-gray-700 shadow-theme-xs transition hover:bg-gray-50 dark:border-gray-800 dark:bg-white/3 dark:text-gray-400 dark:hover:bg-white/3'
                 >
                   <span>Growth Menu</span>
                   <Menu size={18} />
@@ -1232,10 +1248,10 @@ export default function GrowthPage() {
               )}
 
               {(!isMobile || growthMenuOpen) && (
-                <div className='overflow-hidden rounded-2xl border border-brand-200 bg-brand-50/40 shadow-theme-xs dark:border-brand-500/20 dark:bg-brand-500/[0.05]'>
-                  <div className='border-b border-brand-100 bg-white/70 px-5 py-4 dark:border-brand-500/15 dark:bg-white/[0.02]'>
+                <div className='overflow-hidden rounded-2xl border border-brand-200 bg-brand-50/40 shadow-theme-xs dark:border-brand-500/20 dark:bg-brand-500/5'>
+                  <div className='border-b border-brand-100 bg-white/70 px-5 py-4 dark:border-brand-500/15 dark:bg-white/2'>
                     <div className='flex items-center gap-2'>
-                      <div className='flex h-8 w-8 items-center justify-center rounded-[10px] bg-brand-100 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400'>
+                      <div className='flex h-8 w-8 items-center justify-center rounded-(--radius-control) bg-brand-100 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400'>
                         <Menu size={16} />
                       </div>
 
@@ -1274,14 +1290,14 @@ export default function GrowthPage() {
                           className={cn(
                             'group flex w-full items-center justify-between gap-3 rounded-xl border px-3 py-3 text-left transition-all',
                             active
-                              ? 'border-brand-200 bg-white shadow-theme-xs dark:border-brand-500/25 dark:bg-brand-500/[0.12]'
-                              : 'border-transparent bg-white/40 hover:border-brand-100 hover:bg-white dark:bg-white/[0.02] dark:hover:border-brand-500/15 dark:hover:bg-white/[0.05]',
+                              ? 'border-brand-200 bg-white shadow-theme-xs dark:border-brand-500/25 dark:bg-brand-500/12'
+                              : 'border-transparent bg-white/40 hover:border-brand-100 hover:bg-white dark:bg-white/2 dark:hover:border-brand-500/15 dark:hover:bg-white/5',
                           )}
                         >
                           <span className='flex min-w-0 items-center gap-3'>
                             <span
                               className={cn(
-                                'flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px]',
+                                'flex h-9 w-9 shrink-0 items-center justify-center rounded-(--radius-control)',
                                 active
                                   ? 'bg-white text-brand-500 shadow-theme-xs dark:bg-white/10 dark:text-brand-400'
                                   : 'text-gray-500 dark:text-gray-400',
@@ -1380,7 +1396,7 @@ export default function GrowthPage() {
                               onClick={() => setSelectedHistory(h)}
                               className='flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 p-3.5 transition hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700'
                             >
-                              <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
+                              <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-(--radius-control) bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
                                 <CalendarDays size={15} />
                               </div>
                               <div className='min-w-0 flex-1'>
@@ -1471,7 +1487,7 @@ export default function GrowthPage() {
                           className='cursor-pointer overflow-hidden rounded-xl border border-gray-200 transition hover:-translate-y-0.5 hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700'
                         >
                           <div
-                            className='flex aspect-[16/9] min-h-[160px] items-center justify-center bg-gray-50 bg-cover bg-center dark:bg-white/[0.03]'
+                            className='flex aspect-video min-h-40 items-center justify-center bg-gray-50 bg-cover bg-center dark:bg-white/3'
                             style={
                               idea.thumbnail
                                 ? { backgroundImage: `url(${idea.thumbnail})` }
@@ -1500,7 +1516,7 @@ export default function GrowthPage() {
                             </p>
                             <div className='mt-2.5 flex flex-wrap gap-1.5'>
                               {idea.estimated_cost && (
-                                <span className='rounded-[10px] bg-gray-100 px-2 py-0.5 type-caption text-gray-500 dark:bg-white/[0.06] dark:text-gray-400'>
+                                <span className='rounded-(--radius-control) bg-gray-100 px-2 py-0.5 type-caption text-gray-500 dark:bg-white/6 dark:text-gray-400'>
                                   {idea.estimated_cost === 'free'
                                     ? 'Free'
                                     : `${idea.estimated_cost} cost`}
@@ -1628,7 +1644,7 @@ export default function GrowthPage() {
                                   </p>
 
                                   <div className='mb-2.5 flex items-center gap-2'>
-                                    <div className='h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-white/[0.06]'>
+                                    <div className='h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-white/6'>
                                       <div
                                         className='h-full rounded-full transition-all duration-700'
                                         style={{
@@ -1664,7 +1680,7 @@ export default function GrowthPage() {
 
                                   {isExpanded && trend.implementation && (
                                     <>
-                                      <div className='mt-2.5 rounded-[10px] bg-gray-50 p-3 type-caption leading-relaxed text-gray-600 dark:bg-white/[0.03] dark:text-gray-300'>
+                                      <div className='mt-2.5 rounded-(--radius-control) bg-gray-50 p-3 type-caption leading-relaxed text-gray-600 dark:bg-white/3 dark:text-gray-300'>
                                         {trend.implementation}
                                       </div>
                                       <Button
@@ -1685,7 +1701,7 @@ export default function GrowthPage() {
                                   )}
                                 </div>
                                 <div
-                                  className='flex min-h-[110px] items-center justify-center bg-gray-50 bg-cover bg-center dark:bg-white/[0.03]'
+                                  className='flex min-h-27.5 items-center justify-center bg-gray-50 bg-cover bg-center dark:bg-white/3'
                                   style={
                                     trend.thumbnail
                                       ? {
@@ -1801,7 +1817,7 @@ export default function GrowthPage() {
                       value={scriptTopic}
                       onChange={(e) => setScriptTopic(e.target.value)}
                       placeholder='Example: How faster replies increase Instagram sales'
-                      className='min-w-[280px] flex-1'
+                      className='min-w-70 flex-1'
                     />
                     <Button
                       disabled={scriptLoading || !scriptTopic.trim()}
@@ -1826,9 +1842,9 @@ export default function GrowthPage() {
       <Modal
         isOpen={scriptLoading || !!script}
         onClose={() => !scriptLoading && setScript(null)}
-        className='m-4 max-w-[820px]'
+        className='m-4 max-w-205'
       >
-        <div className='flex max-h-[85vh] w-full flex-col overflow-hidden rounded-[20px] bg-white dark:bg-gray-900'>
+        <div className='flex max-h-[85vh] w-full flex-col overflow-hidden rounded-(--radius-panel) bg-white dark:bg-gray-900'>
           <div className='flex items-start justify-between gap-4 border-b border-gray-100 px-6 py-5 pr-14 dark:border-gray-800'>
             <div className='flex items-center gap-3'>
               <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
@@ -1850,7 +1866,7 @@ export default function GrowthPage() {
 
           <div className='flex-1 overflow-y-auto px-6 py-5'>
             {scriptLoading ? (
-              <div className='flex min-h-[220px] flex-col items-center justify-center gap-3 text-gray-500 dark:text-gray-400'>
+              <div className='flex min-h-55 flex-col items-center justify-center gap-3 text-gray-500 dark:text-gray-400'>
                 <Loader2 size={26} className='animate-spin' />
                 <span className='type-small font-medium'>
                   Generating script...
@@ -1927,7 +1943,7 @@ export default function GrowthPage() {
 
                 <div className='flex flex-wrap gap-4'>
                   {script.cta && (
-                    <div className='flex-1 basis-[220px]'>
+                    <div className='flex-1 basis-55'>
                       <ModalSection
                         icon={<Target size={13} />}
                         label='CTA'
@@ -1938,7 +1954,7 @@ export default function GrowthPage() {
                     </div>
                   )}
                   {script.thumbnail_text && (
-                    <div className='flex-1 basis-[220px]'>
+                    <div className='flex-1 basis-55'>
                       <ModalSection
                         icon={<FileText size={13} />}
                         label='Thumbnail text'
@@ -2011,12 +2027,12 @@ export default function GrowthPage() {
         <Modal
           isOpen
           onClose={() => setSelectedIdea(null)}
-          className='m-4 max-w-[640px]'
+          className='m-4 max-w-160'
         >
-          <div className='max-h-[85vh] w-full overflow-y-auto rounded-[20px] bg-white dark:bg-gray-900'>
+          <div className='max-h-[85vh] w-full overflow-y-auto rounded-(--radius-panel) bg-white dark:bg-gray-900'>
             {selectedIdea.thumbnail && (
               <div
-                className='aspect-[16/9] min-h-[220px] bg-cover bg-center'
+                className='aspect-video min-h-55 bg-cover bg-center'
                 style={{ backgroundImage: `url(${selectedIdea.thumbnail})` }}
               />
             )}
@@ -2061,7 +2077,7 @@ export default function GrowthPage() {
               </p>
 
               {selectedIdea.data_evidence && (
-                <div className='mb-3.5 rounded-[10px] bg-brand-50 p-3.5 type-caption leading-relaxed text-gray-600 dark:bg-brand-500/10 dark:text-gray-300'>
+                <div className='mb-3.5 rounded-(--radius-control) bg-brand-50 p-3.5 type-caption leading-relaxed text-gray-600 dark:bg-brand-500/10 dark:text-gray-300'>
                   <span className='font-semibold text-brand-600 dark:text-brand-400'>
                     Data evidence:{' '}
                   </span>
@@ -2070,7 +2086,7 @@ export default function GrowthPage() {
               )}
 
               {selectedIdea.expected_outcome && (
-                <div className='mb-3.5 rounded-[10px] bg-success-50 p-3.5 type-caption leading-relaxed text-gray-600 dark:bg-success-500/10 dark:text-gray-300'>
+                <div className='mb-3.5 rounded-(--radius-control) bg-success-50 p-3.5 type-caption leading-relaxed text-gray-600 dark:bg-success-500/10 dark:text-gray-300'>
                   <span className='font-semibold text-success-700 dark:text-success-400'>
                     Expected outcome:{' '}
                   </span>
@@ -2083,7 +2099,7 @@ export default function GrowthPage() {
                   {selectedIdea.tags.map((tag) => (
                     <span
                       key={tag}
-                      className='rounded-[10px] bg-gray-100 px-2 py-0.5 type-caption text-gray-500 dark:bg-white/[0.06] dark:text-gray-400'
+                      className='rounded-(--radius-control) bg-gray-100 px-2 py-0.5 type-caption text-gray-500 dark:bg-white/6 dark:text-gray-400'
                     >
                       {tag.replace(/_/g, ' ')}
                     </span>
@@ -2127,9 +2143,9 @@ export default function GrowthPage() {
       <Modal
         isOpen={actionPlanLoading || !!actionPlan}
         onClose={() => !actionPlanLoading && setActionPlan(null)}
-        className='m-4 max-w-[720px]'
+        className='m-4 max-w-180'
       >
-        <div className='flex max-h-[85vh] w-full flex-col overflow-hidden rounded-[20px] bg-white dark:bg-gray-900'>
+        <div className='flex max-h-[85vh] w-full flex-col overflow-hidden rounded-(--radius-panel) bg-white dark:bg-gray-900'>
           <div className='flex items-center gap-3 border-b border-gray-100 px-6 py-5 pr-14 dark:border-gray-800'>
             <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-success-50 text-success-600 dark:bg-success-500/15 dark:text-success-400'>
               <Rocket size={18} />
@@ -2148,7 +2164,7 @@ export default function GrowthPage() {
 
           <div className='flex-1 overflow-y-auto px-6 py-5'>
             {actionPlanLoading ? (
-              <div className='flex min-h-[220px] flex-col items-center justify-center gap-3 text-gray-500 dark:text-gray-400'>
+              <div className='flex min-h-55 flex-col items-center justify-center gap-3 text-gray-500 dark:text-gray-400'>
                 <Loader2 size={26} className='animate-spin' />
                 <span className='type-small font-medium'>
                   Building your action plan...
@@ -2181,7 +2197,7 @@ export default function GrowthPage() {
                           className='rounded-xl border border-gray-200 p-4 dark:border-gray-800'
                         >
                           <div className='mb-1.5 flex items-center gap-2'>
-                            <span className='flex h-6 w-6 shrink-0 items-center justify-center rounded-[10px] bg-success-50 type-caption font-semibold text-success-600 dark:bg-success-500/15 dark:text-success-400'>
+                            <span className='flex h-6 w-6 shrink-0 items-center justify-center rounded-(--radius-control) bg-success-50 type-caption font-semibold text-success-600 dark:bg-success-500/15 dark:text-success-400'>
                               {step.step}
                             </span>
                             <span className='type-small font-semibold text-gray-800 dark:text-white/90'>
@@ -2217,7 +2233,7 @@ export default function GrowthPage() {
                       {actionPlan.success_metrics.map((m, i) => (
                         <div
                           key={i}
-                          className='flex items-center gap-2 rounded-[10px] bg-gray-50 px-3 py-2 type-caption text-gray-700 dark:bg-white/[0.03] dark:text-gray-300'
+                          className='flex items-center gap-2 rounded-(--radius-control) bg-gray-50 px-3 py-2 type-caption text-gray-700 dark:bg-white/3 dark:text-gray-300'
                         >
                           <CheckCircle2
                             size={12}
@@ -2240,7 +2256,7 @@ export default function GrowthPage() {
                       {actionPlan.risks.map((r, i) => (
                         <div
                           key={i}
-                          className='flex items-center gap-2 rounded-[10px] bg-error-50 px-3 py-2 type-caption text-gray-700 dark:bg-error-500/10 dark:text-gray-300'
+                          className='flex items-center gap-2 rounded-(--radius-control) bg-error-50 px-3 py-2 type-caption text-gray-700 dark:bg-error-500/10 dark:text-gray-300'
                         >
                           <AlertTriangle
                             size={12}
@@ -2292,9 +2308,9 @@ export default function GrowthPage() {
         <Modal
           isOpen
           onClose={() => setSelectedHistory(null)}
-          className='m-4 max-w-[560px]'
+          className='m-4 max-w-140'
         >
-          <div className='max-h-[85vh] w-full overflow-y-auto rounded-[20px] bg-white dark:bg-gray-900'>
+          <div className='max-h-[85vh] w-full overflow-y-auto rounded-(--radius-panel) bg-white dark:bg-gray-900'>
             <div className='flex items-center gap-3 border-b border-gray-100 px-6 py-5 pr-14 dark:border-gray-800'>
               <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
                 <CalendarDays size={18} />
@@ -2350,6 +2366,7 @@ export default function GrowthPage() {
           </div>
         </Modal>
       )}
+      </div>
     </RequireAuth>
   );
 }

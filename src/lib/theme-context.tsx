@@ -131,6 +131,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 const initial = stored === "dark" ? true : false;
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     // const initial = stored ? stored === "dark" : false;
+    // Syncs from an external system (localStorage / matchMedia) that
+    // isn't available during SSR — the canonical use case for an effect.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsDark(initial);
     document.documentElement.classList.toggle("dark", initial);
 

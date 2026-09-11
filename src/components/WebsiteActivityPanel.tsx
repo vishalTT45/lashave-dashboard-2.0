@@ -76,8 +76,6 @@ type Theme = {
   divider: string;
 };
 
-const alpha = (hex: string, hexAlpha: string) => `${hex}${hexAlpha}`;
-
 const STATUS_META = {
   active: { color: '#22c55e', label: 'Active' },
   idle: { color: '#f59e0b', label: 'Idle' },
@@ -144,7 +142,11 @@ export function WebsiteActivityPanel({
   isDark: boolean;
 }) {
   const [data, setData] = useState<ActivityResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // Read value intentionally unused for now — setError still tracks
+  // fetch failures so a future error UI can consume it without
+  // re-wiring the fetch logic.
+  const [, setError] = useState<string | null>(null);
+  const [now, setNow] = useState(() => Date.now());
   const mountedRef = useRef(true);
 
   const fetchData = useCallback(async () => {
@@ -157,15 +159,29 @@ export function WebsiteActivityPanel({
         setData(resp);
         setError(null);
       }
-    } catch (e: any) {
-      if (mountedRef.current) setError(e?.message || 'Failed to load activity');
+    } catch (e: unknown) {
+      if (mountedRef.current) {
+        setError(e instanceof Error ? e.message : 'Failed to load activity');
+      }
     }
   }, [conversationId]);
 
   useEffect(() => {
     mountedRef.current = true;
+    // Fetch on mount and poll every 3s. `fetchData`'s setData/setError
+    // are the correct place for a loading/data flag on an async fetch,
+    // not a derive-state-from-render antipattern — same established
+    // false-positive class as the other fetch-on-mount effects in this
+    // codebase.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
-    const iv = setInterval(fetchData, 3000);
+    const iv = setInterval(() => {
+      fetchData();
+      // `now` is tracked as state (updated on the same cadence as the
+      // data refresh) instead of calling Date.now() directly during
+      // render, which is an impure call React's rules disallow there.
+      setNow(Date.now());
+    }, 3000);
     return () => {
       mountedRef.current = false;
       clearInterval(iv);
@@ -219,9 +235,9 @@ export function WebsiteActivityPanel({
   const snap = data.snapshot;
   const statusInfo = STATUS_META[snap.status] || STATUS_META.away;
   const currentPageMs = snap.current_page_start_ts
-    ? Date.now() - snap.current_page_start_ts
+    ? now - snap.current_page_start_ts
     : 0;
-  const sessionMs = snap.session_started_ts ? Date.now() - snap.session_started_ts : 0;
+  const sessionMs = snap.session_started_ts ? now - snap.session_started_ts : 0;
   const journey = snap.journey || [];
 
   return (

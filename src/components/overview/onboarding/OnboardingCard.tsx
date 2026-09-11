@@ -110,10 +110,10 @@ export function OnboardingCard({
       : Bot;
 
   return (
-    <section className='mb-6 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-white/[0.03]'>
+    <section className='mb-6 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-theme-xs dark:border-gray-800 dark:bg-white/3'>
       <div className='flex flex-col gap-4 border-b border-gray-200 px-4 py-4 dark:border-gray-800 sm:flex-row sm:items-center sm:justify-between sm:px-5'>
         <div className='flex items-start gap-3'>
-          <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
+          <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-(--radius-control) bg-brand-50 text-brand-500 dark:bg-brand-500/15 dark:text-brand-400'>
             <Sparkles className='h-5 w-5' />
           </div>
           <div>
@@ -135,7 +135,7 @@ export function OnboardingCard({
           type='button'
           onClick={() => setDismissed(true)}
           aria-label='Dismiss onboarding'
-          className='inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:text-gray-500 dark:hover:bg-white/[0.05] dark:hover:text-gray-300'
+          className='inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-(--radius-control) text-gray-400 transition hover:bg-gray-100 hover:text-gray-700 dark:text-gray-500 dark:hover:bg-white/5 dark:hover:text-gray-300'
         >
           <X className='h-4 w-4' />
         </button>
@@ -149,7 +149,7 @@ export function OnboardingCard({
           />
         </div>
 
-        <div className='grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]'>
+        <div className='grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]'>
           <div className='flex gap-4'>
             <div
               className={cn(
@@ -183,7 +183,7 @@ export function OnboardingCard({
             </div>
           </div>
 
-          <div className='grid gap-3 sm:grid-cols-3 xl:grid-cols-1'>
+          <div className='grid gap-3 sm:grid-cols-3 lg:grid-cols-1'>
             {steps.map((step, index) => (
               <div
                 key={step.id}
@@ -191,7 +191,7 @@ export function OnboardingCard({
                   'flex items-start gap-3 rounded-xl border p-3 transition',
                   step.active
                     ? 'border-brand-200 bg-brand-50 dark:border-brand-500/20 dark:bg-brand-500/10'
-                    : 'border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-white/[0.02]',
+                    : 'border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-white/2',
                 )}
               >
                 <div
@@ -200,7 +200,7 @@ export function OnboardingCard({
                     step.done
                       ? 'border-success-200 bg-success-50 text-success-600 dark:border-success-500/20 dark:bg-success-500/15 dark:text-success-500'
                       : step.active
-                        ? 'border-brand-200 bg-white text-brand-500 dark:border-brand-500/20 dark:bg-white/[0.04] dark:text-brand-400'
+                        ? 'border-brand-200 bg-white text-brand-500 dark:border-brand-500/20 dark:bg-white/4 dark:text-brand-400'
                         : 'border-gray-200 bg-white text-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-500',
                   )}
                 >

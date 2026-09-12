@@ -242,8 +242,17 @@
      and the app shell only.)
      ─────────────────────────────────────────────────────────────── */
 
-  /* Content boundary */
-  --layout-content-max: 1440px;
+  /* Opt-in readable-width cap. NOT applied globally — the dashboard
+     canvas itself has no width cap of its own (see .dashboard-container
+     in dashboard.css) and fills whatever the shell's main column gives
+     it, the same way a table, chart, or KPI grid should. This token is
+     for the specific pages/components that will deliberately opt into
+     it during the file-by-file pass — a settings form, a prose block —
+     where a 1900px-wide text input would be bad UX. Nothing currently
+     references this token; it's declared now so it's ready when that
+     pass reaches those pages, instead of every page inventing its own
+     one-off max-width value at that point. */
+  --layout-readable-max: 1440px;
   /* A single fluid value instead of three discrete stepped ones behind
      media queries — this is the core of the "never a visible jump"
      philosophy: gutters (and the other spacing tokens below) grow and

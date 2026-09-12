@@ -110,15 +110,16 @@ export function AppSidebar() {
       <div
         className={`flex py-8 ${!isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start'}`}
       >
-        <Link href='/' className='flex items-center gap-2'>
+        <Link href='/' className='flex shrink-0 items-center gap-2 whitespace-nowrap'>
           <Image
             src='/lashvaelogo.png'
             alt='Lashvae'
             width={showLabel ? 36 : 32}
             height={showLabel ? 36 : 32}
+            className='shrink-0'
           />
           {showLabel && (
-            <span className='type-card-title font-semibold tracking-wide text-(--app-sidebar-text)'>
+            <span className='type-card-title shrink-0 whitespace-nowrap font-semibold tracking-wide text-(--app-sidebar-text)'>
               LASHVAE AI
             </span>
           )}

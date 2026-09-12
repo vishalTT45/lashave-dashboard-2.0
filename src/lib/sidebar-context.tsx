@@ -42,6 +42,7 @@ function getBucket(width: number): ScreenBucket {
 
 type SidebarContextType = {
   isExpanded: boolean;
+  isMobile: boolean;
   isMobileOpen: boolean;
   isHovered: boolean;
   openSubmenu: string | null;
@@ -109,6 +110,7 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
     <SidebarContext.Provider
       value={{
         isExpanded: isMobile ? false : isExpanded,
+        isMobile,
         isMobileOpen,
         isHovered,
         openSubmenu,

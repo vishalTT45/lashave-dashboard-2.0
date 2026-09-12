@@ -36,17 +36,34 @@
                 and that should still read as "desktop."
 ══════════════════════════════════════════════════════════════════ */
 
-/* Centered content boundary + a fluid page gutter — the single
-   definition of the app's content width. Use instead of ad-hoc
-   `mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8`. The gutter itself is
-   `clamp()`-based (see --layout-page-gutter in globals.css) so it
-   scales continuously with viewport width instead of stepping between
-   fixed values at specific breakpoints — there's no threshold here for
-   a browser zoom level to cross. */
+/* Full-width canvas + a fluid page gutter — the single definition of
+   the dashboard's structural padding. This deliberately has NO
+   max-width: a dashboard is mostly KPI grids, tables, and charts,
+   which should use whatever width the shell's main column actually
+   gives them, not stop at an arbitrary reading-width cap with dead
+   space sitting unused beside them on a wide screen. The gutter
+   itself is `clamp()`-based (see --layout-page-gutter in globals.css)
+   so it scales continuously with viewport width instead of stepping
+   between fixed values at specific breakpoints.
+
+   This used to carry `max-width: var(--layout-content-max)` (later
+   `margin-inline: 0` instead of `auto`, to stop that cap from
+   centering itself and opening a widening gap between the sidebar and
+   the visible content as the viewport grew — confirmed by measuring
+   two screenshots: a ~40px inset at one width vs. ~141px at a wider
+   one). Removing the cap entirely fixes the same problem at the root
+   instead of just stopping it from centering, and — more importantly —
+   means wide screens actually get a wider workspace instead of dead
+   space next to a fixed-width column.
+
+   Pages/components that genuinely want a reading-width cap (a settings
+   form, a block of prose) should opt in explicitly with
+   `--layout-readable-max` (globals.css) rather than inheriting one
+   here — that's deliberately not decided globally, since "does this
+   page need a cap" is a per-page judgment call for the file-by-file
+   pass, not a structural rule. */
 .dashboard-container {
   width: 100%;
-  max-width: var(--layout-content-max);
-  margin-inline: auto;
   padding-inline: var(--layout-page-gutter);
 }
 

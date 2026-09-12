@@ -30,7 +30,9 @@
  *
  * Exports
  * ────────
- *   <Container>  Centered max-width content boundary + page gutters
+ *   <Container>  Full-width canvas + page gutters (no reading-width cap —
+ *                see --layout-readable-max in globals.css for pages that
+ *                deliberately want one)
  *   <Section>    Vertical rhythm between major page sections
  *   <Stack>      Vertical flex layout with a consistent gap
  *   <Cluster>    Horizontal flex-wrap group (filter bars, tag lists)
@@ -55,9 +57,13 @@ interface BaseProps {
 }
 
 /**
- * Centered content boundary with responsive page gutters. Renders
+ * Full-width dashboard canvas with responsive page gutters. Renders
  * `.dashboard-container` (defined in dashboard.css) — the single
- * source of truth for page max-width + horizontal padding.
+ * source of truth for the page's horizontal padding. Has no
+ * max-width of its own: dashboard content (grids, tables, charts)
+ * should use whatever width the shell's main column gives it. Pages
+ * that want a narrower reading width (a form, prose) should opt into
+ * `--layout-readable-max` explicitly rather than get one from here.
  *
  * Replaces ad-hoc `mx-auto w-full max-w-360 px-4 sm:px-6 lg:px-8`.
  */

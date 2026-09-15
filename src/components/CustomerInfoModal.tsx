@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { DragEvent, useEffect, useState } from 'react';
+import { DragEvent, useEffect, useState } from "react";
 import {
   ChevronDown,
   GripVertical,
@@ -9,17 +9,17 @@ import {
   Trash2,
   UserCheck,
   X,
-} from 'lucide-react';
+} from "lucide-react";
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Modal } from '@/components/ui/modal';
-import { Switch } from '@/components/ui/switch';
-import { cn } from '@/lib/utils';
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Modal } from "@/components/ui/modal";
+import { Switch } from "@/components/ui/switch";
+import { cn } from "@/lib/utils";
 
-type FieldType = 'text' | 'number' | 'dropdown';
+type FieldType = "text" | "number" | "dropdown";
 
 interface CustomerField {
   id: string;
@@ -44,30 +44,30 @@ interface Props {
 
 const DEFAULT_FIELDS: CustomerField[] = [
   {
-    id: 'default-name',
-    field_key: 'name',
-    label: 'Full Name',
-    field_type: 'text',
+    id: "default-name",
+    field_key: "name",
+    label: "Full Name",
+    field_type: "text",
     required: true,
     options: [],
     is_active: true,
     isDefault: true,
   },
   {
-    id: 'default-phone',
-    field_key: 'phone',
-    label: 'Phone Number',
-    field_type: 'text',
+    id: "default-phone",
+    field_key: "phone",
+    label: "Phone Number",
+    field_type: "text",
     required: true,
     options: [],
     is_active: true,
     isDefault: true,
   },
   {
-    id: 'default-email',
-    field_key: 'email',
-    label: 'Email Address',
-    field_type: 'text',
+    id: "default-email",
+    field_key: "email",
+    label: "Email Address",
+    field_type: "text",
     required: false,
     options: [],
     is_active: true,
@@ -75,49 +75,50 @@ const DEFAULT_FIELDS: CustomerField[] = [
   },
 ];
 
-const FIELD_TYPE_OPTIONS: { value: FieldType; label: string; help: string }[] = [
-  {
-    value: 'text',
-    label: 'Text answer',
-    help: 'Customer can type any answer.',
-  },
-  {
-    value: 'number',
-    label: 'Number',
-    help: 'Customer must enter a number.',
-  },
-  {
-    value: 'dropdown',
-    label: 'Dropdown choices',
-    help: 'Customer will choose one option from your list.',
-  },
-];
+const FIELD_TYPE_OPTIONS: { value: FieldType; label: string; help: string }[] =
+  [
+    {
+      value: "text",
+      label: "Text answer",
+      help: "Customer can type any answer.",
+    },
+    {
+      value: "number",
+      label: "Number",
+      help: "Customer must enter a number.",
+    },
+    {
+      value: "dropdown",
+      label: "Dropdown choices",
+      help: "Customer will choose one option from your list.",
+    },
+  ];
 
 const INPUT_CLASS =
-  'h-10 rounded-(--radius-control) border-gray-300 px-4 py-2 type-small text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus-visible:border-brand-300 focus-visible:ring-3 focus-visible:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus-visible:border-brand-800';
+  "h-10 rounded-[10px] border-gray-300 px-4 py-2 type-small text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus-visible:border-brand-300 focus-visible:ring-3 focus-visible:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus-visible:border-brand-800";
 
 const SELECT_CLASS =
-  'h-10 w-full appearance-none rounded-(--radius-control) border border-gray-300 bg-transparent px-4 py-2 pr-10 type-small text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800';
+  "h-10 w-full appearance-none rounded-[10px] border border-gray-300 bg-transparent px-4 py-2 pr-10 type-small text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:focus:border-brand-800";
 
 function slugifyKey(value: string) {
   return value
     .trim()
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '_')
-    .replace(/^_+|_+$/g, '');
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
 }
 
 function getTypeLabel(type: FieldType) {
   return (
     FIELD_TYPE_OPTIONS.find((option) => option.value === type)?.label ??
-    'Text answer'
+    "Text answer"
   );
 }
 
 function getTypeHelp(type: FieldType) {
   return (
     FIELD_TYPE_OPTIONS.find((option) => option.value === type)?.help ??
-    'Customer can type any answer.'
+    "Customer can type any answer."
   );
 }
 
@@ -152,7 +153,7 @@ function ToggleRow({
   onChange: (checked: boolean) => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-(--radius-control) border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-white/2">
+    <div className="flex items-center justify-between gap-3 rounded-[10px] border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-800 dark:bg-white/[0.02]">
       <span className="type-small font-medium text-gray-700 dark:text-gray-300">
         {label}
       </span>
@@ -161,10 +162,7 @@ function ToggleRow({
   );
 }
 
-export default function CustomerInfoModal({
-  onClose,
-  apiFetch,
-}: Props) {
+export default function CustomerInfoModal({ onClose, apiFetch }: Props) {
   const [fields, setFields] = useState<CustomerField[]>(DEFAULT_FIELDS);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -174,11 +172,11 @@ export default function CustomerInfoModal({
   useEffect(() => {
     (async () => {
       try {
-        const data = await apiFetch('/admin/booking/customer-info', {
+        const data = await apiFetch("/admin/booking/customer-info", {
           auth: true,
         });
 
-        const defaultKeys = new Set(['name', 'phone', 'email']);
+        const defaultKeys = new Set(["name", "phone", "email"]);
         const apiDefaults = (data.items || []).filter((field) =>
           defaultKeys.has(field.field_key),
         );
@@ -221,9 +219,9 @@ export default function CustomerInfoModal({
       ...prev,
       {
         id: `new-${Date.now()}`,
-        field_key: '',
-        label: '',
-        field_type: 'text',
+        field_key: "",
+        label: "",
+        field_type: "text",
         required: false,
         options: [],
         is_active: true,
@@ -237,7 +235,7 @@ export default function CustomerInfoModal({
   const addOption = (id: string) => {
     const field = fields.find((item) => item.id === id);
     updateField(id, {
-      options: [...(field?.options ?? []), ''],
+      options: [...(field?.options ?? []), ""],
     });
   };
 
@@ -282,13 +280,13 @@ export default function CustomerInfoModal({
       if (!field.isDefault) {
         if (!field.label.trim()) {
           setError(
-            'Every additional question needs a question shown to the customer.',
+            "Every additional question needs a question shown to the customer.",
           );
           return;
         }
 
         if (
-          field.field_type === 'dropdown' &&
+          field.field_type === "dropdown" &&
           field.options.filter((option) => option.trim()).length === 0
         ) {
           setError(
@@ -320,15 +318,15 @@ export default function CustomerInfoModal({
         },
       );
 
-      await apiFetch('/admin/booking/customer-info', {
-        method: 'PUT',
+      await apiFetch("/admin/booking/customer-info", {
+        method: "PUT",
         body: { items },
         auth: true,
       });
 
       onClose();
     } catch (event: unknown) {
-      setError(event instanceof Error ? event.message : 'Save failed');
+      setError(event instanceof Error ? event.message : "Save failed");
     } finally {
       setSaving(false);
     }
@@ -341,11 +339,11 @@ export default function CustomerInfoModal({
     <Modal
       isOpen
       onClose={onClose}
-      className="m-4 max-w-215"
+      className="m-4 max-w-[860px]"
       showCloseButton={false}
     >
-      <div className="flex max-h-[85vh] w-full flex-col overflow-hidden rounded-(--radius-panel) bg-white dark:bg-gray-900">
-        <div className="flex items-start justify-between gap-5 border-b border-gray-100 px-6 py-5 pr-5 dark:border-gray-800">
+      <div className="flex max-h-[85vh] w-full flex-col overflow-hidden rounded-[20px] bg-white dark:bg-gray-900">
+        <div className="flex  items-start justify-between gap-5 border-b border-gray-100 px-6 py-5 pr-5 dark:border-gray-800">
           <div className="min-w-0">
             <Badge color="primary" startIcon={<UserCheck size={13} />}>
               Customer Info
@@ -375,7 +373,7 @@ export default function CustomerInfoModal({
               Loading fields...
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="  space-y-6">
               <section className="space-y-4">
                 <SectionHeader
                   title="Required customer details"
@@ -386,7 +384,7 @@ export default function CustomerInfoModal({
                   {defaultFields.map((field) => (
                     <div
                       key={field.id}
-                      className="grid grid-cols-1 items-center gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/2 md:grid-cols-[1fr_1fr_auto]"
+                      className="grid grid-cols-1 items-center gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/[0.02] md:grid-cols-[1fr_1fr_auto]"
                     >
                       <div>
                         <p className="type-caption font-medium text-gray-500 dark:text-gray-400">
@@ -407,9 +405,8 @@ export default function CustomerInfoModal({
                       </div>
 
                       <ToggleRow
-                        label={field.required ? 'Required' : 'Optional'}
+                        label={field.required ? "Required" : "Optional"}
                         checked={field.required}
-                        disabled={field.field_key === 'name' || field.field_key === 'phone'}
                         onChange={(checked) =>
                           updateField(field.id, { required: checked })
                         }
@@ -432,7 +429,7 @@ export default function CustomerInfoModal({
                 </div>
 
                 {customFields.length === 0 ? (
-                  <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-5 py-10 text-center dark:border-gray-800 dark:bg-white/2">
+                  <div className="rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-5 py-10 text-center dark:border-gray-800 dark:bg-white/[0.02]">
                     <h4 className="type-small font-semibold text-gray-800 dark:text-white/90">
                       No additional questions yet
                     </h4>
@@ -461,23 +458,23 @@ export default function CustomerInfoModal({
                           }
                           onDragEnd={() => setDragIndex(null)}
                           className={cn(
-                            'rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/3',
+                            "rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]",
                             dragIndex === fieldIndex &&
-                              'border-brand-300 dark:border-brand-700',
+                              "border-brand-300 dark:border-brand-700",
                           )}
                         >
                           <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-4 py-3 dark:border-gray-800">
                             <div className="flex min-w-0 items-center gap-3">
                               <button
                                 type="button"
-                                className="flex h-9 w-9 cursor-grab items-center justify-center rounded-(--radius-control) border border-gray-200 bg-white text-gray-400 dark:border-gray-800 dark:bg-gray-900"
+                                className="flex h-9 w-9 cursor-grab items-center justify-center rounded-[10px] border border-gray-200 bg-white text-gray-400 dark:border-gray-800 dark:bg-gray-900"
                                 aria-label="Drag field"
                               >
                                 <GripVertical size={16} />
                               </button>
                               <div className="min-w-0">
                                 <p className="truncate type-small font-semibold text-gray-800 dark:text-white/90">
-                                  {field.label || 'Untitled question'}
+                                  {field.label || "Untitled question"}
                                 </p>
                                 <p className="mt-0.5 type-caption text-gray-500 dark:text-gray-400">
                                   {getTypeLabel(field.field_type)}
@@ -488,7 +485,7 @@ export default function CustomerInfoModal({
                             <button
                               type="button"
                               onClick={() => removeField(field.id)}
-                              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-(--radius-control) border border-gray-200 bg-white text-gray-500 transition hover:bg-gray-50 hover:text-error-500 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-white/3 dark:hover:text-error-400"
+                              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] border border-gray-200 bg-white text-gray-500 transition hover:bg-gray-50 hover:text-error-500 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-white/[0.03] dark:hover:text-error-400"
                               aria-label="Remove field"
                             >
                               <Trash2 size={16} />
@@ -525,7 +522,7 @@ export default function CustomerInfoModal({
                                         field_type: event.target
                                           .value as FieldType,
                                         options:
-                                          event.target.value === 'dropdown'
+                                          event.target.value === "dropdown"
                                             ? field.options
                                             : [],
                                       })
@@ -574,8 +571,8 @@ export default function CustomerInfoModal({
                               </div>
                             </div>
 
-                            {field.field_type === 'dropdown' && (
-                              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/2">
+                            {field.field_type === "dropdown" && (
+                              <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/[0.02]">
                                 <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                                   <div>
                                     <h4 className="type-small font-semibold text-gray-800 dark:text-white/90">
@@ -621,7 +618,7 @@ export default function CustomerInfoModal({
                                         onClick={() =>
                                           removeOption(field.id, optionIndex)
                                         }
-                                        className="flex h-10 w-10 items-center justify-center rounded-(--radius-control) border border-gray-200 bg-white text-gray-500 transition hover:bg-gray-50 hover:text-error-500 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-white/3"
+                                        className="flex h-10 w-10 items-center justify-center rounded-[10px] border border-gray-200 bg-white text-gray-500 transition hover:bg-gray-50 hover:text-error-500 dark:border-gray-800 dark:bg-gray-900 dark:hover:bg-white/[0.03]"
                                         aria-label="Remove choice"
                                       >
                                         <X size={15} />
@@ -632,21 +629,22 @@ export default function CustomerInfoModal({
                               </div>
                             )}
 
-                            <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/2">
+                            <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-white/[0.02]">
                               <p className="type-caption font-medium text-gray-500 dark:text-gray-400">
                                 Customer preview
                               </p>
                               <p className="mt-2 type-small font-semibold text-gray-800 dark:text-white/90">
-                                {field.label || 'Your question will appear here'}
+                                {field.label ||
+                                  "Your question will appear here"}
                               </p>
 
-                              {field.field_type === 'dropdown' ? (
+                              {field.field_type === "dropdown" ? (
                                 cleanOptions.length > 0 ? (
                                   <div className="mt-3 grid gap-2">
                                     {cleanOptions.map((option, optionIndex) => (
                                       <div
                                         key={`${option}-${optionIndex}`}
-                                        className="rounded-(--radius-control) border border-gray-200 bg-white px-3 py-2 type-small text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
+                                        className="rounded-[10px] border border-gray-200 bg-white px-3 py-2 type-small text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300"
                                       >
                                         {optionIndex + 1}. {option}
                                       </div>
@@ -658,10 +656,10 @@ export default function CustomerInfoModal({
                                   </p>
                                 )
                               ) : (
-                                <div className="mt-3 rounded-(--radius-control) border border-dashed border-gray-300 bg-white px-3 py-2 type-small text-gray-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400">
-                                  {field.field_type === 'number'
-                                    ? 'Customer will enter a number.'
-                                    : 'Customer will type an answer.'}
+                                <div className="mt-3 rounded-[10px] border border-dashed border-gray-300 bg-white px-3 py-2 type-small text-gray-500 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400">
+                                  {field.field_type === "number"
+                                    ? "Customer will enter a number."
+                                    : "Customer will type an answer."}
                                 </div>
                               )}
                             </div>
@@ -688,7 +686,7 @@ export default function CustomerInfoModal({
           </Button>
           <Button onClick={save} disabled={saving || loading}>
             {saving && <Loader2 size={15} className="animate-spin" />}
-            {saving ? 'Saving...' : 'Save fields'}
+            {saving ? "Saving..." : "Save fields"}
           </Button>
         </div>
       </div>

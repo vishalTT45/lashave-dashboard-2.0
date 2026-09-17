@@ -866,7 +866,7 @@ export default function LeadsPage() {
       }[];
       total: number;
     }>(
-      '/admin/attention?type=followup&status=open&limit=8',
+      '/admin/attention?type=followup&status=open&fresh_days=7&limit=8',
       { auth: true },
     )
       .then((data) => {

@@ -473,6 +473,7 @@ function ReviewRow({
   const lowRating = rating > 0 && rating <= 2;
   const needsManual = lowRating || review.is_critical === true;
   const [reply, setReply] = useState(review.ai_suggestion || "");
+  const [hasGeneratedDraft, setHasGeneratedDraft] = useState(Boolean(review.ai_suggestion?.trim()),)
   const [publishing, setPublishing] = useState(false);
   const [aiProcessing, setAiProcessing] = useState(false);
 
@@ -508,6 +509,7 @@ function ReviewRow({
       const suggestion = result.suggestion?.trim();
       if (!suggestion) throw new Error("AI returned an empty suggestion.");
       setReply(suggestion);
+      setHasGeneratedDraft(true);
       onMessage("AI suggestion generated.", "success");
     } catch (error: unknown) {
       onMessage(
@@ -604,24 +606,27 @@ function ReviewRow({
                 disabled={publishing || aiProcessing}
                 className="inline-flex h-9 items-center gap-2 rounded-(--radius-control) border border-gray-200 bg-white px-3 type-small font-medium text-gray-700 disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
               >
-                {aiProcessing && needsManual ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                {aiProcessing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    drafting...
+                  </>
                 ) : (
-                  <Wand2 className="h-4 w-4" />
+                  <>
+                    <Wand2 className="h-4 w-4" />
+                    draft
+                  </>
                 )}
-                Draft
               </button>
               <button
                 type="button"
-                onClick={() =>
-                  void (needsManual ? publishManualReply() : publishAiReply())
-                }
+                onClick={() => void publishManualReply()}
                 disabled={
                   publishing || aiProcessing || (needsManual && !reply.trim())
                 }
                 className="inline-flex h-9 items-center gap-2 rounded-(--radius-control) bg-brand-500 px-3 type-small font-medium text-white disabled:opacity-50"
               >
-                {publishing || (aiProcessing && !needsManual) ? (
+                {publishing ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   <Send className="h-4 w-4" />
@@ -632,7 +637,7 @@ function ReviewRow({
           )}
         </td>
       </tr>
-      {!replied && needsManual && (
+      {!replied && (
         <tr>
           <td
             colSpan={4}

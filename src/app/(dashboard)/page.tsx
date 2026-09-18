@@ -111,11 +111,11 @@ function normalizeTimeValue(item: UnknownRecord) {
 function normalizeMetricValue(item: UnknownRecord) {
   return numericValue(
     item.v ??
-      item.value ??
-      item.count ??
-      item.messages ??
-      item.total_messages ??
-      item.message_count,
+    item.value ??
+    item.count ??
+    item.messages ??
+    item.total_messages ??
+    item.message_count,
   );
 }
 
@@ -354,11 +354,10 @@ function DateFilter({
         ].map((preset) => (
           <button
             key={preset.label}
-            className={`h-(--control-height-sm) whitespace-nowrap rounded-lg px-3 type-small font-medium transition ${
-              activePreset === preset.days
-                ? 'bg-brand-500 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/5'
-            }`}
+            className={`h-(--control-height-sm) whitespace-nowrap rounded-lg px-3 type-small font-medium transition ${activePreset === preset.days
+              ? 'bg-brand-500 text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-white/5'
+              }`}
             onClick={() => {
               setActivePreset(preset.days);
               setDateRange({
@@ -734,9 +733,9 @@ function ActiveChannelsCard({
     );
     const displayName = match
       ? match.display_name ||
-        match.account_name ||
-        match.username ||
-        match.platform
+      match.account_name ||
+      match.username ||
+      match.platform
       : item.label;
     return {
       channel: match ?? null,
@@ -782,9 +781,8 @@ function ActiveChannelsCard({
         return (
           <div
             key={item.channel?.id || item.platform}
-            className={`flex min-h-24 min-w-0 w-full flex-col overflow-hidden rounded-2xl border border-gray-200/70 bg-white/90 p-2 shadow-sm backdrop-blur dark:border-white/7 dark:bg-gray-900/60 sm:p-2.5 ${
-              item.comingSoon ? 'opacity-75' : ''
-            }`}
+            className={`flex min-h-24 min-w-0 w-full flex-col overflow-hidden rounded-2xl border border-gray-200/70 bg-white/90 p-2 shadow-sm backdrop-blur dark:border-white/7 dark:bg-gray-900/60 sm:p-2.5 ${item.comingSoon ? 'opacity-75' : ''
+              }`}
           >
             <div className='flex items-start gap-2 sm:gap-2.5 w-full min-w-0'>
               <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-brand-50 dark:bg-brand-500/10 sm:h-9 sm:w-9'>
@@ -793,9 +791,8 @@ function ActiveChannelsCard({
                   alt={`${item.label} logo`}
                   width={28}
                   height={28}
-                  className={`h-6 w-6 object-contain sm:h-7 sm:w-7 ${
-                    item.comingSoon ? 'grayscale' : ''
-                  }`}
+                  className={`h-6 w-6 object-contain sm:h-7 sm:w-7 ${item.comingSoon ? 'grayscale' : ''
+                    }`}
                 />
               </div>
               <div className='min-w-0 flex-1 w-full overflow-hidden'>
@@ -936,11 +933,10 @@ function AttentionCard({
                       </span>
                     </p>
                     <span
-                      className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${
-                        isUrgent
-                          ? 'bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-400'
-                          : cfg.badge
-                      }`}
+                      className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${isUrgent
+                        ? 'bg-error-50 text-error-600 dark:bg-error-500/15 dark:text-error-400'
+                        : cfg.badge
+                        }`}
                     >
                       {cfg.label}
                     </span>
@@ -1016,6 +1012,8 @@ export default function OverviewPage() {
           channelsRes,
           faqs,
           me,
+          openConvs,
+          allConvs,
         ] = await Promise.all([
           apiFetch<unknown>(
             `/admin/stats/timeseries-by-channel?interval=day${dq}`,
@@ -1044,15 +1042,18 @@ export default function OverviewPage() {
             { auth: true },
           ),
           apiFetch<{ items: ChannelInfo[] }>('/admin/channels', { auth: true }),
-          apiFetch<ItemsResponse>('/admin/faq?limit=1', {
-            auth: true,
-          }),
-          apiFetch<AuthMeResponse>('/admin/auth/me', { auth: true }).catch(
-            (): AuthMeResponse => ({ user: { id: 'default' } }),
-          ),
+          apiFetch<ItemsResponse>('/admin/faq?limit=1', { auth: true, }),
+
+          apiFetch<AuthMeResponse>('/admin/auth/me', { auth: true, }).catch((): AuthMeResponse => ({ user: { id: 'default' }, })),
+
+          apiFetch<ItemsResponse>(`/admin/conversations?status=open&limit=1${dq}`, { auth: true }).catch((): ItemsResponse => ({ items: [], total: 0 })),
+          apiFetch<ItemsResponse>(`/admin/conversations?limit=1${dq}`, { auth: true }).catch((): ItemsResponse => ({ items: [], total: 0 })),
         ]);
 
-        setOverview(o);
+        const totalConversations = allConvs.total ?? allConvs.items?.length ?? o.total_conversations ?? 0;
+        const openConversations = openConvs.total ?? openConvs.items?.length ?? o.open_conversations ?? 0;
+
+        setOverview({ ...o, total_conversations: totalConversations, open_conversations: openConversations, });
         setPipeline(p);
         setTsMessages(adaptTimeseries(dailyMessagesRaw));
         setTsMessagesByChannel(adaptChannelTimeseries(byChannelRaw));
@@ -1071,7 +1072,7 @@ export default function OverviewPage() {
             if (flag === '1') trained = true;
             localStorage.removeItem('onboarding_trained');
           }
-        } catch {}
+        } catch { }
         setHasFaqs(trained);
         setTenantId(tid);
         setLoaded(true);
@@ -1137,8 +1138,8 @@ export default function OverviewPage() {
       .then((res) =>
         setReturningTotal(
           numberValue(res.total_returning) ??
-            numberValue(res.total_returning_users) ??
-            0,
+          numberValue(res.total_returning_users) ??
+          0,
         ),
       )
       .catch(() => setReturningTotal(0));
@@ -1333,7 +1334,7 @@ ${about}`.trim();
           JSON.stringify(payload.pendingUpload),
         );
       }
-    } catch {}
+    } catch { }
     setHasFaqs(true);
     setShowTrainAI(false);
     router.push('/faq');

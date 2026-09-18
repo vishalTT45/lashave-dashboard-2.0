@@ -156,11 +156,10 @@ function Alert({
 
   return (
     <div
-      className={`rounded-(--radius-control) border px-4 py-3 type-small ${
-        type === 'success'
-          ? 'border-success-200 bg-success-50 text-success-700 dark:border-success-500/25 dark:bg-success-500/10 dark:text-success-400'
-          : 'border-error-200 bg-error-50 text-error-600 dark:border-error-500/25 dark:bg-error-500/10 dark:text-error-400'
-      }`}
+      className={`rounded-(--radius-control) border px-4 py-3 type-small ${type === 'success'
+        ? 'border-success-200 bg-success-50 text-success-700 dark:border-success-500/25 dark:bg-success-500/10 dark:text-success-400'
+        : 'border-error-200 bg-error-50 text-error-600 dark:border-error-500/25 dark:bg-error-500/10 dark:text-error-400'
+        }`}
     >
       {message}
     </div>
@@ -508,11 +507,10 @@ function AuthPageInner() {
                       setTab(item);
                       go(item);
                     }}
-                    className={`rounded-(--radius-control) px-3 py-2 type-small font-medium transition ${
-                      tab === item
-                        ? 'bg-white text-blue-600 shadow-theme-xs dark:bg-gray-900 dark:text-blue-400'
-                        : 'text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400'
-                    }`}
+                    className={`rounded-(--radius-control) px-3 py-2 type-small font-medium transition ${tab === item
+                      ? 'bg-white text-blue-600 shadow-theme-xs dark:bg-gray-900 dark:text-blue-400'
+                      : 'text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400'
+                      }`}
                   >
                     {item === 'login' ? 'Sign In' : 'Sign Up'}
                   </button>
@@ -622,7 +620,7 @@ function AuthPageInner() {
                     <span>
                       I agree to the{' '}
                       <a
-                        href='https://lashvae.com/legal/terms'
+                        href='https://lashvae.com/terms'
                         target='_blank'
                         rel='noopener noreferrer'
                         className='text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300'
@@ -640,7 +638,7 @@ function AuthPageInner() {
                       </a>
                       , and{' '}
                       <a
-                        href='https://lashvae.com/legal/dpa'
+                        href='https://lashvae.com/legal/data-processing-agreement'
                         target='_blank'
                         rel='noopener noreferrer'
                         className='text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300'

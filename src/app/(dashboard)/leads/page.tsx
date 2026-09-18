@@ -773,7 +773,7 @@ function getLast7DaysRange() {
   const to = new Date();
   const from = new Date();
 
-  from.setDate(to.getDate() - 6);
+  from.setDate(to.getDate() - 7);
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
@@ -866,7 +866,7 @@ export default function LeadsPage() {
       }[];
       total: number;
     }>(
-      '/admin/attention?type=followup&status=open&limit=8',
+      '/admin/attention?type=followup&status=open&fresh_days=7&limit=8',
       { auth: true },
     )
       .then((data) => {

@@ -338,10 +338,10 @@ function adaptTopics(raw: RawTopicsResponse): TopicItem[] {
 type RawDepthResponse =
   | DepthItem[]
   | {
-      depth_distribution?: Record<string, number>;
-      avg_intent_detected_at_message?: number | null;
-      avg_lead_created_at_message?: number | null;
-    }
+    depth_distribution?: Record<string, number>;
+    avg_intent_detected_at_message?: number | null;
+    avg_lead_created_at_message?: number | null;
+  }
   | null
   | undefined;
 
@@ -558,10 +558,10 @@ function CustomerTabControls({
     label: string;
     value: CustomerSortOption;
   }[] = [
-    { label: 'A–Z', value: 'name_asc' },
-    { label: 'Z–A', value: 'name_desc' },
-    { label: 'Last Updated', value: 'updated' },
-  ];
+      { label: 'A–Z', value: 'name_asc' },
+      { label: 'Z–A', value: 'name_desc' },
+      { label: 'Last Updated', value: 'updated' },
+    ];
 
   return (
     <div className='flex flex-wrap items-center gap-2'>
@@ -1612,7 +1612,7 @@ function CustomersTab({
       Boolean(
         lead.updated_at &&
         (Date.now() - new Date(lead.updated_at).getTime()) / (1000 * 60 * 60 * 24) <=
-          ACTIVE_DAYS,
+        ACTIVE_DAYS,
       ),
     [],
   );
@@ -2140,10 +2140,10 @@ function formatActivityBucket(bucket?: string | null) {
   if (!Number.isNaN(parsed.getTime())) {
     return hasTime
       ? parsed.toLocaleTimeString('en-GB', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false,
-        })
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      })
       : parsed.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
   }
 
@@ -2191,7 +2191,7 @@ function OverviewTab({
       base.includes('?') ? `${base}&${q}` : `${base}${suffix}`;
 
     (async () => {
-      const [ov, dp, rt, tp, pipe] = await Promise.allSettled([
+      const [ov, dp, rt, tp, pipe, convs] = await Promise.allSettled([
         apiFetch<RawOverviewStats>(withRange('/admin/stats/overview'), {
           auth: true,
         }),
@@ -2210,9 +2210,19 @@ function OverviewTab({
         apiFetch<RawPipelineResponse>('/admin/leads/pipeline', {
           auth: true,
         }),
+        apiFetch<{ items?: unknown[]; total?: number }>(
+          withRange('/admin/conversations?limit=1'),
+          { auth: true },
+        ),
       ]);
 
-      if (ov.status === 'fulfilled') setOverview(adaptOverview(ov.value));
+      if (ov.status === 'fulfilled') {
+        const adapted = adaptOverview(ov.value);
+        if (convs.status === 'fulfilled') {
+          adapted.conversations = convs.value.total ?? convs.value.items?.length ?? adapted.conversations;
+        }
+        setOverview(adapted);
+      }
       if (dp.status === 'fulfilled') setDepth(adaptDepth(dp.value));
       if (rt.status === 'fulfilled') setReturning(adaptReturning(rt.value));
       if (tp.status === 'fulfilled') setTopics(adaptTopics(tp.value));
@@ -2239,11 +2249,11 @@ function OverviewTab({
     label: d.label,
     value: depth.find((x) => x.bucket === d.key)?.count ?? 0,
   }));
-const topicDonut = topics.map((t) => ({
-  label: TOPIC_CFG[t.topic]?.label ?? t.topic,
-  value: t.count,
-  color: TOPIC_CFG[t.topic]?.color ?? fallbackColorForTopic(t.topic),
-}));
+  const topicDonut = topics.map((t) => ({
+    label: TOPIC_CFG[t.topic]?.label ?? t.topic,
+    value: t.count,
+    color: TOPIC_CFG[t.topic]?.color ?? fallbackColorForTopic(t.topic),
+  }));
   const convRate =
     overview && overview.conversations > 0
       ? Math.round((overview.leads / overview.conversations) * 100)
@@ -2252,9 +2262,9 @@ const topicDonut = topics.map((t) => ({
   const peakBucket =
     timeseries && timeseries.length > 0
       ? timeseries.reduce(
-          (a, b) => (b.messages > a.messages ? b : a),
-          timeseries[0],
-        )
+        (a, b) => (b.messages > a.messages ? b : a),
+        timeseries[0],
+      )
       : null;
 
   const peakLabel = formatActivityBucket(peakBucket?.bucket);
@@ -2503,70 +2513,70 @@ export default function AnalyticsPage() {
         <ConversationLimitBanner />
         <PageBreadcrumb pageTitle='Analytics' />
 
-      <div className='mb-4 flex flex-wrap items-start justify-end gap-3'>
-        {tab === 'overview' && (
-          <>
-            <div ref={dateFilterRef} className='relative'>
-              <DateFilter
-                dateRange={dateRange}
-                activePreset={activePreset}
-                setDateRange={setDateRange}
-                setActivePreset={setActivePreset}
-                open={dateOpen}
-                onToggle={() => setDateOpen((v) => !v)}
-                onClose={() => setDateOpen(false)}
-              />
-            </div>
-            <WeeklyReportButton />
-          </>
-        )}
+        <div className='mb-4 flex flex-wrap items-start justify-end gap-3'>
+          {tab === 'overview' && (
+            <>
+              <div ref={dateFilterRef} className='relative'>
+                <DateFilter
+                  dateRange={dateRange}
+                  activePreset={activePreset}
+                  setDateRange={setDateRange}
+                  setActivePreset={setActivePreset}
+                  open={dateOpen}
+                  onToggle={() => setDateOpen((v) => !v)}
+                  onClose={() => setDateOpen(false)}
+                />
+              </div>
+              <WeeklyReportButton />
+            </>
+          )}
 
-        {tab === 'customers' && (
-          <CustomerTabControls
-            sortOption={sortOption}
-            sortDropdownOpen={sortDropdownOpen}
-            setSortDropdownOpen={setSortDropdownOpen}
-            onSortChange={setSortOption}
-            onExport={() => setExportTrigger((n) => n + 1)}
-          />
-        )}
-      </div>
+          {tab === 'customers' && (
+            <CustomerTabControls
+              sortOption={sortOption}
+              sortDropdownOpen={sortDropdownOpen}
+              setSortDropdownOpen={setSortDropdownOpen}
+              onSortChange={setSortOption}
+              onExport={() => setExportTrigger((n) => n + 1)}
+            />
+          )}
+        </div>
 
-      <div className='mb-4 inline-flex gap-1 rounded-xl border border-gray-200 bg-gray-100 p-1 dark:border-gray-800 dark:bg-white/3'>
-        {TABS.map((t) => {
-          const active = tab === t.id;
+        <div className='mb-4 inline-flex gap-1 rounded-xl border border-gray-200 bg-gray-100 p-1 dark:border-gray-800 dark:bg-white/3'>
+          {TABS.map((t) => {
+            const active = tab === t.id;
 
-          return (
-            <button
-              key={t.id}
-              type='button'
-              onClick={() => setTab(t.id)}
-              className={cn(
-                'rounded-(--radius-control) px-4 py-2 type-small font-semibold transition',
-                active
-                  ? 'bg-white text-brand-500 shadow-theme-xs dark:bg-white/10 dark:text-brand-400'
-                  : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300',
-              )}
-            >
-              {t.label}
-            </button>
-          );
-        })}
-      </div>
+            return (
+              <button
+                key={t.id}
+                type='button'
+                onClick={() => setTab(t.id)}
+                className={cn(
+                  'rounded-(--radius-control) px-4 py-2 type-small font-semibold transition',
+                  active
+                    ? 'bg-white text-brand-500 shadow-theme-xs dark:bg-white/10 dark:text-brand-400'
+                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300',
+                )}
+              >
+                {t.label}
+              </button>
+            );
+          })}
+        </div>
 
-      <div key={tab}>
-        {tab === 'overview' && (
-          <OverviewTab isDark={isDark} dateRange={dateRange} />
-        )}
+        <div key={tab}>
+          {tab === 'overview' && (
+            <OverviewTab isDark={isDark} dateRange={dateRange} />
+          )}
 
-        {tab === 'customers' && (
-          <CustomersTab
-            isDark={isDark}
-            sortOption={sortOption}
-            exportTrigger={exportTrigger}
-          />
-        )}
-      </div>
+          {tab === 'customers' && (
+            <CustomersTab
+              isDark={isDark}
+              sortOption={sortOption}
+              exportTrigger={exportTrigger}
+            />
+          )}
+        </div>
       </div>
     </RequireAuth>
   );

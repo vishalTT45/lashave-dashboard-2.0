@@ -773,7 +773,7 @@ function getLast7DaysRange() {
   const to = new Date();
   const from = new Date();
 
-  from.setDate(to.getDate() - 6);
+  from.setDate(to.getDate() - 7);
 
   const formatDate = (date: Date) => {
     const year = date.getFullYear();

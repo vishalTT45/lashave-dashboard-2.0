@@ -57,7 +57,7 @@ export default function DataProcessingAgreementModal({
     try {
       setSaving(true);
 
-      const fallbackPrivacyUrl = 'https://lashvae.com/legal/dpa';
+      const fallbackPrivacyUrl = 'https://lashvae.com/legal/data-processing-agreement';
       await apiFetch('/admin/processing-acceptance', {
         method: 'POST',
         auth: true,
